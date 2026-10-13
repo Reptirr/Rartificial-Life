@@ -7,15 +7,16 @@
 
 class Neuron;
 
-class Dendrite : Executable {
+class Dendrite : public Executable {
     std::string neuron_{};
+    std::unordered_set<std::string> synapses_{};
 
 public:
     explicit Dendrite(Executor *executor, std::string neuron)
         : Executable(executor), neuron_(std::move(neuron)) {
     }
 
-    void getSignal(std::string val) {
+    void addSignal(std::string val) {
         executor_->push(Command{
             .type = NEURON_GET_SIGNAL,
             .data = {
@@ -23,5 +24,17 @@ public:
                 {"signal", val}
             }
         });
+    }
+
+    void addSynaps(std::string synaps) {
+        synapses_.insert(synaps);
+    }
+
+    // getters
+    std::string getNeuron() {
+        return neuron_;
+    }
+    std::unordered_set<std::string> getSynapses() {
+        return synapses_;
     }
 };

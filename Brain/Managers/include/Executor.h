@@ -47,5 +47,5 @@ public:
             dirties_.push(cmd);
     }
 
-    void tact();
+    unsigned int tact();
 };

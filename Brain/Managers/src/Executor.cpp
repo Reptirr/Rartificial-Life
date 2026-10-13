@@ -8,12 +8,12 @@
 void Executor::executeCmdFabric(Command cmd) {
     switch (cmd.type) {
         case NONE: {
-            std::cout << "get NONE command. data: " << mapToString(cmd.data) << "\n";
+            std::cout << "get NONE command. data: " << mapToString(cmd.data) << std::endl;
             return;
         }
 
         case NEURON_SPIKE: {
-            std::cout << "get NEURON_SPIKE command. data: " << mapToString(cmd.data) << "\n";
+            std::cout << "get NEURON_SPIKE command. data: " << mapToString(cmd.data) << std::endl;
 
             std::string axon_id = cmd.data.at("axon");
             auto *axon = storage_.get<Axon>(axon_id);
@@ -23,36 +23,36 @@ void Executor::executeCmdFabric(Command cmd) {
         }
 
         case SYNAPS_FORWARD_SIGNAL: {
-            std::cout << "get SYNAPS_FORWARD_SIGNAL command. data: " << mapToString(cmd.data) << "\n";
+            std::cout << "get SYNAPS_FORWARD_SIGNAL command. data: " << mapToString(cmd.data) << std::endl;
 
             std::string synaps_id = cmd.data.at("synaps");
             auto *synaps = storage_.get<Synaps>(synaps_id);
 
-            synaps->getSpike();
+            synaps->handleSpike();
             return;
         }
 
         case DENDRIT_GET_SIGNAL:  {
-            std::cout << "get DENDRIT_GET_SIGNAL command. data: " << mapToString(cmd.data) << "\n";
+            std::cout << "get DENDRIT_GET_SIGNAL command. data: " << mapToString(cmd.data) << std::endl;
 
             std::string dendrite_id = cmd.data.at("dendrite");
             std::string signal = cmd.data.at("signal");
 
             auto *dendrite = storage_.get<Dendrite>(dendrite_id);
 
-            dendrite->getSignal(signal);
+            dendrite->addSignal(signal);
             return;
         }
 
         case NEURON_GET_SIGNAL: {
-            std::cout << "get NEURON_GET_SIGNAL command. data: " << mapToString(cmd.data) << "\n";
+            std::cout << "get NEURON_GET_SIGNAL command. data: " << mapToString(cmd.data) << std::endl;
 
             std::string neuron_id = cmd.data.at("neuron");
             std::string signal_s = cmd.data.at("signal");
 
             auto *neuron = storage_.get<Neuron>(neuron_id);
 
-            neuron->getSignal(signal_s);
+            neuron->addSignal(signal_s);
 
             return;
         }
@@ -61,19 +61,22 @@ void Executor::executeCmdFabric(Command cmd) {
     }
 }
 
-void Executor::tact() {
-    std::cout << "handle tact " << ++tact_i << "\n";
-
+unsigned int Executor::tact() {
     tact_running = true;
+    tact_i++;
 
-    auto dirties_copy = dirties_;
+    int action_i = 0;
 
-    while (!dirties_copy.empty()) {
-        executeCmdFabric(dirties_copy.front());
-        dirties_copy.pop();
+    while (!dirties_.empty()) {
+        std::cout << "[" << tact_i << "][" << action_i << "] ";
+        executeCmdFabric(dirties_.front());
+        dirties_.pop();
+        action_i++;
     }
 
     tact_running = false;
     dirties_ = next_tact_dirties;
     next_tact_dirties = std::queue<Command>();
+
+    return action_i;
 }

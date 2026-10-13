@@ -7,18 +7,25 @@
 class Axon;
 
 class Neuron : public Executable {
-    std::string axon_;
+    std::string axon_{};
+    std::string dendrite_{};
 
     double sum{};
     double threshold{10};
 
 public:
-    Neuron(Executor *executor, std::string axon)
-        : Executable(executor),
-          axon_(std::move(axon)) {
+    explicit Neuron(Executor *executor)
+        : Executable(executor) {
+
     }
 
-    void getSignal(const std::string& signal_s) {
+    /// use it for neuron creating: first create neuron, after create axon&dendrite, after use that method to finish init
+    void init(std::string axon, std::string dendrite) {
+        axon_ = std::move(axon);
+        dendrite_ = std::move(dendrite);
+    }
+
+    void addSignal(const std::string& signal_s) {
         double signal = std::stod(signal_s);
         sum += signal;
 
@@ -31,6 +38,14 @@ public:
                 }
             });
         }
+    }
+
+    // getters
+    std::string getAxon() {
+        return axon_;
+    }
+    std::string getDendrite() {
+        return dendrite_;
     }
 
 };

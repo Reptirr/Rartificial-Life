@@ -35,19 +35,26 @@ class Storage {
         else static_assert(always_false<T>, "Unknown type");
     }
 
+    template <typename Map>
+    static std::string randomKey(const Map& m) {
+        if (m.empty()) return "";
+
+        static std::mt19937 rng{std::random_device{}()};
+        std::uniform_int_distribution<size_t> dist(0, m.size() - 1);
+
+        return std::next(m.begin(), dist(rng))->first;
+    }
+
 public:
     std::string put(Neuron *neuron) {
         return putImpl(neurons_, neuron);
     }
-
     std::string put(Axon *axon) {
         return putImpl(axons_, axon);
     }
-
     std::string put(Synaps *synaps) {
         return putImpl(synapses_, synaps);
     }
-
     std::string put(Dendrite *dendrite) {
         return putImpl(dendrites_, dendrite);
     }
@@ -63,4 +70,8 @@ public:
     bool remove(const std::string &uuid) {
         return mapFor<T>(*this).erase(uuid) > 0;
     }
+
+    std::string getRandomNeuron() const   { return randomKey(neurons_); }
+    std::string getRandomAxon() const     { return randomKey(axons_); }
+    std::string getRandomDendrite() const { return randomKey(dendrites_); }
 };
