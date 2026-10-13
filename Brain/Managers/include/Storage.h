@@ -1,6 +1,8 @@
 #pragma once
+#include <ranges>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <UUIDGenerator.h>
 
 
@@ -74,4 +76,14 @@ public:
     std::string getRandomNeuron() const   { return randomKey(neurons_); }
     std::string getRandomAxon() const     { return randomKey(axons_); }
     std::string getRandomDendrite() const { return randomKey(dendrites_); }
+
+    std::unordered_set<std::string> neurons() {
+        auto k = std::ranges::views::keys(neurons_);
+        return std::unordered_set(k.begin(), k.end());
+    }
+
+    std::unordered_set<std::string> synapses() {
+        auto k = std::ranges::views::keys(synapses_);
+        return std::unordered_set(k.begin(), k.end());
+    }
 };

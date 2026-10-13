@@ -36,6 +36,15 @@ public:
 
         neuron->init(axon_id, dendrite_id);
 
+        // random coordinates
+        static std::random_device rd{};
+        static std::mt19937 gen{rd()};
+        static std::uniform_real_distribution dist{-1.0, 1.0};
+
+        neuron->setPoint({ dist(gen), dist(gen) });
+        axon->setPoint(neuron->point());
+        dendrite->setPoint(neuron->point());
+
         return {
             {"neuron", neuron_id},
             {"axon", axon_id},
@@ -47,7 +56,13 @@ public:
         auto *synaps = new Synaps(&executor_, dendrite_id, axon_id);
         auto synaps_id = storage_.put(synaps);
 
-        storage_.get<Axon>(axon_id)->addSynaps(synaps_id);
+        auto *axon = storage_.get<Axon>(axon_id);
+        auto *dendrite = storage_.get<Dendrite>(dendrite_id);
+        auto *neuron1 = storage_.get<Neuron>(storage_.get<Axon>(axon_id)->getNeuron());
+        auto *neuron2 = storage_.get<Neuron>(storage_.get<Dendrite>(dendrite_id)->getNeuron());
+
+        axon->addSynaps(synaps_id);
+        dendrite->addSynaps(synaps_id);
 
         return synaps_id;
     }

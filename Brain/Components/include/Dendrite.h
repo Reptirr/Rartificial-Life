@@ -1,5 +1,6 @@
 #pragma once
 
+#include <BrainComponent.h>
 #include <Command.h>
 #include <Executable.h>
 #include <Executor.h>
@@ -7,7 +8,7 @@
 
 class Neuron;
 
-class Dendrite : public Executable {
+class Dendrite : public Executable, public BrainComponent {
     std::string neuron_{};
     std::unordered_set<std::string> synapses_{};
 

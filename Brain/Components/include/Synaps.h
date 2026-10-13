@@ -5,7 +5,7 @@
 
 class Dendrite;
 
-class Synaps : public Executable {
+class Synaps : public Executable, public BrainComponent {
 
     std::string axon_;
     std::string dendrite_;

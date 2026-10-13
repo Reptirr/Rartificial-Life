@@ -3,6 +3,13 @@ project(Rartificial_Life)
 
 set(CMAKE_CXX_STANDARD 20)
 
+# Автоматическая обработка Qt-специфичных файлов
+set(CMAKE_AUTOMOC ON)   # moc: для Q_OBJECT, сигналов и слотов
+set(CMAKE_AUTORCC ON)   # rcc: для .qrc ресурсов
+
+find_package(Qt6 REQUIRED Widgets)
+
+
 add_executable(Rartificial_Life
         main.cpp
         Brain/Components/include/Neuron.h
@@ -16,11 +23,18 @@ add_executable(Rartificial_Life
         Brain/Managers/include/Command.h
         Brain/Managers/src/Executor.cpp
         Brain/Managers/include/Brain.h
+        UI/include/BrainWidget.h
+        UI/include/BrainWidget.h
+        UI/include/UIStorage.h
+        Brain/Components/include/BrainComponent.h
 )
 
+target_link_libraries(Rartificial_Life PRIVATE Qt6::Widgets)
 
 include_directories(Rartificial_Life
         Brain/Components/include
         Brain/Managers/include
         Brain/Utils/include
+
+        UI/include
 )
