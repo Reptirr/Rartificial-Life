@@ -1,4 +1,5 @@
 #pragma once
+#include <Command.h>
 #include <utility>
 
 #pragma once
@@ -6,26 +7,81 @@
 class Dendrite;
 
 class Synaps : public Executable, public BrainComponent {
-
     std::string axon_;
     std::string dendrite_;
 
+    double w{1};
+
+    bool is_reducing{};
+
+    // edu
+    double mediator{};
+    double Ca{};
+
+
 public:
     explicit Synaps(Executor *executor, std::string dendrite, std::string axon)
-    : Executable(executor), axon_(std::move(axon)), dendrite_(std::move(dendrite)) {
-
+        : Executable(executor), axon_(std::move(axon)), dendrite_(std::move(dendrite)) {
     }
 
     void handleSpike() {
-        if (!dendrite_.empty()) {
-            executor_->push(Command{
-                .type = DENDRIT_GET_SIGNAL,
+        executor_->push(Command{
+            .type = DENDRIT_GET_SIGNAL,
+            .data = {
+                {"dendrite", dendrite_},
+                {"signal", std::to_string(w)}
+            }
+        });
+
+        mediator += 1.0;
+
+        if (Ca > 0.0) {
+            w -= mediator * 0.05;
+            w = std::clamp(w, 0.0, 100.0);
+        }
+
+        if (!is_reducing) {
+            executor_->push({
+                .type = REDUCE_VALS_IN_SYNAPS,
                 .data = {
-                    {"dendrite", dendrite_},
-                    {"signal", "8.23"}
+                    {"synaps", this_id_}
                 }
             });
+
+            is_reducing = true;
         }
+    }
+
+    void handleCa() {
+        Ca += 1.0;
+
+        if (mediator > 0.0) {
+            w += Ca * 0.05;
+            w = std::clamp(w, 0.0, 100.0);
+        }
+
+        if (!is_reducing) {
+            executor_->push({
+                .type = REDUCE_VALS_IN_SYNAPS,
+                .data = {
+                    {"synaps", this_id_}
+                }
+            });
+
+            is_reducing = true;
+        }
+    }
+
+    void reduce() {
+        Ca = std::max(0.0, Ca-0.2);
+        mediator = std::max(0.0, mediator-0.2);
+
+        executor_->push({
+            .type = REDUCE_VALS_IN_SYNAPS,
+            .data = {
+                {"synaps", this_id_}
+            }
+        });
     }
 
     // getters
@@ -34,5 +90,14 @@ public:
     }
     std::string getDendrite() {
         return dendrite_;
+    }
+    double getCa() {
+        return Ca;
+    }
+    double getMediator() {
+        return mediator;
+    }
+    double getW() {
+        return w;
     }
 };

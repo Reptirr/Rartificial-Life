@@ -26,7 +26,7 @@ public:
     void putSpike() const {
         for (auto synaps : synapses_) {
             executor_->push(Command{
-                .type = SYNAPS_FORWARD_SIGNAL,
+                .type = SYNAPS_GET_SPIKE,
                 .data = {
                     {"synaps", synaps}
                 }

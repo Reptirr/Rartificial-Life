@@ -5,6 +5,7 @@
 #include <Storage.h>
 #include <QPainter>
 #include <UIStorage.h>
+#include <QTextItem>
 
 class BrainWidget : public QWidget {
     Storage &storage_;
@@ -20,9 +21,20 @@ class BrainWidget : public QWidget {
         BrainPoint pSynaps   = a + d * 0.75;
         BrainPoint pDendrite = a + d * 0.75;
 
+        auto *synaps = storage_.get<Synaps>(link.synaps);
+        double Ca = synaps->getCa();
+        double med = synaps->getMediator();
+        double w = synaps->getW();
+
+
         auto scr = [&](BrainPoint bp) {
             return toQPoint(bp.mapTo(width(), height()));
         };
+
+        QFont font("Arial", 12);          // семейство и размер в пунктах
+        font.setBold(true);                         // жирный
+        font.setItalic(false);
+        p.setFont(font);
 
         // аксон: зелёный
         p.setPen(QPen(Qt::green, 2));
@@ -32,11 +44,14 @@ class BrainWidget : public QWidget {
         p.setPen(QPen(Qt::gray, 2));
         p.setBrush(Qt::gray);
         p.drawEllipse(scr(pSynaps), 7, 7);
+        p.drawText(scr(pSynaps), QString("Med: %1;  Ca: %2;  W: %3")
+                                        .arg(med, 0, 'f', 2)
+                                        .arg(Ca,  0, 'f', 2)
+                                        .arg(w,   0, 'f', 3));
 
         // дендрит: красный
         p.setPen(QPen(Qt::red, 2));
         p.drawLine(scr(pDendrite), scr(b));
-
     }
 
 protected:

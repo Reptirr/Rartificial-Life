@@ -31,6 +31,17 @@ public:
         synapses_.insert(synaps);
     }
 
+    void transmitCu() const {
+        for (std::string synaps : synapses_) {
+            executor_->push({
+                .type = HANDLE_CA_IN_SYNAPS,
+                .data = {
+                    {"synaps", synaps}
+                }
+            });
+        }
+    }
+
     // getters
     std::string getNeuron() {
         return neuron_;

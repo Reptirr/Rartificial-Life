@@ -34,7 +34,13 @@ public:
         auto *dendrite = new Dendrite(&executor_, neuron_id);
         auto dendrite_id = storage_.put(dendrite);
 
+        neuron->setThisId(neuron_id);
         neuron->init(axon_id, dendrite_id);
+
+        dendrite->setThisId(dendrite_id);
+        neuron->setThisId(neuron_id);
+        axon->setThisId(axon_id);
+
 
         // random coordinates
         static std::random_device rd{};
@@ -52,6 +58,7 @@ public:
         };
     }
 
+
     std::string createSynaps(const std::string& axon_id, const std::string& dendrite_id) {
         auto *synaps = new Synaps(&executor_, dendrite_id, axon_id);
         auto synaps_id = storage_.put(synaps);
@@ -63,6 +70,8 @@ public:
 
         axon->addSynaps(synaps_id);
         dendrite->addSynaps(synaps_id);
+
+        synaps->setThisId(synaps_id);
 
         return synaps_id;
     }

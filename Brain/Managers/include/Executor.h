@@ -33,11 +33,17 @@ class Executor {
     unsigned int tact_i{};
     bool tact_running{};
 
+    std::vector<PlanCommand> plan_commands_{};
+
     void executeCmdFabric(Command cmd);
 
 public:
     explicit Executor(Storage &storage) : storage_(storage) {
 
+    }
+
+    void pushPlan(int inTact, Command cmd) {
+        plan_commands_.push_back(PlanCommand{cmd, inTact});
     }
 
     void push(const Command &cmd) {

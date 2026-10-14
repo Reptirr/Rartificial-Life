@@ -36,7 +36,13 @@ inline BrainPoint operator*(double k, const BrainPoint& p) { return p * k; }
 class BrainComponent {
 protected:
     BrainPoint point_{};
+    std::string this_id_{};
+
 public:
+    void setThisId(const std::string &this_id) {
+        this_id_ = this_id;
+    }
+
     double x() const { return point_.x; }
     double y() const { return point_.y; }
 

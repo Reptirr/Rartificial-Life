@@ -22,7 +22,7 @@ void Executor::executeCmdFabric(Command cmd) {
             return;
         }
 
-        case SYNAPS_FORWARD_SIGNAL: {
+        case SYNAPS_GET_SPIKE: {
             std::cout << "get SYNAPS_FORWARD_SIGNAL command. data: " << mapToString(cmd.data) << std::endl;
 
             std::string synaps_id = cmd.data.at("synaps");
@@ -57,7 +57,51 @@ void Executor::executeCmdFabric(Command cmd) {
             return;
         }
 
-        default: return;
+        case HANDLE_CA_IN_DENDRITE: {
+            std::cout << "get HANDLE_CA_IN_DENDRITE command. data: " << mapToString(cmd.data) << std::endl;
+
+            std::string dendrite_id = cmd.data.at("dendrite");
+            auto *dendrite = storage_.get<Dendrite>(dendrite_id);
+
+            dendrite->transmitCu();
+
+            return;
+        }
+
+        case HANDLE_CA_IN_SYNAPS: {
+            std::cout << "get PRODUCE_CA_IN_SYNAPS command. data: " << mapToString(cmd.data) << std::endl;
+
+            auto synaps_id = cmd.data.at("synaps");
+            auto *synaps = storage_.get<Synaps>(synaps_id);
+
+            synaps->handleCa();
+
+            return;
+        }
+
+        case REDUCE_VALS_IN_SYNAPS: {
+            std::cout << "get REDUCE_VALS_IN_SYNAPS command. data: " << mapToString(cmd.data) << std::endl;
+
+            auto synaps_id = cmd.data.at("synaps");
+            auto *synaps = storage_.get<Synaps>(synaps_id);
+
+            synaps->reduce();
+
+            return;
+        }
+
+        case RANDOM_NEURON_SPIKE: {
+            std::cout << "get RANDOM_NEURON_SPIKE command. data: " << mapToString(cmd.data) << std::endl;
+
+            auto neuron_id = cmd.data.at("neuron");
+            auto *neuron = storage_.get<Neuron>(neuron_id);
+
+            neuron->onRandomSpike();
+
+            return;
+        }
+
+        default: my_assert(false);
     }
 }
 
@@ -66,6 +110,17 @@ unsigned int Executor::tact() {
     tact_i++;
 
     int action_i = 0;
+
+    // чекаем планы
+    for (auto it = plan_commands_.begin(); it != plan_commands_.end(); ) {
+        if (it->inTact <= 0) {
+            dirties_.push(it->cmd);
+            it = plan_commands_.erase(it);  // erase возвращает следующий элемент
+        } else {
+            it->inTact--;
+            ++it;
+        }
+    }
 
     while (!dirties_.empty()) {
         std::cout << "[" << tact_i << "][" << action_i << "] ";
