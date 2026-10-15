@@ -101,6 +101,17 @@ void Executor::executeCmdFabric(Command cmd) {
             return;
         }
 
+        case AXON_GREW: {
+            std::cout << "get AXON_GREW command. data: " << mapToString(cmd.data) << std::endl;
+
+            auto axon_id = cmd.data.at("axon");
+            auto *axon = storage_.get<Axon>(axon_id);
+
+            axon->handleGrow();
+
+            return;
+        }
+
         default: my_assert(false);
     }
 }

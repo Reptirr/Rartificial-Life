@@ -16,6 +16,9 @@ enum CommandType {
     HANDLE_CA_IN_SYNAPS,
     REDUCE_VALS_IN_SYNAPS,
 
+    // GROWING
+    AXON_GREW,
+
     // OTHER
     RANDOM_NEURON_SPIKE
 };
