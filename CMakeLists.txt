@@ -28,6 +28,10 @@ add_executable(Rartificial_Life
         UI/include/UIStorage.h
         Brain/Components/include/BrainComponent.h
         my_assert.h
+        Brain/Managers/include/Controller.h
+        Brain/Managers/src/Controller.cpp
+        Brain/Managers/include/BrainMap.h
+        Brain/Components/include/ComponentTypes.h
 )
 
 target_link_libraries(Rartificial_Life PRIVATE Qt6::Widgets)

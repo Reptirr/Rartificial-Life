@@ -11,7 +11,7 @@ int main(int argc, char** argv) {
 
 
     // создаем рандомные синапсы
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 0; i++) {
         std::string axon, dendrite;
 
         do {

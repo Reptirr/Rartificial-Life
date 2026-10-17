@@ -38,9 +38,13 @@ protected:
     BrainPoint point_{};
     std::string this_id_{};
 
+    virtual void onSetThisId() {}
+
 public:
+    /// set after all pre-creatings
     void setThisId(const std::string &this_id) {
         this_id_ = this_id;
+        onSetThisId();
     }
 
     double x() const { return point_.x; }
@@ -51,4 +55,6 @@ public:
 
     BrainPoint point() const { return point_; }
     void setPoint(const BrainPoint point) { point_ = point; }
+
+    virtual ~BrainComponent() = default;
 };
