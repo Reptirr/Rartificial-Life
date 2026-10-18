@@ -1,5 +1,6 @@
 #pragma once
 
+#include <BrainAnalyzer.h>
 #include <queue>
 #include <utility>
 #include <Storage.h>
@@ -29,6 +30,7 @@ static inline std::string mapToString(const std::unordered_map<std::string, std:
 class Executor {
     Storage &storage_;
     Controller &controller_;
+    BrainAnalyzer analyzer_;
 
     std::queue<Command> dirties_{};
     std::queue<Command> next_tact_dirties{};

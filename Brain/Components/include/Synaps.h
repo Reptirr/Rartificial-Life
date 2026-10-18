@@ -73,8 +73,14 @@ public:
     }
 
     void reduce() {
-        Ca = std::max(0.0, Ca-0.2);
-        mediator = std::max(0.0, mediator-0.2);
+        // чем больше Ca, тем быстрее уходит (экспоненциальный распад)
+        constexpr double ca_decay = 0.1;     // доля, уходящая за такт
+        constexpr double ca_min_step = 0.02; // минимальный шаг, чтобы значение дошло до нуля
+
+        Ca -= std::max(Ca * ca_decay, ca_min_step);
+        if (Ca < 0.0) Ca = 0.0;
+
+        mediator = std::max(0.0, mediator - 0.2);
 
         executor_->push({
             .type = REDUCE_VALS_IN_SYNAPS,

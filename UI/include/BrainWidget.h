@@ -1,52 +1,19 @@
 #pragma once
 
 #include <Dendrite.h>
-#include <iostream>
 #include <Neuron.h>
 #include <QWidget>
 #include <Storage.h>
-#include <QPainter>
-#include <UIStorage.h>
 #include <QTextItem>
 #include <Synaps.h>
 
+// px
+static qreal neuron_r = 5;
+static qreal synaps_r = 3;
+
+
 class BrainWidget : public QWidget {
     Storage &storage_;
-    UIStorage ui_storage_{};
-
-    void drawLink(QPainter& p, const BrainLinkRef& link) {
-        auto *axon = storage_.get<Axon>(link.axon);
-
-        BrainPoint a = storage_.get<Neuron>(link.neuron1)->point();
-        BrainPoint b = storage_.get<Neuron>(link.neuron2)->point();
-
-        auto *synaps = storage_.get<Synaps>(link.synaps);
-        double Ca = synaps->getCa();
-        double med = synaps->getMediator();
-        double w = synaps->getW();
-
-        QFont font("Arial", 12);          // семейство и размер в пунктах
-        font.setBold(true);                         // жирный
-        font.setItalic(false);
-        p.setFont(font);
-
-        auto scr = [&](BrainPoint bp) {
-            return toQPoint(bp.mapTo(width(), height()));
-        };
-
-        // синапс: серый
-        p.setPen(QPen(Qt::gray, 2));
-        p.setBrush(Qt::gray);
-        p.drawEllipse(scr(synaps->point()), 7, 7);
-        p.drawText(scr(synaps->point()), QString("Med: %1;  Ca: %2;  W: %3")
-                                        .arg(med, 0, 'f', 2)
-                                        .arg(Ca,  0, 'f', 2)
-                                        .arg(w,   0, 'f', 3));
-
-        // дендрит: красный
-        p.setPen(QPen(Qt::red, 2));
-        p.drawLine(scr(synaps->point()), scr(b));
-    }
 
 protected:
     void paintEvent(QPaintEvent *event) override {
@@ -54,7 +21,7 @@ protected:
         p.setRenderHints(QPainter::Antialiasing);
 
         auto scr = [&](BrainPoint bp) {
-            return toQPoint(bp.mapTo(width(), height()));
+            return toQPointF(bp.mapTo(width(), height()));
         };
 
         // рисуем нейроны и их аксоны
@@ -72,7 +39,7 @@ protected:
             brush.setStyle(Qt::BrushStyle::SolidPattern);
             p.setBrush(brush);
 
-            p.drawEllipse(scr(neuron->point()), 14, 14);
+            p.drawEllipse(scr(neuron->point()), neuron_r, neuron_r);
 
             // аксон
             p.setPen(QColorConstants::Green);
@@ -98,11 +65,11 @@ protected:
                     // рисуем синапс
                     p.setPen(QPen(Qt::gray, 2));
                     p.setBrush(Qt::gray);
-                    p.drawEllipse(scr(synaps->point()), 7, 7);
-                    p.drawText(scr(synaps->point()), QString("Med: %1;  Ca: %2;  W: %3")
-                                                    .arg(med, 0, 'f', 2)
-                                                    .arg(Ca,  0, 'f', 2)
-                                                    .arg(w,   0, 'f', 3));
+                    p.drawEllipse(scr(synaps->point()), synaps_r, synaps_r);
+                    // p.drawText(scr(synaps->point()), QString("Med: %1;  Ca: %2;  W: %3")
+                    //                                 .arg(med, 0, 'f', 2)
+                    //                                 .arg(Ca,  0, 'f', 2)
+                    //                                 .arg(w,   0, 'f', 3));
 
                     // рисуем дендрит
                     auto dendrite_id = synaps->getDendrite();

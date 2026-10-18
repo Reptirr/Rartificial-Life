@@ -27,9 +27,9 @@ struct BrainPoint {
 // число слева: 2.0 * p
 inline BrainPoint operator*(double k, const BrainPoint& p) { return p * k; }
 
-[[nodiscard]] inline QPoint toQPoint(const BrainPoint& p) {
-    return {static_cast<int>(std::lround(p.x)),
-            static_cast<int>(std::lround(p.y))};
+[[nodiscard]] inline QPointF toQPointF(const BrainPoint& p) {
+    return {static_cast<double>(p.x),
+            static_cast<double>(p.y)};
 }
 
 inline double dist(BrainPoint p1, BrainPoint p2) {

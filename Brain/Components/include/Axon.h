@@ -31,7 +31,7 @@ class Axon : public Executable, public BrainComponent {
     int current_active_node_i{0};
     bool is_growing{};
     double angle{};
-    double step{0.05};
+    double step{0.09};
 
     static BrainPoint moveByAzimuth(const BrainPoint p, const double azimuth, const double length) {
         return { p.x + length * std::sin(azimuth),
@@ -93,7 +93,7 @@ public:
 
             current_active_node_i++;
 
-            for (auto dendrite_id : brain_map_->searchDendrite(point(), 0.04)) {
+            for (auto dendrite_id : brain_map_->searchDendrite(point(), 0.06)) {
                 executor_->push({
                     .type = CREATE_SYNAPS,
                     .data = {

@@ -1,8 +1,9 @@
 #pragma once
+#include <magic_enum.hpp>
 #include <string>
 #include <unordered_map>
 
-enum CommandType {
+enum CommandType : int {
     NONE,
 
     // BASE
@@ -23,6 +24,10 @@ enum CommandType {
     // OTHER
     RANDOM_NEURON_SPIKE
 };
+
+inline std::string_view toString(CommandType type) {
+    return magic_enum::enum_name(type);
+}
 
 struct Command {
     CommandType type{};

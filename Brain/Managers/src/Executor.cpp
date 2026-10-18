@@ -8,12 +8,12 @@
 void Executor::executeCmdFabric(Command cmd) {
     switch (cmd.type) {
         case NONE: {
-            std::cout << "get NONE command. data: " << mapToString(cmd.data) << std::endl;
+            // std::cout << "get NONE command. data: " << mapToString(cmd.data) << std::endl;
             return;
         }
 
         case NEURON_SPIKE: {
-            std::cout << "get NEURON_SPIKE command. data: " << mapToString(cmd.data) << std::endl;
+            // std::cout << "get NEURON_SPIKE command. data: " << mapToString(cmd.data) << std::endl;
 
             std::string axon_id = cmd.data.at("axon");
             auto *axon = storage_.get<Axon>(axon_id);
@@ -23,7 +23,7 @@ void Executor::executeCmdFabric(Command cmd) {
         }
 
         case SYNAPS_GET_SPIKE: {
-            std::cout << "get SYNAPS_FORWARD_SIGNAL command. data: " << mapToString(cmd.data) << std::endl;
+            // std::cout << "get SYNAPS_FORWARD_SIGNAL command. data: " << mapToString(cmd.data) << std::endl;
 
             std::string synaps_id = cmd.data.at("synaps");
             auto *synaps = storage_.get<Synaps>(synaps_id);
@@ -33,7 +33,7 @@ void Executor::executeCmdFabric(Command cmd) {
         }
 
         case DENDRIT_GET_SIGNAL:  {
-            std::cout << "get DENDRIT_GET_SIGNAL command. data: " << mapToString(cmd.data) << std::endl;
+            // std::cout << "get DENDRIT_GET_SIGNAL command. data: " << mapToString(cmd.data) << std::endl;
 
             std::string dendrite_id = cmd.data.at("dendrite");
             std::string signal = cmd.data.at("signal");
@@ -45,7 +45,7 @@ void Executor::executeCmdFabric(Command cmd) {
         }
 
         case NEURON_GET_SIGNAL: {
-            std::cout << "get NEURON_GET_SIGNAL command. data: " << mapToString(cmd.data) << std::endl;
+            // std::cout << "get NEURON_GET_SIGNAL command. data: " << mapToString(cmd.data) << std::endl;
 
             std::string neuron_id = cmd.data.at("neuron");
             std::string signal_s = cmd.data.at("signal");
@@ -58,7 +58,7 @@ void Executor::executeCmdFabric(Command cmd) {
         }
 
         case HANDLE_CA_IN_DENDRITE: {
-            std::cout << "get HANDLE_CA_IN_DENDRITE command. data: " << mapToString(cmd.data) << std::endl;
+            // std::cout << "get HANDLE_CA_IN_DENDRITE command. data: " << mapToString(cmd.data) << std::endl;
 
             std::string dendrite_id = cmd.data.at("dendrite");
             auto *dendrite = storage_.get<Dendrite>(dendrite_id);
@@ -69,7 +69,7 @@ void Executor::executeCmdFabric(Command cmd) {
         }
 
         case HANDLE_CA_IN_SYNAPS: {
-            std::cout << "get PRODUCE_CA_IN_SYNAPS command. data: " << mapToString(cmd.data) << std::endl;
+            // std::cout << "get PRODUCE_CA_IN_SYNAPS command. data: " << mapToString(cmd.data) << std::endl;
 
             auto synaps_id = cmd.data.at("synaps");
             auto *synaps = storage_.get<Synaps>(synaps_id);
@@ -80,7 +80,7 @@ void Executor::executeCmdFabric(Command cmd) {
         }
 
         case REDUCE_VALS_IN_SYNAPS: {
-            std::cout << "get REDUCE_VALS_IN_SYNAPS command. data: " << mapToString(cmd.data) << std::endl;
+            // std::cout << "get REDUCE_VALS_IN_SYNAPS command. data: " << mapToString(cmd.data) << std::endl;
 
             auto synaps_id = cmd.data.at("synaps");
             auto *synaps = storage_.get<Synaps>(synaps_id);
@@ -91,7 +91,7 @@ void Executor::executeCmdFabric(Command cmd) {
         }
 
         case RANDOM_NEURON_SPIKE: {
-            std::cout << "get RANDOM_NEURON_SPIKE command. data: " << mapToString(cmd.data) << std::endl;
+            // std::cout << "get RANDOM_NEURON_SPIKE command. data: " << mapToString(cmd.data) << std::endl;
 
             auto neuron_id = cmd.data.at("neuron");
             auto *neuron = storage_.get<Neuron>(neuron_id);
@@ -102,7 +102,7 @@ void Executor::executeCmdFabric(Command cmd) {
         }
 
         case AXON_GREW: {
-            std::cout << "get AXON_GREW command. data: " << mapToString(cmd.data) << std::endl;
+            // std::cout << "get AXON_GREW command. data: " << mapToString(cmd.data) << std::endl;
 
             auto axon_id = cmd.data.at("axon");
             auto *axon = storage_.get<Axon>(axon_id);
@@ -113,7 +113,7 @@ void Executor::executeCmdFabric(Command cmd) {
         }
 
         case CREATE_SYNAPS: {
-            std::cout << "get CREATE_SYNAPS. data: " << mapToString(cmd.data) << std::endl;
+            // std::cout << "get CREATE_SYNAPS. data: " << mapToString(cmd.data) << std::endl;
 
             auto node_i = std::stoi(cmd.data.at("current_node_index"));
 
@@ -133,6 +133,8 @@ void Executor::executeCmdFabric(Command cmd) {
 }
 
 unsigned int Executor::tact() {
+    analyzer_.beginTact(dirties_.size(), plan_commands_.size());
+
     tact_running = true;
     tact_i++;
 
@@ -150,15 +152,17 @@ unsigned int Executor::tact() {
     }
 
     while (!dirties_.empty()) {
-        std::cout << "[" << tact_i << "][" << action_i << "] ";
+        analyzer_.beginCommand(dirties_.front().type);
         executeCmdFabric(dirties_.front());
+        analyzer_.endCommand();
+
         dirties_.pop();
         action_i++;
     }
 
     tact_running = false;
-    dirties_ = next_tact_dirties;
-    next_tact_dirties = std::queue<Command>();
+    std::swap(dirties_, next_tact_dirties);
 
+    analyzer_.endTact();
     return action_i;
 }
