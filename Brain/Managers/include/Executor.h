@@ -4,6 +4,7 @@
 #include <utility>
 #include <Storage.h>
 #include <Command.h>
+#include <Controller.h>
 
 /*
  * первый такт: 1. Neuron (стреляет)
@@ -27,6 +28,8 @@ static inline std::string mapToString(const std::unordered_map<std::string, std:
 
 class Executor {
     Storage &storage_;
+    Controller &controller_;
+
     std::queue<Command> dirties_{};
     std::queue<Command> next_tact_dirties{};
 
@@ -38,8 +41,7 @@ class Executor {
     void executeCmdFabric(Command cmd);
 
 public:
-    explicit Executor(Storage &storage) : storage_(storage) {
-
+    explicit Executor(Storage &storage, Controller &controller) : storage_(storage), controller_(controller) {
     }
 
     void pushPlan(int inTact, Command cmd) {

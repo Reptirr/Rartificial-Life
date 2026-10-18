@@ -112,6 +112,22 @@ void Executor::executeCmdFabric(Command cmd) {
             return;
         }
 
+        case CREATE_SYNAPS: {
+            std::cout << "get CREATE_SYNAPS. data: " << mapToString(cmd.data) << std::endl;
+
+            auto node_i = std::stoi(cmd.data.at("current_node_index"));
+
+            auto axon_id = cmd.data.at("axon");
+            auto *axon = storage_.get<Axon>(axon_id);
+
+            auto dendrite_id = cmd.data.at("dendrite");
+            auto *dendrite = storage_.get<Dendrite>(dendrite_id);
+
+            auto synaps_id = controller_.createSynaps(dendrite_id, axon_id, node_i);
+
+            return;
+        }
+
         default: my_assert(false);
     }
 }

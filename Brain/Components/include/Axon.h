@@ -9,7 +9,8 @@
 
 struct AxonNode {
     BrainPoint point{};
-    bool active{};
+    bool active{}; // при соединению с синапсам равен false
+    std::string synaps{}; // "" если у него синапса нет, айди синапса если есть
     int previous_node{-1}; // индекс в векторе
 
     std::string toString() const {
@@ -54,8 +55,10 @@ public:
 
     }
 
-    void addSynaps(const std::string& synaps) {
+    void addSynaps(const std::string& synaps, int node_i) {
         synapses_.insert(synaps);
+        if (node_i >= 0)
+            nodes_.at(node_i).synaps = synaps;
         is_growing = false;
     }
 
@@ -90,6 +93,22 @@ public:
 
             current_active_node_i++;
 
+            for (auto dendrite_id : brain_map_->searchDendrite(point(), 0.04)) {
+                executor_->push({
+                    .type = CREATE_SYNAPS,
+                    .data = {
+                        {"axon", this_id_},
+                        {"dendrite", dendrite_id},
+                        {"current_node_index", std::to_string(current_active_node_i)}
+                    }
+                });
+
+                nodes_.at(current_active_node_i).active = false;
+
+                return;
+            }
+
+
             executor_->pushPlan(2, {
                 .type = AXON_GREW,
                 .data = {
@@ -98,6 +117,7 @@ public:
             });
         }
     }
+
 
     // getters
     std::unordered_set<std::string> getSynapses() {

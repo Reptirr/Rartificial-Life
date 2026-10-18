@@ -1,17 +1,18 @@
 #pragma once
+
 #include <BrainComponent.h>
 #include <Storage.h>
 
 
+class Storage;
+
 class BrainMap {
-    Storage& storage_;
+    Storage* storage_;
 
 public:
-    explicit BrainMap(const int resolution) : cells_(resolution * resolution), resolution_(resolution) {
-
+    explicit BrainMap(Storage *storage)
+        : storage_(storage) {
     }
 
-    void insert(BrainPoint p) {
-
-    }
+    std::vector<std::string> searchDendrite(BrainPoint from, double r);
 };

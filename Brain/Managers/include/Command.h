@@ -18,6 +18,7 @@ enum CommandType {
 
     // GROWING
     AXON_GREW,
+    CREATE_SYNAPS,
 
     // OTHER
     RANDOM_NEURON_SPIKE
@@ -31,6 +32,4 @@ struct Command {
 struct PlanCommand {
     Command cmd{};
     int inTact{};
-
-
 };

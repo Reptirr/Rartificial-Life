@@ -32,6 +32,8 @@ add_executable(Rartificial_Life
         Brain/Managers/src/Controller.cpp
         Brain/Managers/include/BrainMap.h
         Brain/Components/include/ComponentTypes.h
+        Brain/Managers/src/BrainMap.cpp
+        Brain/Utils/include/BrainPoint.h
 )
 
 target_link_libraries(Rartificial_Life PRIVATE Qt6::Widgets)

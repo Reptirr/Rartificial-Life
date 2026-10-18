@@ -1,4 +1,5 @@
 #pragma once
+#include <BrainMap.h>
 #include <ranges>
 #include <string>
 #include <unordered_map>
@@ -84,6 +85,11 @@ public:
 
     std::unordered_set<std::string> synapses() {
         auto k = std::ranges::views::keys(synapses_);
+        return std::unordered_set(k.begin(), k.end());
+    }
+
+    std::unordered_set<std::string> dendrites() {
+        auto k = std::ranges::views::keys(dendrites_);
         return std::unordered_set(k.begin(), k.end());
     }
 };

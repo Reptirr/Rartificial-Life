@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Dendrite.h>
 #include <iostream>
 #include <Neuron.h>
 #include <QWidget>
@@ -7,6 +8,7 @@
 #include <QPainter>
 #include <UIStorage.h>
 #include <QTextItem>
+#include <Synaps.h>
 
 class BrainWidget : public QWidget {
     Storage &storage_;
@@ -17,7 +19,6 @@ class BrainWidget : public QWidget {
 
         BrainPoint a = storage_.get<Neuron>(link.neuron1)->point();
         BrainPoint b = storage_.get<Neuron>(link.neuron2)->point();
-        BrainPoint d = b - a;
 
         auto *synaps = storage_.get<Synaps>(link.synaps);
         double Ca = synaps->getCa();
@@ -77,13 +78,41 @@ protected:
             p.setPen(QColorConstants::Green);
             // пробегаемся по каждой ноде аксона, строя линии
             for (auto &node : axon->nodes()) {
-                std::cout << "draw node: " << node.toString() << std::endl;
                 p.drawPoint(scr(node.point));
                 if (node.previous_node >= 0) {
                     p.drawLine(
                         scr(axon->nodes().at(node.previous_node).point),
                         scr(node.point)
                     );
+                }
+
+                if (auto &synaps_id = node.synaps; !synaps_id.empty()) {
+                    auto *synaps = storage_.get<Synaps>(synaps_id);
+                    auto med = synaps->getMediator();
+                    auto Ca = synaps->getCa();
+                    auto w = synaps->getW();
+
+                    // рисуем линию к синапсу
+                    p.drawLine(scr(node.point), scr(synaps->point()));
+
+                    // рисуем синапс
+                    p.setPen(QPen(Qt::gray, 2));
+                    p.setBrush(Qt::gray);
+                    p.drawEllipse(scr(synaps->point()), 7, 7);
+                    p.drawText(scr(synaps->point()), QString("Med: %1;  Ca: %2;  W: %3")
+                                                    .arg(med, 0, 'f', 2)
+                                                    .arg(Ca,  0, 'f', 2)
+                                                    .arg(w,   0, 'f', 3));
+
+                    // рисуем дендрит
+                    auto dendrite_id = synaps->getDendrite();
+                    auto *dendrite = storage_.get<Dendrite>(dendrite_id);
+
+                    auto neuron2_id = dendrite->getNeuron();
+                    auto *neuron2 = storage_.get<Neuron>(neuron2_id);
+
+                    p.setPen(QPen(Qt::red, 2));
+                    p.drawLine(scr(synaps->point()), scr(neuron2->point()));
                 }
             }
         }

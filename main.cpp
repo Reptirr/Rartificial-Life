@@ -6,21 +6,20 @@
 #include <bits/this_thread_sleep.h>
 
 int main(int argc, char** argv) {
-    Brain brain{4};
+    Brain brain{40};
     auto &storage = brain.getStorage();
 
-
-    // создаем рандомные синапсы
-    for (int i = 0; i < 0; i++) {
-        std::string axon, dendrite;
-
-        do {
-            axon = storage.getRandomAxon();
-            dendrite = storage.getRandomDendrite();
-        } while (storage.get<Axon>(axon)->getNeuron() == storage.get<Dendrite>(dendrite)->getNeuron());
-
-        brain.createSynaps(axon, dendrite);
-    }
+    // // создаем рандомные синапсы
+    // for (int i = 0; i < 0; i++) {
+    //     std::string axon, dendrite;
+    //
+    //     do {
+    //         axon = storage.getRandomAxon();
+    //         dendrite = storage.getRandomDendrite();
+    //     } while (storage.get<Axon>(axon)->getNeuron() == storage.get<Dendrite>(dendrite)->getNeuron());
+    //
+    //     brain.createSynaps(axon, dendrite);
+    // }
 
     QApplication a{argc, argv};
 
@@ -32,8 +31,6 @@ int main(int argc, char** argv) {
     QObject::connect(&timer, &QTimer::timeout, [&] {
         brain.tact();
         w->update();
-
-        std::this_thread::sleep_for(std::chrono::milliseconds{100});
     });
     timer.start(0);
 

@@ -4,8 +4,8 @@
 #include <Neuron.h>
 #include <Synaps.h>
 
-Controller::Controller(Storage &storage, Executor &executor)
-    : storage_(storage), executor_(executor)
+Controller::Controller(Storage &storage, Executor &executor, BrainMap &brain_map)
+    : storage_(storage), executor_(executor), brain_map_(brain_map)
 {
 
 }
@@ -20,7 +20,7 @@ std::unordered_map<std::string, std::string> Controller::createNeuron() {
     auto *dendrite = new Dendrite(&executor_, neuron_id);
     auto dendrite_id = storage_.put(dendrite);
 
-    neuron->setThisId(neuron_id);
+    neuron->setInit(neuron_id, brain_map_);
     neuron->init(axon_id, dendrite_id);
 
     // random coordinates
@@ -32,9 +32,9 @@ std::unordered_map<std::string, std::string> Controller::createNeuron() {
     axon->setPoint(neuron->point());
     dendrite->setPoint(neuron->point());
 
-    dendrite->setThisId(dendrite_id);
-    neuron->setThisId(neuron_id);
-    axon->setThisId(axon_id);
+    dendrite->setInit(dendrite_id, brain_map_);
+    neuron->setInit(neuron_id, brain_map_);
+    axon->setInit(axon_id, brain_map_);
 
     return {
         {"neuron", neuron_id},
@@ -44,17 +44,19 @@ std::unordered_map<std::string, std::string> Controller::createNeuron() {
 
 }
 
-std::string Controller::createSynaps(const std::string &dendrite_id, const std::string &axon_id) {
+std::string Controller::createSynaps(const std::string &dendrite_id, const std::string &axon_id, int axon_node_from) {
     auto *synaps = new Synaps(&executor_, dendrite_id, axon_id);
     auto synaps_id = storage_.put(synaps);
 
     auto *axon = storage_.get<Axon>(axon_id);
     auto *dendrite = storage_.get<Dendrite>(dendrite_id);
 
-    axon->addSynaps(synaps_id);
+    axon->addSynaps(synaps_id, axon_node_from);
     dendrite->addSynaps(synaps_id);
 
-    synaps->setThisId(synaps_id);
+    synaps->setInit(synaps_id, brain_map_);
+
+    synaps->setPoint(middleBetween(axon->nodes().at(axon_node_from).point, dendrite->point()));
 
     return synaps_id;
 }
