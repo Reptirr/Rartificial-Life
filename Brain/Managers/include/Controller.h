@@ -6,8 +6,14 @@ class Controller {
     Executor &executor_;
     BrainMap &brain_map_;
 
+    std::function<void(std::string, std::string, std::string)> new_neuron_callback_; // neuron, dendrite, axon
+    std::function<void(std::string)> new_synaps_callback_; // synaps
+
 public:
     Controller(Storage &storage, Executor &executor, BrainMap &brain_map);
+
+    void setNewNeuronCallback(const std::function<void(std::string, std::string, std::string)> &new_neuron_callback);
+    void setNewSynapsCallback(const std::function<void(std::string)> &new_synaps_callback);
 
     std::unordered_map<std::string, std::string> createNeuron();
     std::string createSynaps(const std::string &dendrite_id, const std::string &axon_id, int axon_node_from);

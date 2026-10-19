@@ -10,6 +10,14 @@ Controller::Controller(Storage &storage, Executor &executor, BrainMap &brain_map
 
 }
 
+void Controller::setNewNeuronCallback(const std::function<void(std::string, std::string, std::string)> &new_neuron_callback) {
+    new_neuron_callback_ = new_neuron_callback;
+}
+
+void Controller::setNewSynapsCallback(const std::function<void(std::string)> &new_synaps_callback) {
+    new_synaps_callback_ = new_synaps_callback;
+}
+
 std::unordered_map<std::string, std::string> Controller::createNeuron() {
     auto *neuron = new Neuron(&executor_);
     auto neuron_id = storage_.put(neuron);
@@ -36,6 +44,8 @@ std::unordered_map<std::string, std::string> Controller::createNeuron() {
     neuron->setInit(neuron_id, brain_map_);
     axon->setInit(axon_id, brain_map_);
 
+    new_neuron_callback_(neuron_id, dendrite_id, axon_id);
+
     return {
         {"neuron", neuron_id},
         {"axon", axon_id},
@@ -57,6 +67,8 @@ std::string Controller::createSynaps(const std::string &dendrite_id, const std::
     synaps->setInit(synaps_id, brain_map_);
 
     synaps->setPoint(middleBetween(axon->nodes().at(axon_node_from).point, dendrite->point()));
+
+    new_synaps_callback_(synaps_id);
 
     return synaps_id;
 }

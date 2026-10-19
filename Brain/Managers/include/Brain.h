@@ -11,15 +11,25 @@ class Brain {
     Controller controller_;
     BrainMap brain_map_{&storage_};
 
-
     void createRandomNeurons(int number) {
         for (int i = 0; i < number; i++)
             createNeuron();
     }
 
 public:
-    explicit Brain(int numberOfInitNeurons) : executor_(storage_, controller_), controller_(storage_, executor_, brain_map_) {
+    explicit Brain() : executor_(storage_, controller_), controller_(storage_, executor_, brain_map_) {
+
+    }
+
+    void init(int numberOfInitNeurons) {
         createRandomNeurons(numberOfInitNeurons);
+    }
+
+    void setNewNeuronCallback(const std::function<void(std::string, std::string, std::string)> &new_neuron_callback) {
+        controller_.setNewNeuronCallback(new_neuron_callback);
+    }
+    void setNewSynapsCallback(const std::function<void(std::string)> &new_synaps_callback) {
+        controller_.setNewSynapsCallback(new_synaps_callback);
     }
 
     Storage &getStorage() {
@@ -27,7 +37,8 @@ public:
     }
 
     std::unordered_map<std::string, std::string> createNeuron() {
-        return controller_.createNeuron();
+        auto res = controller_.createNeuron();
+        return res;
     }
 
 

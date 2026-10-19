@@ -1,26 +1,48 @@
 
 #include <Brain.h>
-#include <BrainWidget.h>
+#include <BrainView.h>
 #include <QApplication>
 #include <QTimer>
-#include <bits/this_thread_sleep.h>
+#include <QWidget>
+#include <QHBoxLayout>
 
 int main(int argc, char** argv) {
-    Brain brain{2000};
+    Brain brain{};
     auto &storage = brain.getStorage();
 
     QApplication a{argc, argv};
 
-    auto *w = new BrainWidget(storage);
+    auto *w = new QWidget();
     w->setFixedSize(1000, 1000);
     w->show();
 
+    auto *brainView = new BrainView(w, storage);
+    brainView->setFixedSize(1000, 1000);
+    auto *layout = new QHBoxLayout(w);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+    layout->addWidget(brainView);
+
+
+    const std::function onNewNeuron = [&](const std::string &neuron, const std::string &dendrite, const std::string &axon) {
+          brainView->onNewNeuron(neuron, dendrite, axon);
+    };
+    const std::function onNewSynaps = [&](const std::string &synaps) {
+        brainView->onNewSynaps(synaps);
+    };
+
+    brain.setNewNeuronCallback(onNewNeuron);
+    brain.setNewSynapsCallback(onNewSynaps);
+
+    // start
+    brain.init(200);
+
     QTimer timer;
     QObject::connect(&timer, &QTimer::timeout, [&] {
-        w->update();
+        brainView->updateAll();
         brain.tact();
     });
-    timer.start(0);
+    timer.start(20);
 
     return a.exec();
 }
