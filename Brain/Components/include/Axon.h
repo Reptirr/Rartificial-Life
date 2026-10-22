@@ -60,6 +60,8 @@ public:
         if (node_i >= 0)
             nodes_.at(node_i).synaps = synaps;
         is_growing = false;
+
+        data_collector_->onUpdateAxon(this_id_);
     }
 
     void putSpike() const {
@@ -104,7 +106,6 @@ public:
                 });
 
                 nodes_.at(current_active_node_i).active = false;
-
                 return;
             }
 

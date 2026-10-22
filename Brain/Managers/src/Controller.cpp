@@ -50,12 +50,12 @@ std::string Controller::createSynaps(const std::string &dendrite_id, const std::
     auto *axon = storage_.get<Axon>(axon_id);
     auto *dendrite = storage_.get<Dendrite>(dendrite_id);
 
+    synaps->setPoint(middleBetween(axon->nodes().at(axon_node_from).point, dendrite->point()));
+    synaps->setInit(synaps_id, brain_map_, &data_collector_);
+
     axon->addSynaps(synaps_id, axon_node_from);
     dendrite->addSynaps(synaps_id);
 
-    synaps->setInit(synaps_id, brain_map_, &data_collector_);
-
-    synaps->setPoint(middleBetween(axon->nodes().at(axon_node_from).point, dendrite->point()));
 
     return synaps_id;
 }
