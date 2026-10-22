@@ -7,18 +7,19 @@
 #include <Storage.h>
 #include <SynapsItem.h>
 #include <QWheelEvent>
+#include <UIController.h>
+#include <UIMapper.h>
 
 class BrainView : public QGraphicsView {
+    QGraphicsScene *scene_ = new QGraphicsScene(this);
     Storage &storage_;
-    QGraphicsScene *scene_;
-
-    std::unordered_map<std::string, UIComponent *> items_;
+    UIStorage ui_storage_{};
+    UIController controller_{ui_storage_, scene_};
 
     void fitAll() {
         fitInView(QRectF(-1, -1, 2, 2), Qt::IgnoreAspectRatio);
         baseScale = transform().m11();
     }
-
     bool autoFit = true;
     double baseScale = 1.0;
 
@@ -38,17 +39,14 @@ protected:
         QPointF after = mapToScene(e->position().toPoint());
         translate(after.x() - before.x(), after.y() - before.y());
     }
-
     void resizeEvent(QResizeEvent* e) override {
         QGraphicsView::resizeEvent(e);
         if (autoFit) fitAll();
     }
-
     void showEvent(QShowEvent* e) override {
         QGraphicsView::showEvent(e);
         if (autoFit) fitAll();
     }
-
     void mouseDoubleClickEvent(QMouseEvent* e) override {
         // двойной клик по пустому месту: сброс зума
         autoFit = true;
@@ -67,44 +65,46 @@ public:
         setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         setDragMode(ScrollHandDrag);
 
-        scene_ = new QGraphicsScene(this);
         scene_->setSceneRect(-10, -10, 20, 20);
         setScene(scene_);
     }
 
-    void updateAll() {
-        for (auto [id, component] : items_) {
-            component->UIUpdate();
+    void updateAll() const {
+        for (auto *item : scene_->items()) {
+            if (auto *component = dynamic_cast<UIComponent *>(item)) {
+                component->UIUpdate();
+            }
         }
     }
 
-    void onNewNeuron(const std::string &neuron_id, const std::string &dendrite_id, const std::string &axon_id) {
-        qDebug() << "new neuron";
-
+    void onNewNeuron(const std::string &neuron_id, const std::string &dendrite_id, const std::string &axon_id) const {
         auto *neuron = storage_.get<Neuron>(neuron_id);
         auto *dendrite = storage_.get<Dendrite>(dendrite_id);
         auto *axon = storage_.get<Axon>(axon_id);
 
-        auto *neuron_item = new NeuronItem(storage_, neuron);
-        auto *dendrite_item = new DendriteItem(storage_, dendrite);
-        auto *axon_item = new AxonItem(storage_, axon);
-
-        scene_->addItem(neuron_item);
-        scene_->addItem(dendrite_item);
-        scene_->addItem(axon_item);
-
-        items_.insert({neuron_id, neuron_item});
-        items_.insert({dendrite_id, dendrite_item});
-        items_.insert({axon_id, axon_item});
+        controller_.newNeuron(
+            neuron_id,
+            UIMapper::convertNeuron(neuron),
+            UIMapper::convertDendrite(dendrite),
+            UIMapper::convertAxon(axon)
+        );
     }
 
     void onNewSynaps(const std::string &synaps_id) {
         auto *synaps = storage_.get<Synaps>(synaps_id);
 
-        auto *synaps_item = new SynapsItem(storage_, synaps);
+        controller_.newSynaps(
+            synaps_id,
+            UIMapper::convertSynaps(synaps)
+        );
+    }
 
-        scene_->addItem(synaps_item);
+    void onNewNodeAxon(const std::string &axon_id) {
+        auto *axon = storage_.get<Axon>(axon_id);
 
-        items_.insert({synaps_id, synaps_item});
+        controller_.newNodeAxon(
+            axon_id,
+            UIMapper::convertAxon(axon)
+        );
     }
 };

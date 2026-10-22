@@ -128,6 +128,14 @@ void Executor::executeCmdFabric(Command cmd) {
             return;
         }
 
+        case AXON_NEW_NODE: {
+            auto axon_id = cmd.data.at("axon");
+
+            controller_.onNewAxonNode(axon_id);
+
+            return;
+        }
+
         default: my_assert(false);
     }
 }

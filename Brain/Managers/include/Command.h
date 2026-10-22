@@ -22,7 +22,10 @@ enum CommandType : int {
     CREATE_SYNAPS,
 
     // OTHER
-    RANDOM_NEURON_SPIKE
+    RANDOM_NEURON_SPIKE,
+
+    // FOR UI
+    AXON_NEW_NODE
 };
 
 inline std::string_view toString(CommandType type) {

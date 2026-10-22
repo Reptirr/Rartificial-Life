@@ -1,8 +1,6 @@
 #pragma once
-#include <Axon.h>
-#include <BrainPoint.h>
 #include <NeuronItem.h>
-#include <Synaps.h>
+#include <SynapsItem.h>
 #include <UIComponent.h>
 
 inline QPainterPath smoothPath(const QVector<QPointF> &pts) {
@@ -30,30 +28,30 @@ inline QPainterPath smoothPath(const QVector<QPointF> &pts) {
 }
 
 class AxonItem : public QGraphicsPathItem, public UIComponent {
-    Axon *axon_;
+    AxonData data_;
 
 public:
-    explicit AxonItem(Storage &storage, Axon *axon) : UIComponent(storage) {
-        axon_ = axon;
-
+    explicit AxonItem(UIStorage &storage, const AxonData &data) : UIComponent(storage), data_(data) {
         setZValue(UIConfig::axon_z);
 
         setPen({QColorConstants::Green, UIConfig::axon_width});
     }
 
     void UIUpdate() override {
-        auto scr = [](BrainPoint p) { return toQPointF(p); };
-
         QVector<QPointF> pts{};
-        for (auto node : axon_->nodes()) {
-            pts.push_back(scr(node.point));
+        for (auto node : data_.nodes) {
+            pts.push_back(node.pos);
             if (!node.synaps.empty()) {
-                pts.push_back(scr(storage_.get<Synaps>(node.synaps)->point()));
+                pts.push_back(storage_.getSynaps(node.synaps)->getData().pos);
             }
         }
 
-        auto path = smoothPath(pts);
+        const auto path = smoothPath(pts);
 
         setPath(path);
+    }
+
+    void setData(const AxonData &data) {
+        data_ = data;
     }
 };

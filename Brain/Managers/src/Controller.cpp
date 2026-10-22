@@ -18,6 +18,10 @@ void Controller::setNewSynapsCallback(const std::function<void(std::string)> &ne
     new_synaps_callback_ = new_synaps_callback;
 }
 
+void Controller::setNewNodeAxonCallback(const std::function<void(std::string)> &new_node_axon_callback) {
+    update_axon_callback_ = new_node_axon_callback;
+}
+
 std::unordered_map<std::string, std::string> Controller::createNeuron() {
     auto *neuron = new Neuron(&executor_);
     auto neuron_id = storage_.put(neuron);
@@ -71,4 +75,8 @@ std::string Controller::createSynaps(const std::string &dendrite_id, const std::
     new_synaps_callback_(synaps_id);
 
     return synaps_id;
+}
+
+void Controller::onNewAxonNode(const std::string &axon_id) const {
+    update_axon_callback_(axon_id);
 }

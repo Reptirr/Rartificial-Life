@@ -31,6 +31,9 @@ public:
     void setNewSynapsCallback(const std::function<void(std::string)> &new_synaps_callback) {
         controller_.setNewSynapsCallback(new_synaps_callback);
     }
+    void setNewNodeAxonCallback(const std::function<void(std::string)> &new_node_axon_callback) {
+        controller_.setNewNodeAxonCallback(new_node_axon_callback);
+    }
 
     Storage &getStorage() {
         return storage_;

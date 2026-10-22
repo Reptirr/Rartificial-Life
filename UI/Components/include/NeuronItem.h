@@ -6,14 +6,14 @@
 #include <UIConfig.h>
 
 class NeuronItem : public QGraphicsEllipseItem, public UIComponent {
-    Neuron *neuron_;
+    NeuronData data_;
 
 public:
-    NeuronItem(Storage &storage, Neuron *neuron) : QGraphicsEllipseItem(-UIConfig::neuron_r, -UIConfig::neuron_r,
+    NeuronItem(UIStorage &storage, const NeuronData &data) : QGraphicsEllipseItem(-UIConfig::neuron_r, -UIConfig::neuron_r,
                                                         UIConfig::neuron_r * 2, UIConfig::neuron_r * 2), UIComponent(storage) {
-        neuron_ = neuron;
-        qDebug() << "new neuron at " << toQPointF(neuron_->point());
-        setPos(toQPointF(neuron_->point()));
+        data_ = data;
+        qDebug() << "new neuron at " << data_.pos;
+        setPos(data_.pos);
 
         setZValue(UIConfig::neuron_z);
 

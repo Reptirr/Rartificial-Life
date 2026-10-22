@@ -39,6 +39,11 @@ add_executable(Rartificial_Life
         UI/Components/include/AxonItem.h
         UI/Components/include/DendriteItem.h
         UI/Components/include/UIComponent.h
+        UI/Managers/include/UIController.h
+        UI/Managers/include/UIStorage.h
+        UI/Components/include/UIDatas.h
+        UI/Utils/include/SceneUtils.h
+        UI/Managers/include/UIMapper.h
 )
 
 target_link_libraries(Rartificial_Life PRIVATE Qt6::Widgets)
@@ -50,4 +55,5 @@ include_directories(Rartificial_Life
 
         UI/Managers/include
         UI/Components/include
+        UI/Utils/include
 )

@@ -30,9 +30,13 @@ int main(int argc, char** argv) {
     const std::function onNewSynaps = [&](const std::string &synaps) {
         brainView->onNewSynaps(synaps);
     };
+    const std::function onNewNodeAxon = [&](const std::string &axon_id) {
+        brainView->onNewNodeAxon(axon_id);
+    };
 
     brain.setNewNeuronCallback(onNewNeuron);
     brain.setNewSynapsCallback(onNewSynaps);
+    brain.setNewNodeAxonCallback(onNewNodeAxon);
 
     // start
     brain.init(200);

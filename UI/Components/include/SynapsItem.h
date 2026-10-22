@@ -1,21 +1,17 @@
 #pragma once
-#include <BrainPoint.h>
 #include <QGraphicsEllipseItem>
-#include <qgraphicsscene.h>
 #include <qpen.h>
-#include <Synaps.h>
 #include <UIComponent.h>
 #include <UIConfig.h>
 
 class SynapsItem : public QGraphicsEllipseItem, public UIComponent {
-    Synaps *synaps_;
-
+    SynapsData data_;
 public:
-    explicit SynapsItem(Storage &storage, Synaps *synaps) : QGraphicsEllipseItem(-UIConfig::synaps_r, -UIConfig::synaps_r,
+    explicit SynapsItem(UIStorage &storage, SynapsData data) : QGraphicsEllipseItem(-UIConfig::synaps_r, -UIConfig::synaps_r,
                                                                  UIConfig::synaps_r * 2, UIConfig::synaps_r * 2),
-                                            UIComponent(storage),
-                                            synaps_(synaps) {
-        setPos(toQPointF(synaps->point()));
+                                            UIComponent(storage) {
+        data_ = data;
+        setPos(data_.pos);
 
         setZValue(UIConfig::synaps_z);
 
@@ -23,5 +19,9 @@ public:
         setBrush({QColorConstants::Gray});
 
         update();
+    }
+
+    SynapsData &getData() {
+        return data_;
     }
 };
