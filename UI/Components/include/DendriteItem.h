@@ -34,4 +34,10 @@ public:
     void setData(DendriteData data) {
         data_ = data;
     }
+
+    void setData(Data *d) override {
+        if (const auto *data = dynamic_cast<DendriteData *>(d)) {
+            data_ = *data;
+        }
+    }
 };

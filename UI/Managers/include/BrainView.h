@@ -7,6 +7,7 @@
 #include <Storage.h>
 #include <SynapsItem.h>
 #include <QWheelEvent>
+#include <UIBatcher.h>
 #include <UIController.h>
 #include <UIMapper.h>
 
@@ -15,6 +16,7 @@ class BrainView : public QGraphicsView {
     Storage &storage_;
     UIStorage ui_storage_{};
     UIController controller_{ui_storage_, scene_};
+    UIBatcher batcher_{controller_, ui_storage_};
 
     void fitAll() {
         fitInView(QRectF(-1, -1, 2, 2), Qt::IgnoreAspectRatio);
@@ -27,7 +29,7 @@ protected:
     void wheelEvent(QWheelEvent* e) override {
         autoFit = false;
 
-        double factor = e->angleDelta().y() > 0 ? 1.15 : 1.0 / 1.15;
+        const double factor = e->angleDelta().y() > 0 ? 1.15 : 1.0 / 1.15;
 
         // ограничение зума относительно "вписано целиком"
         double next = transform().m11() * factor;
@@ -65,27 +67,27 @@ public:
         setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         setDragMode(ScrollHandDrag);
 
+        setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+
         scene_->setSceneRect(-10, -10, 20, 20);
         setScene(scene_);
     }
 
-    void updateAll() const {
-        for (auto *item : scene_->items()) {
-            if (auto *component = dynamic_cast<UIComponent *>(item)) {
-                component->UIUpdate();
-            }
-        }
-    }
-
-    void onNewNeuron(const std::string &neuron_id) const {
+    void onNewNeuron(const std::string &neuron_id) {
         auto *neuron = storage_.get<Neuron>(neuron_id);
         auto *dendrite = storage_.get<Dendrite>(neuron->getDendrite());
         auto *axon = storage_.get<Axon>(neuron->getAxon());
 
-        controller_.newNeuron(
+        batcher_.onCreate(
             neuron_id,
-            UIMapper::convertNeuron(neuron),
-            UIMapper::convertDendrite(dendrite),
+            UIMapper::convertNeuron(neuron)
+        );
+        batcher_.onCreate(
+            neuron->getDendrite(),
+            UIMapper::convertDendrite(dendrite)
+        );
+        batcher_.onCreate(
+            neuron->getAxon(),
             UIMapper::convertAxon(axon)
         );
     }
@@ -93,27 +95,18 @@ public:
     void onNewSynaps(const std::string &synaps_id) {
         auto *synaps = storage_.get<Synaps>(synaps_id);
 
-        controller_.newSynaps(
-            synaps_id,
-            UIMapper::convertSynaps(synaps)
-        );
+        batcher_.onCreate(synaps_id, UIMapper::convertSynaps(synaps));
     }
 
     void onUpdateAxon(const std::string &axon_id) {
         auto *axon = storage_.get<Axon>(axon_id);
 
-        controller_.updateAxon(
-            axon_id,
-            UIMapper::convertAxon(axon)
-        );
+        batcher_.onUpdate(axon_id, UIMapper::convertAxon(axon));
     }
 
     void onUpdateDendrite(const std::string &dendrite_id) {
         auto *dendrite = storage_.get<Dendrite>(dendrite_id);
 
-        controller_.updateDendrite(
-            dendrite_id,
-            UIMapper::convertDendrite(dendrite)
-        );
+        batcher_.onUpdate(dendrite_id, UIMapper::convertDendrite(dendrite));
     }
 };

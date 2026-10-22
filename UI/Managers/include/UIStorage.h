@@ -2,6 +2,7 @@
 #include <UIDatas.h>
 #include <unordered_map>
 
+class UIComponent;
 class NeuronItem;
 class DendriteItem;
 class AxonItem;
@@ -13,6 +14,11 @@ class UIStorage {
     std::unordered_map<std::string, AxonItem *> axons_;
     std::unordered_map<std::string, SynapsItem *> synapses_;
 
+    template <typename Map>
+    static UIComponent *find(const Map &map, const std::string &id) {
+        const auto it = map.find(id);
+        return it != map.end() ? it->second : nullptr;  // *Item* -> UIComponent* неявно
+    }
 public:
     DendriteItem *getDendrite(const std::string &dendrite_id) const {
         return dendrites_.at(dendrite_id);
@@ -55,5 +61,13 @@ public:
     }
     const std::unordered_map<std::string, SynapsItem *> &getSynapses() const {
         return synapses_;
+    }
+
+    UIComponent *getComponent(const std::string &id) const {
+        if (auto *c = find(neurons_, id)) return c;
+        if (auto *c = find(dendrites_, id)) return c;
+        if (auto *c = find(axons_, id)) return c;
+        if (auto *c = find(synapses_, id)) return c;
+        return nullptr;
     }
 };

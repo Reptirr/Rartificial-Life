@@ -33,41 +33,36 @@ public:
     }
 
 
-    void newNeuron(const std::string &neuron_id, const NeuronData &neuron_data, const DendriteData &dendrite_data, const AxonData &axon_data) const {
-        auto *neuron_item = createNeuronItem(neuron_data);
-        auto *dendrite_item = createDendriteItem(dendrite_data);
-        auto *axon_item = createAxonItem(axon_data);
-
-        ui_storage_.insertNeuron(neuron_id, neuron_item);
-        ui_storage_.insertDendrite(neuron_data.dendrite, dendrite_item);
-        ui_storage_.insertAxon(neuron_data.axon, axon_item);
-
-        addItems(scene_, {
-                     neuron_item,
-                     dendrite_item,
-                     axon_item
-                 });
+    auto newNeuron(const std::string &neuron_id, const NeuronData &data) const {
+        auto *item = createNeuronItem(data);
+        ui_storage_.insertNeuron(neuron_id, item);
+        addItems(scene_, {item});
+        return item;
     }
 
-    void newSynaps(const std::string &synaps_id, const SynapsData &data) const {
-        auto *synaps_item = createSynapsItem(data);
-
-        ui_storage_.insertSynaps(synaps_id, synaps_item);
-
-        scene_->addItem(synaps_item);
+    auto newDendrite(const std::string &dendrite_id, const DendriteData &data) const {
+        auto *item = createDendriteItem(data);
+        ui_storage_.insertDendrite(dendrite_id, item);
+        addItems(scene_, {item});
+        return item;
     }
 
-    void updateAxon(const std::string &axon_id, const AxonData &data) const {
-        auto *axon_item = ui_storage_.getAxon(axon_id);
-
-        axon_item->setData(data);
-        axon_item->UIUpdate();
+    auto newAxon(const std::string &axon_id, const AxonData &data) const {
+        auto *item = createAxonItem(data);
+        ui_storage_.insertAxon(axon_id, item);
+        addItems(scene_, {item});
+        return item;
     }
 
-    void updateDendrite(const std::string &dendrite_id, const DendriteData &data) const {
-        auto *dendrite_item = ui_storage_.getDendrite(dendrite_id);
+    auto newSynaps(const std::string &synaps_id, const SynapsData &data) const {
+        auto *item = createSynapsItem(data);
+        ui_storage_.insertSynaps(synaps_id, item);
+        scene_->addItem(item);
+        return item;
+    }
 
-        dendrite_item->setData(data);
-        dendrite_item->UIUpdate();
+    void updateComponent(UIComponent *component, Data *data) {
+        component->setData(data);
+        component->UIUpdate();
     }
 };

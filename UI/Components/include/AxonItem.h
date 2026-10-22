@@ -51,7 +51,9 @@ public:
         setPath(path);
     }
 
-    void setData(const AxonData &data) {
-        data_ = data;
+    void setData(Data *d) override {
+        if (const auto *data = dynamic_cast<AxonData *>(d)) {
+            data_ = *data;
+        }
     }
 };

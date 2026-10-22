@@ -21,4 +21,10 @@ public:
         setBrush(QBrush{QColorConstants::DarkCyan});
         update();
     }
+
+    void setData(Data *d) override {
+        if (const auto *data = dynamic_cast<NeuronData *>(d)) {
+            data_ = *data;
+        }
+    }
 };

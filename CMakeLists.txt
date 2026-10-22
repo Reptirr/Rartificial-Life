@@ -46,6 +46,7 @@ add_executable(Rartificial_Life
         UI/Managers/include/UIMapper.h
         Brain/Managers/include/DataCollector.h
         Brain/Utils/include/Typedefs.h
+        UI/Managers/include/UIBatcher.h
 )
 
 target_link_libraries(Rartificial_Life PRIVATE Qt6::Widgets)

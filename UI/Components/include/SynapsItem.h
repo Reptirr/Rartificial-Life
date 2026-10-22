@@ -24,4 +24,10 @@ public:
     SynapsData &getData() {
         return data_;
     }
+
+    void setData(Data *d) override {
+        if (const auto *data = dynamic_cast<SynapsData *>(d)) {
+            data_ = *data;
+        }
+    }
 };

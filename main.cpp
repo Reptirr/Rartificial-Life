@@ -47,10 +47,9 @@ int main(int argc, char** argv) {
 
     QTimer timer;
     QObject::connect(&timer, &QTimer::timeout, [&] {
-        brainView->updateAll();
         brain.tact();
     });
-    timer.start(20);
+    timer.start(0);
 
     return a.exec();
 }
