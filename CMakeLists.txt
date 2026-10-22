@@ -32,21 +32,21 @@ add_executable(Rartificial_Life
         Brain/Managers/src/BrainMap.cpp
         Brain/Utils/include/BrainPoint.h
         Brain/Managers/include/BrainAnalyzer.h
-        UI/Managers/include/BrainView.h
-        UI/Components/include/NeuronItem.h
-        UI/Components/include/UIConfig.h
-        UI/Components/include/SynapsItem.h
-        UI/Components/include/AxonItem.h
-        UI/Components/include/DendriteItem.h
-        UI/Components/include/UIComponent.h
-        UI/Managers/include/UIController.h
-        UI/Managers/include/UIStorage.h
-        UI/Components/include/UIDatas.h
-        UI/Utils/include/SceneUtils.h
-        UI/Managers/include/UIMapper.h
+        BrainUI/Managers/include/BrainView.h
+        BrainUI/Components/include/NeuronItem.h
+        BrainUI/Components/include/UIConfig.h
+        BrainUI/Components/include/SynapsItem.h
+        BrainUI/Components/include/AxonItem.h
+        BrainUI/Components/include/DendriteItem.h
+        BrainUI/Components/include/UIComponent.h
+        BrainUI/Managers/include/UIController.h
+        BrainUI/Managers/include/UIStorage.h
+        BrainUI/Components/include/UIDatas.h
+        BrainUI/Utils/include/SceneUtils.h
+        BrainUI/Managers/include/UIMapper.h
         Brain/Managers/include/DataCollector.h
         Brain/Utils/include/Typedefs.h
-        UI/Managers/include/UIBatcher.h
+        BrainUI/Managers/include/UIBatcher.h
 )
 
 target_link_libraries(Rartificial_Life PRIVATE Qt6::Widgets)
@@ -56,7 +56,7 @@ include_directories(Rartificial_Life
         Brain/Managers/include
         Brain/Utils/include
 
-        UI/Managers/include
-        UI/Components/include
-        UI/Utils/include
+        BrainUI/Managers/include
+        BrainUI/Components/include
+        BrainUI/Utils/include
 )

@@ -13,10 +13,20 @@ class UIBatcher {
     UIController &controller_;
     UIStorage &ui_storage_;
 
-    QTimer timer_;
-
     std::queue<ToCreate> to_create_;
     std::unordered_map<std::string, std::unique_ptr<Data>> updates_;
+
+public:
+    explicit UIBatcher(UIController &controller, UIStorage &storage)
+        : controller_(controller), ui_storage_(storage) {
+    }
+
+    void onCreate(const std::string &id, std::unique_ptr<Data> d) {
+        to_create_.push({id, std::move(d)});
+    }
+    void onUpdate(std::string id, std::unique_ptr<Data> d) {
+        updates_.insert_or_assign(id, std::move(d));
+    }
 
     void applyBatch() {
         std::queue<ToCreate> to_create;
@@ -48,21 +58,5 @@ class UIBatcher {
         for (auto& [component_id, data] : updates) {
             controller_.updateComponent(ui_storage_.getComponent(component_id), data.get());
         }
-    }
-
-public:
-    explicit UIBatcher(UIController &controller, UIStorage &storage)
-        : controller_(controller), ui_storage_(storage) {
-        QObject::connect(&timer_, &QTimer::timeout, [this] {
-            applyBatch();
-        });
-        timer_.start(50);
-    }
-
-    void onCreate(const std::string &id, std::unique_ptr<Data> d) {
-        to_create_.push({id, std::move(d)});
-    }
-    void onUpdate(std::string id, std::unique_ptr<Data> d) {
-        updates_.insert_or_assign(id, std::move(d));
     }
 };

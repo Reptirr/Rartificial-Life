@@ -1,15 +1,13 @@
 #pragma once
 
 #include <Dendrite.h>
-#include <DendriteItem.h>
-#include <NeuronItem.h>
 #include <QGraphicsView>
 #include <Storage.h>
-#include <SynapsItem.h>
 #include <QWheelEvent>
 #include <UIBatcher.h>
 #include <UIController.h>
 #include <UIMapper.h>
+#include <QThread>
 
 class BrainView : public QGraphicsView {
     QGraphicsScene *scene_ = new QGraphicsScene(this);
@@ -17,6 +15,9 @@ class BrainView : public QGraphicsView {
     UIStorage ui_storage_{};
     UIController controller_{ui_storage_, scene_};
     UIBatcher batcher_{controller_, ui_storage_};
+
+    QThread ui_thread;
+    QTimer ui_timer_;
 
     void fitAll() {
         fitInView(QRectF(-1, -1, 2, 2), Qt::IgnoreAspectRatio);
@@ -67,10 +68,13 @@ public:
         setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         setDragMode(ScrollHandDrag);
 
-        setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-
         scene_->setSceneRect(-10, -10, 20, 20);
         setScene(scene_);
+
+        connect(&ui_timer_, &QTimer::timeout, [&] {
+            batcher_.applyBatch();
+        });
+        ui_timer_.start(16);
     }
 
     void onNewNeuron(const std::string &neuron_id) {
