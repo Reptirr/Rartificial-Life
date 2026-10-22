@@ -30,4 +30,8 @@ public:
 
         setPath(path);
     }
+
+    void setData(DendriteData data) {
+        data_ = data;
+    }
 };

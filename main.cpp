@@ -24,19 +24,23 @@ int main(int argc, char** argv) {
     layout->addWidget(brainView);
 
 
-    const std::function onNewNeuron = [&](const std::string &neuron, const std::string &dendrite, const std::string &axon) {
-          brainView->onNewNeuron(neuron, dendrite, axon);
+    const std::function onNewNeuron = [&](const std::string &neuron) {
+        brainView->onNewNeuron(neuron);
     };
     const std::function onNewSynaps = [&](const std::string &synaps) {
         brainView->onNewSynaps(synaps);
     };
-    const std::function onNewNodeAxon = [&](const std::string &axon_id) {
-        brainView->onNewNodeAxon(axon_id);
+    const auto onUpdateAxon = [&](const std::string &axon) {
+        brainView->onUpdateAxon(axon);
+    };
+    const auto onUpdateDendrite = [&](const std::string &dendrite) {
+        brainView->onUpdateDendrite(dendrite);
     };
 
     brain.setNewNeuronCallback(onNewNeuron);
     brain.setNewSynapsCallback(onNewSynaps);
-    brain.setNewNodeAxonCallback(onNewNodeAxon);
+    brain.setUpdateAxonCallback(onUpdateAxon);
+    brain.setUpdateDendriteCallback(onUpdateDendrite);
 
     // start
     brain.init(200);

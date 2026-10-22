@@ -49,7 +49,7 @@ public:
                  });
     }
 
-    void newSynaps(const std::string &synaps_id, const SynapsData &data) {
+    void newSynaps(const std::string &synaps_id, const SynapsData &data) const {
         auto *synaps_item = createSynapsItem(data);
 
         ui_storage_.insertSynaps(synaps_id, synaps_item);
@@ -57,10 +57,17 @@ public:
         scene_->addItem(synaps_item);
     }
 
-    void newNodeAxon(const std::string &axon_id, const AxonData &data) {
+    void updateAxon(const std::string &axon_id, const AxonData &data) const {
         auto *axon_item = ui_storage_.getAxon(axon_id);
 
         axon_item->setData(data);
         axon_item->UIUpdate();
+    }
+
+    void updateDendrite(const std::string &dendrite_id, const DendriteData &data) const {
+        auto *dendrite_item = ui_storage_.getDendrite(dendrite_id);
+
+        dendrite_item->setData(data);
+        dendrite_item->UIUpdate();
     }
 };

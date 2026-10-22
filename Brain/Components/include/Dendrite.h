@@ -29,6 +29,8 @@ public:
 
     void addSynaps(std::string synaps) {
         synapses_.insert(synaps);
+
+        data_collector_->onUpdateDendrite(this_id_);
     }
 
     void transmitCu() const {

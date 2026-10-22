@@ -77,10 +77,10 @@ public:
         }
     }
 
-    void onNewNeuron(const std::string &neuron_id, const std::string &dendrite_id, const std::string &axon_id) const {
+    void onNewNeuron(const std::string &neuron_id) const {
         auto *neuron = storage_.get<Neuron>(neuron_id);
-        auto *dendrite = storage_.get<Dendrite>(dendrite_id);
-        auto *axon = storage_.get<Axon>(axon_id);
+        auto *dendrite = storage_.get<Dendrite>(neuron->getDendrite());
+        auto *axon = storage_.get<Axon>(neuron->getAxon());
 
         controller_.newNeuron(
             neuron_id,
@@ -99,12 +99,21 @@ public:
         );
     }
 
-    void onNewNodeAxon(const std::string &axon_id) {
+    void onUpdateAxon(const std::string &axon_id) {
         auto *axon = storage_.get<Axon>(axon_id);
 
-        controller_.newNodeAxon(
+        controller_.updateAxon(
             axon_id,
             UIMapper::convertAxon(axon)
+        );
+    }
+
+    void onUpdateDendrite(const std::string &dendrite_id) {
+        auto *dendrite = storage_.get<Dendrite>(dendrite_id);
+
+        controller_.updateDendrite(
+            dendrite_id,
+            UIMapper::convertDendrite(dendrite)
         );
     }
 };

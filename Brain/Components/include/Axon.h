@@ -91,13 +91,6 @@ public:
                 .previous_node = current_active_node_i
             });
 
-            executor_->push({
-                .type = AXON_NEW_NODE,
-                .data = {
-                    {"axon", this_id_}
-                }
-            });
-
             current_active_node_i++;
 
             for (auto dendrite_id : brain_map_->searchDendrite(point(), 0.06)) {
@@ -122,6 +115,8 @@ public:
                     {"axon", this_id_}
                 }
             });
+
+            data_collector_->onUpdateAxon(this_id_);
         }
     }
 

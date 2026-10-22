@@ -10,6 +10,7 @@ class Brain {
     Executor executor_;
     Controller controller_;
     BrainMap brain_map_{&storage_};
+    DataCollector data_collector_{&storage_};
 
     void createRandomNeurons(int number) {
         for (int i = 0; i < number; i++)
@@ -17,7 +18,7 @@ class Brain {
     }
 
 public:
-    explicit Brain() : executor_(storage_, controller_), controller_(storage_, executor_, brain_map_) {
+    explicit Brain() : executor_(storage_, controller_), controller_(storage_, executor_, brain_map_, data_collector_) {
 
     }
 
@@ -25,14 +26,17 @@ public:
         createRandomNeurons(numberOfInitNeurons);
     }
 
-    void setNewNeuronCallback(const std::function<void(std::string, std::string, std::string)> &new_neuron_callback) {
-        controller_.setNewNeuronCallback(new_neuron_callback);
+    void setNewNeuronCallback(const StringConsumer &cons) {
+        data_collector_.setNewNeuronConsumer(cons);
     }
-    void setNewSynapsCallback(const std::function<void(std::string)> &new_synaps_callback) {
-        controller_.setNewSynapsCallback(new_synaps_callback);
+    void setNewSynapsCallback(const StringConsumer &cons) {
+        data_collector_.setNewSynapsConsumer(cons);
     }
-    void setNewNodeAxonCallback(const std::function<void(std::string)> &new_node_axon_callback) {
-        controller_.setNewNodeAxonCallback(new_node_axon_callback);
+    void setUpdateDendriteCallback(const StringConsumer &cons) {
+        data_collector_.setUpdateDendriteConsumer(cons);
+    }
+    void setUpdateAxonCallback(const StringConsumer &cons) {
+        data_collector_.setUpdateAxonConsumer(cons);
     }
 
     Storage &getStorage() {
