@@ -32,6 +32,7 @@ class Axon : public Executable, public BrainComponent {
     bool is_growing{};
     double angle{};
     double step{0.09};
+    int max_nodes = 200;
 
     static BrainPoint moveByAzimuth(const BrainPoint p, const double azimuth, const double length) {
         return { p.x + length * std::sin(azimuth),
@@ -77,6 +78,11 @@ public:
 
     void handleGrow() {
         if (is_growing) {
+            if (nodes().size() >= max_nodes) {
+                is_growing = false;
+                return;
+            }
+
             static std::random_device rd{};
             static std::mt19937 gen{rd()};
 

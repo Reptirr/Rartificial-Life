@@ -2,58 +2,81 @@
 #include <NeuronItem.h>
 #include <SynapsItem.h>
 #include <UIComponent.h>
+#include <QStyleOption>
 
-inline QPainterPath smoothPath(const QVector<QPointF> &pts) {
-    QPainterPath path;
+inline QVector<QPainterPath> smoothChunks(const QVector<QPointF> &pts, int segsPerChunk = 12) {
+    QVector<QPainterPath> out;
     const int n = pts.size();
-    if (n == 0) return path;
+    if (n < 2) return out;
 
-    path.moveTo(pts[0]);
-    if (n == 1) return path;
-    if (n == 2) { path.lineTo(pts[1]); return path; }
-
+    QPainterPath cur;
     for (int i = 0; i < n - 1; ++i) {
-        // соседние точки; на краях берём саму крайнюю точку
+        if (i % segsPerChunk == 0) {
+            if (!cur.isEmpty()) out.push_back(cur);
+            cur = QPainterPath();
+            cur.moveTo(pts[i]);
+        }
         const QPointF p0 = pts[qMax(i - 1, 0)];
         const QPointF p1 = pts[i];
         const QPointF p2 = pts[i + 1];
         const QPointF p3 = pts[qMin(i + 2, n - 1)];
 
-        const QPointF c1 = p1 + (p2 - p0) / 6.0;
-        const QPointF c2 = p2 - (p3 - p1) / 6.0;
-
-        path.cubicTo(c1, c2, p2);
+        cur.cubicTo(p1 + (p2 - p0) / 6.0, p2 - (p3 - p1) / 6.0, p2);
     }
-    return path;
+    out.push_back(cur);
+    return out;
 }
 
-class AxonItem : public QGraphicsPathItem, public UIComponent {
+class AxonItem : public QGraphicsItem, public UIComponent {
     AxonData data_;
+    QVector<QPainterPath> chunks_;
+    QVector<QRectF> rects_;
+    QRectF bounds_;
+    QPen pen_{QColorConstants::Green, UIConfig::axon_width};
 
 public:
     explicit AxonItem(UIStorage &storage, const AxonData &data) : UIComponent(storage), data_(data) {
         setZValue(UIConfig::axon_z);
+        setFlag(ItemUsesExtendedStyleOption);        // нужно, чтобы работал exposedRect
+        setAcceptedMouseButtons(Qt::NoButton);       // не считать попадания мышью по пути
+    }
 
-        setPen({QColorConstants::Green, UIConfig::axon_width});
+    QRectF boundingRect() const override { return bounds_; }
+    QPainterPath shape() const override { return {}; }
+
+    void paint(QPainter *p, const QStyleOptionGraphicsItem *opt, QWidget *) override {
+        p->setPen(pen_);
+        p->setBrush(Qt::NoBrush);
+        const double m = pen_.widthF();
+        const QRectF view = opt->exposedRect.adjusted(-m, -m, m, m);
+        for (int i = 0; i < chunks_.size(); ++i)
+            if (rects_[i].intersects(view))
+                p->drawPath(chunks_[i]);
     }
 
     void UIUpdate() override {
-        QVector<QPointF> pts{};
-        for (auto node : data_.nodes) {
+        QVector<QPointF> pts;
+        for (auto &node : data_.nodes) {
             pts.push_back(node.pos);
-            if (!node.synaps.empty()) {
+            if (!node.synaps.empty())
                 pts.push_back(storage_.getSynaps(node.synaps)->getData().pos);
-            }
         }
 
-        const auto path = smoothPath(pts);
-
-        setPath(path);
+        prepareGeometryChange();
+        chunks_ = smoothChunks(pts);
+        rects_.clear();
+        bounds_ = QRectF();
+        for (auto &c : chunks_) {
+            QRectF r = c.controlPointRect();
+            rects_.push_back(r);
+            bounds_ = bounds_.united(r);
+        }
+        const double m = pen_.widthF();
+        bounds_.adjust(-m, -m, m, m);
     }
 
     void setData(Data *d) override {
-        if (const auto *data = dynamic_cast<AxonData *>(d)) {
+        if (const auto *data = dynamic_cast<AxonData *>(d))
             data_ = *data;
-        }
     }
 };

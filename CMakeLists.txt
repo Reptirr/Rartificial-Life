@@ -47,6 +47,7 @@ add_executable(Rartificial_Life
         Brain/Managers/include/DataCollector.h
         Brain/Utils/include/Typedefs.h
         BrainUI/Managers/include/UIBatcher.h
+        GeneralUI/include/MainWindow.h
 )
 
 target_link_libraries(Rartificial_Life PRIVATE Qt6::Widgets)
@@ -59,4 +60,6 @@ include_directories(Rartificial_Life
         BrainUI/Managers/include
         BrainUI/Components/include
         BrainUI/Utils/include
+
+        GeneralUI/include
 )
