@@ -26,6 +26,8 @@ class BrainView : public QGraphicsView {
     bool autoFit = true;
     double baseScale = 1.0;
 
+    bool dragging_{};
+
 protected:
     void wheelEvent(QWheelEvent* e) override {
         autoFit = false;
@@ -41,6 +43,8 @@ protected:
         scale(factor, factor);
         QPointF after = mapToScene(e->position().toPoint());
         translate(after.x() - before.x(), after.y() - before.y());
+
+        qDebug() << "zoom: " << next;
     }
     void resizeEvent(QResizeEvent* e) override {
         QGraphicsView::resizeEvent(e);
@@ -56,6 +60,22 @@ protected:
         fitAll();
         QGraphicsView::mouseDoubleClickEvent(e);
     }
+    void mousePressEvent(QMouseEvent *event) override {
+        if (event->button() == Qt::LeftButton) {
+            dragging_ = true;
+            setRenderHint(QPainter::Antialiasing, false);
+        }
+        QGraphicsView::mousePressEvent(event);
+    }
+    void mouseReleaseEvent(QMouseEvent *event) override {
+        QGraphicsView::mouseReleaseEvent(event);
+
+        if (event->button() == Qt::LeftButton) {
+            dragging_ = false;
+            setRenderHint(QPainter::Antialiasing, true);
+        }
+        batcher_.applyBatch();
+    }
 
 public:
     BrainView(QWidget *parent, Storage &storage)
@@ -67,12 +87,16 @@ public:
         setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         setDragMode(ScrollHandDrag);
+        setViewportUpdateMode(BoundingRectViewportUpdate);
+        setOptimizationFlags(DontSavePainterState
+                           | DontAdjustForAntialiasing);
+        scene_->setItemIndexMethod(QGraphicsScene::NoIndex);
 
         scene_->setSceneRect(-10, -10, 20, 20);
         setScene(scene_);
 
         connect(&ui_timer_, &QTimer::timeout, [&] {
-            batcher_.applyBatch();
+            if (!dragging_) batcher_.applyBatch();
         });
         ui_timer_.start(16);
     }
