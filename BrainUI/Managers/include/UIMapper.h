@@ -6,28 +6,40 @@
 #include <UIDatas.h>
 
 class UIMapper {
+    int w{},h{};
+
+    QPointF scr(BrainPoint p) {
+        return toQPointF({p.x * w, p.y * h});
+    }
+
 public:
-    static std::unique_ptr<Data> convertNeuron(Neuron *neuron) {
+    UIMapper(int window_w, int window_h) {
+        w = window_w;
+        h = window_h;
+    }
+
+    std::unique_ptr<Data> convertNeuron(Neuron *neuron) {
         auto data = std::make_unique<NeuronData>();
 
-        data->pos = toQPointF(neuron->point());
+        data->pos = scr(neuron->point());
         data->dendrite = neuron->getDendrite();
         data->axon = neuron->getAxon();
+        data->type = neuron->getType();
 
         return data;
     }
 
-    static std::unique_ptr<Data> convertDendrite(Dendrite *dendrite) {
+    std::unique_ptr<Data> convertDendrite(Dendrite *dendrite) {
         auto data = std::make_unique<DendriteData>();
 
-        data->pos = toQPointF(dendrite->point());
+        data->pos = scr(dendrite->point());
         data->neuron = dendrite->getNeuron();
         data->synapses = dendrite->getSynapses();
 
         return data;
     }
 
-    static std::unique_ptr<Data> convertAxon(Axon *axon) {
+    std::unique_ptr<Data> convertAxon(Axon *axon) {
         auto data = std::make_unique<AxonData>();
 
         data->nodes.reserve(axon->nodes().size());
@@ -35,7 +47,7 @@ public:
         for (auto &node : axon->nodes()) {
             AxonNodeData node_data{};
 
-            node_data.pos = toQPointF(node.point);
+            node_data.pos = scr(node.point);
             node_data.synaps = node.synaps;
             node_data.prev_node = node.previous_node;
 
@@ -45,10 +57,10 @@ public:
         return data;
     }
 
-    static std::unique_ptr<Data> convertSynaps(Synaps *synaps) {
+    std::unique_ptr<Data> convertSynaps(Synaps *synaps) {
         auto data = std::make_unique<SynapsData>();
 
-        data->pos = toQPointF(synaps->point());
+        data->pos = scr(synaps->point());
         data->dendrite = synaps->getDendrite();
         data->axon = synaps->getAxon();
 

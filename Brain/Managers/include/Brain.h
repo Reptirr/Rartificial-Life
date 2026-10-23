@@ -44,8 +44,14 @@ public:
     }
 
     std::unordered_map<std::string, std::string> createNeuron() {
-        auto res = controller_.createNeuron();
+        auto res = controller_.createCommonNeuron();
         return res;
+    }
+    std::unordered_map<std::string, std::string> createInputNeuron(BrainPoint p) {
+        return controller_.createInputNeuron(p);
+    }
+    std::unordered_map<std::string, std::string> createOutputNeuron(BrainPoint p) {
+        return controller_.createOutputNeuron(p);
     }
 
 

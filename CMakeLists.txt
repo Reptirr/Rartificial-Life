@@ -48,6 +48,7 @@ add_executable(Rartificial_Life
         Brain/Utils/include/Typedefs.h
         BrainUI/Managers/include/UIBatcher.h
         GeneralUI/include/MainWindow.h
+        Brain/Components/include/NeuronType.h
 )
 
 target_link_libraries(Rartificial_Life PRIVATE Qt6::Widgets)

@@ -16,6 +16,8 @@ struct NeuronData : Data {
     QPointF pos;
     std::string dendrite;
     std::string axon;
+
+    NeuronType type;
 };
 
 struct AxonNodeData {

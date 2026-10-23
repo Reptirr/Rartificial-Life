@@ -17,7 +17,7 @@ public:
 
         setZValue(UIConfig::neuron_z);
 
-        setPen(QPen{Qt::black, 0.002});
+        setPen(QPen{Qt::black, 2});
         setBrush(QBrush{QColorConstants::DarkCyan});
         update();
     }
@@ -26,5 +26,34 @@ public:
         if (const auto *data = dynamic_cast<NeuronData *>(d)) {
             data_ = *data;
         }
+    }
+
+
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override {
+        QGraphicsEllipseItem::paint(painter, option, widget);
+
+        // input or output text
+        QPen pen{QColorConstants::Black};
+        painter->setPen(pen);
+
+        QString symbol{};
+
+        auto font = painter->font();
+        font.setPointSizeF(UIConfig::neuron_type_font_size);
+        painter->setFont(font);
+
+        switch (data_.type) {
+            case NeuronType::COMMON:
+                symbol = "C";
+                break;
+            case NeuronType::INPUT:
+                symbol = "I";
+                break;
+            case NeuronType::OUTPUT:
+                symbol = "O";
+                break;
+        }
+
+        painter->drawText(boundingRect(), Qt::AlignCenter | Qt::TextWordWrap, symbol);
     }
 };
