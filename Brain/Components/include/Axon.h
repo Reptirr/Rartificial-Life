@@ -32,6 +32,7 @@ class Axon : public Executable, public BrainComponent {
     bool is_growing{};
     double angle{};
     double step{0.09};
+    int max_nodes = 200;
 
     static BrainPoint moveByAzimuth(const BrainPoint p, const double azimuth, const double length) {
         return { p.x + length * std::sin(azimuth),
@@ -60,6 +61,8 @@ public:
         if (node_i >= 0)
             nodes_.at(node_i).synaps = synaps;
         is_growing = false;
+
+        data_collector_->onUpdateAxon(this_id_);
     }
 
     void putSpike() const {
@@ -75,6 +78,11 @@ public:
 
     void handleGrow() {
         if (is_growing) {
+            if (nodes().size() >= max_nodes) {
+                is_growing = false;
+                return;
+            }
+
             static std::random_device rd{};
             static std::mt19937 gen{rd()};
 
@@ -104,7 +112,6 @@ public:
                 });
 
                 nodes_.at(current_active_node_i).active = false;
-
                 return;
             }
 
@@ -115,6 +122,8 @@ public:
                     {"axon", this_id_}
                 }
             });
+
+            data_collector_->onUpdateAxon(this_id_);
         }
     }
 

@@ -10,7 +10,7 @@ class Brain {
     Executor executor_;
     Controller controller_;
     BrainMap brain_map_{&storage_};
-
+    DataCollector data_collector_{&storage_};
 
     void createRandomNeurons(int number) {
         for (int i = 0; i < number; i++)
@@ -18,8 +18,25 @@ class Brain {
     }
 
 public:
-    explicit Brain(int numberOfInitNeurons) : executor_(storage_, controller_), controller_(storage_, executor_, brain_map_) {
+    explicit Brain() : executor_(storage_, controller_), controller_(storage_, executor_, brain_map_, data_collector_) {
+
+    }
+
+    void init(int numberOfInitNeurons) {
         createRandomNeurons(numberOfInitNeurons);
+    }
+
+    void setNewNeuronCallback(const StringConsumer &cons) {
+        data_collector_.setNewNeuronConsumer(cons);
+    }
+    void setNewSynapsCallback(const StringConsumer &cons) {
+        data_collector_.setNewSynapsConsumer(cons);
+    }
+    void setUpdateDendriteCallback(const StringConsumer &cons) {
+        data_collector_.setUpdateDendriteConsumer(cons);
+    }
+    void setUpdateAxonCallback(const StringConsumer &cons) {
+        data_collector_.setUpdateAxonConsumer(cons);
     }
 
     Storage &getStorage() {
@@ -27,7 +44,8 @@ public:
     }
 
     std::unordered_map<std::string, std::string> createNeuron() {
-        return controller_.createNeuron();
+        auto res = controller_.createNeuron();
+        return res;
     }
 
 

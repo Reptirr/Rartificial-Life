@@ -44,6 +44,7 @@ class Executor {
 
 public:
     explicit Executor(Storage &storage, Controller &controller) : storage_(storage), controller_(controller) {
+
     }
 
     void pushPlan(int inTact, Command cmd) {

@@ -18,6 +18,10 @@ class Synaps : public Executable, public BrainComponent {
     double mediator{};
     double Ca{};
 
+protected:
+    void onSetThisId() override {
+        data_collector_->onNewSynaps(this_id_);
+    }
 
 public:
     explicit Synaps(Executor *executor, std::string dendrite, std::string axon)

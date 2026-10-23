@@ -4,10 +4,8 @@
 #include <Neuron.h>
 #include <Synaps.h>
 
-Controller::Controller(Storage &storage, Executor &executor, BrainMap &brain_map)
-    : storage_(storage), executor_(executor), brain_map_(brain_map)
-{
-
+Controller::Controller(Storage &storage, Executor &executor, BrainMap &brain_map, DataCollector &data_collector)
+    : storage_(storage), executor_(executor), brain_map_(brain_map), data_collector_(data_collector) {
 }
 
 std::unordered_map<std::string, std::string> Controller::createNeuron() {
@@ -20,9 +18,6 @@ std::unordered_map<std::string, std::string> Controller::createNeuron() {
     auto *dendrite = new Dendrite(&executor_, neuron_id);
     auto dendrite_id = storage_.put(dendrite);
 
-    neuron->setInit(neuron_id, brain_map_);
-    neuron->init(axon_id, dendrite_id);
-
     // random coordinates
     static std::random_device rd{};
     static std::mt19937 gen{rd()};
@@ -32,9 +27,13 @@ std::unordered_map<std::string, std::string> Controller::createNeuron() {
     axon->setPoint(neuron->point());
     dendrite->setPoint(neuron->point());
 
-    dendrite->setInit(dendrite_id, brain_map_);
-    neuron->setInit(neuron_id, brain_map_);
-    axon->setInit(axon_id, brain_map_);
+    neuron->setInit(neuron_id, brain_map_, &data_collector_);
+    neuron->init(axon_id, dendrite_id);
+
+    dendrite->setInit(dendrite_id, brain_map_, &data_collector_);
+    neuron->setInit(neuron_id, brain_map_, &data_collector_);
+    axon->setInit(axon_id, brain_map_, &data_collector_);
+
 
     return {
         {"neuron", neuron_id},
@@ -51,12 +50,12 @@ std::string Controller::createSynaps(const std::string &dendrite_id, const std::
     auto *axon = storage_.get<Axon>(axon_id);
     auto *dendrite = storage_.get<Dendrite>(dendrite_id);
 
+    synaps->setPoint(middleBetween(axon->nodes().at(axon_node_from).point, dendrite->point()));
+    synaps->setInit(synaps_id, brain_map_, &data_collector_);
+
     axon->addSynaps(synaps_id, axon_node_from);
     dendrite->addSynaps(synaps_id);
 
-    synaps->setInit(synaps_id, brain_map_);
-
-    synaps->setPoint(middleBetween(axon->nodes().at(axon_node_from).point, dendrite->point()));
 
     return synaps_id;
 }

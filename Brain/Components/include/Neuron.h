@@ -32,6 +32,11 @@ class Neuron : public Executable, public BrainComponent {
         });
     }
 
+protected:
+    void onSetThisId() override {
+
+    }
+
 public:
     explicit Neuron(Executor *executor)
         : Executable(executor) {
@@ -56,6 +61,8 @@ public:
                 {"neuron", this_id_}
             }
         });
+
+        data_collector_->onNewNeuron(this_id_);
     }
 
     void addSignal(const std::string& signal_s) {
@@ -86,5 +93,4 @@ public:
     std::string getDendrite() {
         return dendrite_;
     }
-
 };
