@@ -50,6 +50,7 @@ add_executable(Rartificial_Life
         GeneralUI/include/MainWindow.h
         Brain/Components/include/NeuronType.h
         Brain/Managers/src/Storage.cpp
+        Agent/include/Agent.h
 )
 
 target_link_libraries(Rartificial_Life PRIVATE Qt6::Widgets)
