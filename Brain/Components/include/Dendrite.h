@@ -1,10 +1,11 @@
 #pragma once
 
-#include <BrainComponent.h>
 #include <Command.h>
+#include <DataCollector.h>
 #include <Executable.h>
-#include <Executor.h>
 #include <string>
+#include <unordered_set>
+#include <Executor.h>
 
 class Neuron;
 
@@ -30,7 +31,7 @@ public:
     void addSynaps(std::string synaps) {
         synapses_.insert(synaps);
 
-        data_collector_->onUpdateDendrite(this_id_);
+        data_collector_->onUpdate(this_id_);
     }
 
     void transmitCu() const {

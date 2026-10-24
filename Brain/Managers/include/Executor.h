@@ -1,11 +1,7 @@
 #pragma once
-
 #include <BrainAnalyzer.h>
 #include <queue>
-#include <utility>
-#include <Storage.h>
-#include <Command.h>
-#include <Controller.h>
+
 
 /*
  * первый такт: 1. Neuron (стреляет)
@@ -14,6 +10,8 @@
  * четвертый такт: 4. Dendrit (суммирует сигналы синапсов, отдает в нейрон)
  */
 
+class Controller;
+class Storage;
 struct Command;
 
 static inline std::string mapToString(const std::unordered_map<std::string, std::string>& map) {

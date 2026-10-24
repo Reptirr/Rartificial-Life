@@ -1,5 +1,7 @@
 #pragma once
-#include <QTimer>
+
+#include <mutex>
+#include <my_assert.h>
 #include <queue>
 #include <UIController.h>
 #include <unordered_map>
@@ -16,15 +18,24 @@ class UIBatcher {
     std::queue<ToCreate> to_create_;
     std::unordered_map<std::string, std::unique_ptr<Data>> updates_;
 
+    std::mutex mtx;
+
 public:
     explicit UIBatcher(UIController &controller, UIStorage &storage)
         : controller_(controller), ui_storage_(storage) {
     }
 
     void onCreate(const std::string &id, std::unique_ptr<Data> d) {
+        if (d.get() == nullptr || id.empty())
+            return;
+
+        std::lock_guard lock(mtx);
         to_create_.push({id, std::move(d)});
     }
     void onUpdate(std::string id, std::unique_ptr<Data> d) {
+        if (d.get() == nullptr || id.empty())
+            return;
+        std::lock_guard lock(mtx);
         updates_.insert_or_assign(id, std::move(d));
     }
 
@@ -32,8 +43,11 @@ public:
         std::queue<ToCreate> to_create;
         std::unordered_map<std::string, std::unique_ptr<Data>> updates;
 
-        to_create.swap(to_create_);
-        updates.swap(updates_);
+        {
+            std::lock_guard lock(mtx);
+            to_create.swap(to_create_);
+            updates.swap(updates_);
+        }
 
         while (!to_create.empty()) {
             auto creating = std::move(to_create.front());

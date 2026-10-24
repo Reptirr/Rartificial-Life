@@ -1,16 +1,18 @@
 #pragma once
 #include <Axon.h>
+#include <BrainMap.h>
 #include <Controller.h>
+#include <DataCollector.h>
 #include <Executor.h>
-#include <Neuron.h>
 #include <Storage.h>
+#include <typedefs.h>
 
 class Brain {
     Storage storage_{};
     Executor executor_;
     Controller controller_;
     BrainMap brain_map_{&storage_};
-    DataCollector data_collector_{&storage_};
+    DataCollector data_collector_;
 
     void createRandomNeurons(int number) {
         for (int i = 0; i < number; i++)
@@ -32,20 +34,22 @@ public:
     void setNewSynapsCallback(const StringConsumer &cons) {
         data_collector_.setNewSynapsConsumer(cons);
     }
-    void setUpdateDendriteCallback(const StringConsumer &cons) {
-        data_collector_.setUpdateDendriteConsumer(cons);
+    void setUpdateCallback(const StringConsumer &cons) {
+        data_collector_.setUpdateConsumer(cons);
     }
-    void setUpdateAxonCallback(const StringConsumer &cons) {
-        data_collector_.setUpdateAxonConsumer(cons);
-    }
-
     Storage &getStorage() {
         return storage_;
     }
 
     std::unordered_map<std::string, std::string> createNeuron() {
-        auto res = controller_.createNeuron();
+        auto res = controller_.createCommonNeuron();
         return res;
+    }
+    std::unordered_map<std::string, std::string> createInputNeuron(BrainPoint p) {
+        return controller_.createInputNeuron(p);
+    }
+    std::unordered_map<std::string, std::string> createOutputNeuron(BrainPoint p) {
+        return controller_.createOutputNeuron(p);
     }
 
 

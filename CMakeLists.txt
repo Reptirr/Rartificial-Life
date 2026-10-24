@@ -48,11 +48,15 @@ add_executable(Rartificial_Life
         Brain/Utils/include/Typedefs.h
         BrainUI/Managers/include/UIBatcher.h
         GeneralUI/include/MainWindow.h
+        Brain/Components/include/NeuronType.h
+        Brain/Managers/src/Storage.cpp
 )
 
 target_link_libraries(Rartificial_Life PRIVATE Qt6::Widgets)
 
 include_directories(Rartificial_Life
+        /
+
         Brain/Components/include
         Brain/Managers/include
         Brain/Utils/include
@@ -62,4 +66,8 @@ include_directories(Rartificial_Life
         BrainUI/Utils/include
 
         GeneralUI/include
+)
+
+target_compile_definitions(Rartificial_Life PRIVATE
+#    BRAIN_DEBUG
 )

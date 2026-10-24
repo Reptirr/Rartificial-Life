@@ -1,5 +1,6 @@
 #pragma once
 #include <BrainPoint.h>
+#include <NeuronType.h>
 #include <string>
 
 struct Data {
@@ -16,6 +17,10 @@ struct NeuronData : Data {
     QPointF pos;
     std::string dendrite;
     std::string axon;
+
+    NeuronType type;
+
+    double signal{};
 };
 
 struct AxonNodeData {
@@ -32,4 +37,8 @@ struct SynapsData : Data {
     QPointF pos;
     std::string axon;
     std::string dendrite;
+
+    double mediator{};
+    double Ca{};
+    double w{};
 };

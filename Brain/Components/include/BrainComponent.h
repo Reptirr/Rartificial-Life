@@ -1,8 +1,7 @@
 #pragma once
 #include <BrainPoint.h>
-#include <DataCollector.h>
-#include <qpoint.h>
 
+class DataCollector;
 class BrainMap;
 
 class BrainComponent {

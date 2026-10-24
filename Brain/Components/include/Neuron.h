@@ -3,6 +3,8 @@
 #include <Command.h>
 #include <Executable.h>
 #include <Executor.h>
+#include <NeuronType.h>
+#include <random>
 #include <string>
 
 #include "../../../my_assert.h"
@@ -12,24 +14,43 @@ class Axon;
 class Neuron : public Executable, public BrainComponent {
     std::string axon_{};
     std::string dendrite_{};
+    NeuronType type_{};
 
     double sum{};
     double threshold{10};
 
+    bool can_spike{true};
+    int refractor_ticks = 5;
+
     void spike() {
+        if (!can_spike) return;
+
+        can_spike = false;
+        executor_->pushPlan(
+            refractor_ticks,
+            {
+                .type = NEURON_REFRACTOR_RESET,
+                .data = {
+                    {"neuron", this_id_}
+                }
+            }
+        );
+
         executor_->push(Command{
-            .type = NEURON_SPIKE,
+            .type = AXON_GET_SPIKE,
             .data = {
                 {"axon", axon_}
             }
         });
 
-        executor_->push({
-            .type = HANDLE_CA_IN_DENDRITE,
-            .data = {
-                {"dendrite", dendrite_}
-            }
-        });
+        if (type_ == NeuronType::COMMON) {
+            executor_->push({
+                .type = HANDLE_CA_IN_DENDRITE,
+                .data = {
+                    {"dendrite", dendrite_}
+                }
+            });
+        }
     }
 
 protected:
@@ -38,8 +59,8 @@ protected:
     }
 
 public:
-    explicit Neuron(Executor *executor)
-        : Executable(executor) {
+    explicit Neuron(Executor *executor, NeuronType type)
+        : Executable(executor), type_(type) {
 
     }
 
@@ -51,21 +72,24 @@ public:
 
         my_assert(!this_id_.empty());
 
-        static std::random_device rd{};
-        static std::mt19937 gen(rd());
-        static std::uniform_int_distribution dist{0, 25};
+        if (type_ == NeuronType::COMMON) {
+            static std::random_device rd{};
+            static std::mt19937 gen(rd());
+            static std::uniform_int_distribution dist{0, 25};
 
-        executor_->pushPlan(dist(gen), {
-            .type = RANDOM_NEURON_SPIKE,
-            .data = {
-                {"neuron", this_id_}
-            }
-        });
+            executor_->pushPlan(dist(gen), {
+                .type = RANDOM_NEURON_SPIKE,
+                .data = {
+                    {"neuron", this_id_}
+                }
+            });
+        }
 
         data_collector_->onNewNeuron(this_id_);
     }
 
     void addSignal(const std::string& signal_s) {
+        my_assert(type_ != NeuronType::INPUT);
         double signal = std::stod(signal_s);
         sum += signal;
 
@@ -73,6 +97,11 @@ public:
             sum = 0;
             spike();
         }
+    }
+
+    void manualSpike() {
+        my_assert(type_ == NeuronType::INPUT);
+        spike();
     }
 
     void onRandomSpike() {
@@ -86,11 +115,21 @@ public:
         });
     }
 
+    void refractorReset() {
+        can_spike = true;
+    }
+
     // getters
     std::string getAxon() {
         return axon_;
     }
     std::string getDendrite() {
         return dendrite_;
+    }
+    NeuronType getType() const {
+        return type_;
+    }
+    double getEnergy() const {
+        return sum;
     }
 };
