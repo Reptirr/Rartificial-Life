@@ -67,3 +67,7 @@ include_directories(Rartificial_Life
 
         GeneralUI/include
 )
+
+target_compile_definitions(Rartificial_Life PRIVATE
+#    BRAIN_DEBUG
+)

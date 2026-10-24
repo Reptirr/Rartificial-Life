@@ -41,9 +41,14 @@ public:
                 output_p += BrainPoint{0.0, 0.03};
             }
 
+            // set tps to 100
+            auto step = std::chrono::milliseconds(10);
+            auto next = std::chrono::steady_clock::now();
+
             while (true) {
                 brain_.tact();
-                std::this_thread::sleep_for(std::chrono::milliseconds(0));
+                next += step;
+                std::this_thread::sleep_until(next);
             }
         });
     }

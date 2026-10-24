@@ -14,7 +14,7 @@ void Executor::executeCmdFabric(Command cmd) {
             return;
         }
 
-        case NEURON_SPIKE: {
+        case AXON_GET_SPIKE: {
             // std::cout << "get NEURON_SPIKE command. data: " << mapToString(cmd.data) << std::endl;
 
             std::string axon_id = cmd.data.at("axon");
@@ -126,6 +126,15 @@ void Executor::executeCmdFabric(Command cmd) {
             auto *dendrite = storage_.get<Dendrite>(dendrite_id);
 
             auto synaps_id = controller_.createSynaps(dendrite_id, axon_id, node_i);
+
+            return;
+        }
+
+        case NEURON_REFRACTOR_RESET: {
+            auto neuron_id = cmd.data.at("neuron");
+            auto *neuron = storage_.get<Neuron>(neuron_id);
+
+            neuron->refractorReset();
 
             return;
         }

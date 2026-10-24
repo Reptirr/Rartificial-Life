@@ -18,12 +18,26 @@ class Neuron : public Executable, public BrainComponent {
 
     double sum{};
     double threshold{10};
-    bool spiking{};
+
+    bool can_spike{true};
+    int refractor_ticks = 5;
 
     void spike() {
-        spiking = true;
+        if (!can_spike) return;
+
+        can_spike = false;
+        executor_->pushPlan(
+            refractor_ticks,
+            {
+                .type = NEURON_REFRACTOR_RESET,
+                .data = {
+                    {"neuron", this_id_}
+                }
+            }
+        );
+
         executor_->push(Command{
-            .type = NEURON_SPIKE,
+            .type = AXON_GET_SPIKE,
             .data = {
                 {"axon", axon_}
             }
@@ -99,6 +113,10 @@ public:
                 {"neuron", this_id_}
             }
         });
+    }
+
+    void refractorReset() {
+        can_spike = true;
     }
 
     // getters

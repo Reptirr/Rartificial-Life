@@ -12,7 +12,6 @@ public:
     NeuronItem(UIStorage &storage, const NeuronData &data) : QGraphicsEllipseItem(-UIConfig::neuron_r, -UIConfig::neuron_r,
                                                         UIConfig::neuron_r * 2, UIConfig::neuron_r * 2), UIComponent(storage) {
         data_ = data;
-        qDebug() << "new neuron at " << data_.pos;
         setPos(data_.pos);
 
         setZValue(UIConfig::neuron_z);

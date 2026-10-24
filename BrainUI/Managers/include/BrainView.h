@@ -43,8 +43,6 @@ protected:
         scale(factor, factor);
         QPointF after = mapToScene(e->position().toPoint());
         translate(after.x() - before.x(), after.y() - before.y());
-
-        qDebug() << "zoom: " << next;
     }
     void resizeEvent(QResizeEvent* e) override {
         QGraphicsView::resizeEvent(e);

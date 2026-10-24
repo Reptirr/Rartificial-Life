@@ -7,7 +7,7 @@ enum CommandType : int {
     NONE,
 
     // BASE
-    NEURON_SPIKE,
+    AXON_GET_SPIKE,
     SYNAPS_GET_SPIKE,
     DENDRIT_GET_SIGNAL,
     NEURON_GET_SIGNAL,
@@ -22,7 +22,8 @@ enum CommandType : int {
     CREATE_SYNAPS,
 
     // OTHER
-    RANDOM_NEURON_SPIKE
+    RANDOM_NEURON_SPIKE,
+    NEURON_REFRACTOR_RESET
 };
 
 inline std::string_view toString(CommandType type) {
