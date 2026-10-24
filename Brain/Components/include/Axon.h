@@ -1,8 +1,11 @@
 #pragma once
 #include <BrainComponent.h>
+#include <BrainMap.h>
 #include <Command.h>
+#include <DataCollector.h>
 #include <Executable.h>
 #include <Executor.h>
+#include <random>
 #include <string>
 #include <unordered_set>
 #include <utility>
@@ -62,7 +65,7 @@ public:
             nodes_.at(node_i).synaps = synaps;
         is_growing = false;
 
-        data_collector_->onUpdateAxon(this_id_);
+        data_collector_->onUpdate(this_id_);
     }
 
     void putSpike() const {
@@ -112,6 +115,7 @@ public:
                 });
 
                 nodes_.at(current_active_node_i).active = false;
+                data_collector_->onUpdate(this_id_);
                 return;
             }
 
@@ -123,7 +127,7 @@ public:
                 }
             });
 
-            data_collector_->onUpdateAxon(this_id_);
+            data_collector_->onUpdate(this_id_);
         }
     }
 

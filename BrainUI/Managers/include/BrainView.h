@@ -8,6 +8,7 @@
 #include <UIController.h>
 #include <UIMapper.h>
 #include <QThread>
+#include <QTimer>
 
 class BrainView : public QGraphicsView {
     QGraphicsScene *scene_ = new QGraphicsScene(this);
@@ -26,8 +27,6 @@ class BrainView : public QGraphicsView {
     }
     bool autoFit = true;
     double baseScale = 1.0;
-
-    bool dragging_{};
 
 protected:
     void wheelEvent(QWheelEvent* e) override {
@@ -61,22 +60,6 @@ protected:
         fitAll();
         QGraphicsView::mouseDoubleClickEvent(e);
     }
-    void mousePressEvent(QMouseEvent *event) override {
-        if (event->button() == Qt::LeftButton) {
-            dragging_ = true;
-            // setRenderHint(QPainter::Antialiasing, false);
-        }
-        QGraphicsView::mousePressEvent(event);
-    }
-    void mouseReleaseEvent(QMouseEvent *event) override {
-        QGraphicsView::mouseReleaseEvent(event);
-
-        if (event->button() == Qt::LeftButton) {
-            dragging_ = false;
-            // setRenderHint(QPainter::Antialiasing, true);
-        }
-        batcher_.applyBatch();
-    }
 
 public:
     BrainView(QWidget *parent, Storage &storage, int w, int h)
@@ -99,7 +82,7 @@ public:
         setScene(scene_);
 
         connect(&ui_timer_, &QTimer::timeout, [&] {
-            if (!dragging_) batcher_.applyBatch();
+            batcher_.applyBatch();
         });
         ui_timer_.start(16);
     }
@@ -131,15 +114,30 @@ public:
         batcher_.onCreate(synaps_id, mapper_.convertSynaps(synaps));
     }
 
-    void onUpdateAxon(const std::string &axon_id) {
-        auto *axon = storage_.get<Axon>(axon_id);
+    void onUpdate(const std::string &id) {
+        std::unique_ptr<Data> data;
 
-        batcher_.onUpdate(axon_id, mapper_.convertAxon(axon));
-    }
+        if (auto *neuron = storage_.get<Neuron>(id)) {
+            qDebug() << "neuron";
+            data = mapper_.convertNeuron(neuron);
 
-    void onUpdateDendrite(const std::string &dendrite_id) {
-        auto *dendrite = storage_.get<Dendrite>(dendrite_id);
+        } else if (auto *axon = storage_.get<Axon>(id)) {
+            qDebug() << "axon";
+            data = mapper_.convertAxon(axon);
 
-        batcher_.onUpdate(dendrite_id, mapper_.convertDendrite(dendrite));
+        } else if (auto *dendrite = storage_.get<Dendrite>(id)) {
+            qDebug() << "dendrite";
+            data = mapper_.convertDendrite(dendrite);
+
+        } else if (auto *synaps = storage_.get<Synaps>(id)) {
+            qDebug() << "synaps";
+            data = mapper_.convertSynaps(synaps);
+
+        } else {
+            // fallback
+            return;
+        }
+
+        batcher_.onUpdate(id, std::move(data));
     }
 };

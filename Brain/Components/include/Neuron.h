@@ -4,6 +4,7 @@
 #include <Executable.h>
 #include <Executor.h>
 #include <NeuronType.h>
+#include <random>
 #include <string>
 
 #include "../../../my_assert.h"
@@ -17,8 +18,10 @@ class Neuron : public Executable, public BrainComponent {
 
     double sum{};
     double threshold{10};
+    bool spiking{};
 
     void spike() {
+        spiking = true;
         executor_->push(Command{
             .type = NEURON_SPIKE,
             .data = {
@@ -107,5 +110,8 @@ public:
     }
     NeuronType getType() const {
         return type_;
+    }
+    double getEnergy() const {
+        return sum;
     }
 };

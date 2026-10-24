@@ -1,5 +1,6 @@
 #pragma once
-#include <QTimer>
+
+#include <my_assert.h>
 #include <queue>
 #include <UIController.h>
 #include <unordered_map>
@@ -22,9 +23,14 @@ public:
     }
 
     void onCreate(const std::string &id, std::unique_ptr<Data> d) {
+        if (d.get() == nullptr || id.empty())
+            return;
         to_create_.push({id, std::move(d)});
     }
     void onUpdate(std::string id, std::unique_ptr<Data> d) {
+        if (d.get() == nullptr || id.empty())
+            return;
+
         updates_.insert_or_assign(id, std::move(d));
     }
 

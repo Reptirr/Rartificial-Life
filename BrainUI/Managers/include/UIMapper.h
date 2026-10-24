@@ -63,6 +63,9 @@ public:
         data->pos = scr(synaps->point());
         data->dendrite = synaps->getDendrite();
         data->axon = synaps->getAxon();
+        data->Ca = synaps->getCa();
+        data->mediator = synaps->getMediator();
+        data->w = synaps->getW();
 
         return data;
     }

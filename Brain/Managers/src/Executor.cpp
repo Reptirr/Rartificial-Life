@@ -1,8 +1,10 @@
 #include <Axon.h>
+#include <Controller.h>
 #include <Dendrite.h>
 #include <Executor.h>
 #include <iostream>
 #include <Neuron.h>
+#include <Storage.h>
 #include <Synaps.h>
 
 void Executor::executeCmdFabric(Command cmd) {

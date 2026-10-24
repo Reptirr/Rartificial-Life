@@ -22,8 +22,7 @@ public:
         // connect logic with ui
         brain_.setNewNeuronCallback([&](const std::string &s) { brain_view_->onNewNeuron(s); });
         brain_.setNewSynapsCallback([&](const std::string& s) { brain_view_->onNewSynaps(s); });
-        brain_.setUpdateAxonCallback([&](const std::string &s) { brain_view_->onUpdateAxon(s); });
-        brain_.setUpdateDendriteCallback([&](const std::string &s) {brain_view_->onUpdateDendrite(s); });
+        brain_.setUpdateCallback([&](const std::string &s) { brain_view_->onUpdate(s); });
 
         worker_thread = std::thread([&] {
             brain_.init(200);

@@ -49,6 +49,8 @@ public:
             w = std::clamp(w, 0.0, 100.0);
         }
 
+        data_collector_->onUpdate(this_id_);
+
         if (!is_reducing) {
             executor_->push({
                 .type = REDUCE_VALS_IN_SYNAPS,
@@ -65,11 +67,12 @@ public:
         if (prev_neuron_type_ == NeuronType::INPUT) return;
 
         Ca += 1.0;
-
         if (mediator > 0.0) {
             w += Ca * 0.05;
             w = std::clamp(w, 0.0, 100.0);
         }
+
+        data_collector_->onUpdate(this_id_);
 
         if (!is_reducing) {
             executor_->push({
@@ -94,6 +97,8 @@ public:
         if (Ca < 0.0) Ca = 0.0;
 
         mediator = std::max(0.0, mediator - 0.2);
+
+        data_collector_->onUpdate(this_id_);
 
         if (Ca != 0 || mediator != 0) {
             executor_->push({
