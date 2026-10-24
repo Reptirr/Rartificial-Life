@@ -90,6 +90,8 @@ public:
         auto *dendrite = storage_.get<Dendrite>(neuron->getDendrite()); // when there is input neuron it is null
         auto *axon = storage_.get<Axon>(neuron->getAxon());
 
+        qDebug() << "handle new neuron: " << toString(neuron->getType());
+
         batcher_.onCreate(
             neuron_id,
             mapper_.convertNeuron(neuron)

@@ -27,6 +27,10 @@ public:
         }
     }
 
+    void UIUpdate() override {
+        update();
+    }
+
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override {
         QGraphicsEllipseItem::paint(painter, option, widget);
@@ -52,6 +56,8 @@ public:
                 symbol = "O";
                 break;
         }
+
+        symbol += "\nS: " + QString::number(data_.signal, 'f', 2);
 
         painter->drawText(boundingRect(), Qt::AlignCenter | Qt::TextWordWrap, symbol);
     }

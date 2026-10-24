@@ -97,6 +97,8 @@ public:
             sum = 0;
             spike();
         }
+
+        data_collector_->onUpdate(this_id_);
     }
 
     void manualSpike() {
@@ -129,7 +131,7 @@ public:
     NeuronType getType() const {
         return type_;
     }
-    double getEnergy() const {
+    double getSignal() const {
         return sum;
     }
 };

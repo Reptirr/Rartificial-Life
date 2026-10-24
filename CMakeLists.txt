@@ -45,17 +45,18 @@ add_executable(Rartificial_Life
         BrainUI/Utils/include/SceneUtils.h
         BrainUI/Managers/include/UIMapper.h
         Brain/Managers/include/DataCollector.h
-        Brain/Utils/include/Typedefs.h
+        Brain/Utils/include/typedefs.h
         BrainUI/Managers/include/UIBatcher.h
         GeneralUI/include/MainWindow.h
         Brain/Components/include/NeuronType.h
         Brain/Managers/src/Storage.cpp
+        Agent/include/Agent.h
 )
 
 target_link_libraries(Rartificial_Life PRIVATE Qt6::Widgets)
 
 include_directories(Rartificial_Life
-        /
+        ${CMAKE_SOURCE_DIR}
 
         Brain/Components/include
         Brain/Managers/include
