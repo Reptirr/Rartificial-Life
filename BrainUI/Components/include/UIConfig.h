@@ -8,7 +8,7 @@ struct UIConfig {
     static constexpr double axon_width = 6;
 
     static constexpr double neuron_type_font_size = 15;
-    static constexpr double synaps_info_font_size = 2;
+    static constexpr double synaps_info_font_size = 1.88;
 
     // Z VALUES
     static constexpr qreal synaps_z = 2;

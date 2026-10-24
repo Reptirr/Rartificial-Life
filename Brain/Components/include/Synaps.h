@@ -100,13 +100,15 @@ public:
 
         data_collector_->onUpdate(this_id_);
 
-        if (Ca != 0 || mediator != 0) {
+        if (Ca != 0.0 || mediator != 0.0) {
             executor_->push({
                 .type = REDUCE_VALS_IN_SYNAPS,
                 .data = {
                     {"synaps", this_id_}
                 }
             });
+        } else {
+            is_reducing = false;
         }
     }
 

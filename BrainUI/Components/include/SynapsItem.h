@@ -3,6 +3,7 @@
 #include <qpen.h>
 #include <UIComponent.h>
 #include <UIConfig.h>
+#include <QStyleOption>
 
 class SynapsItem : public QGraphicsEllipseItem, public UIComponent {
     SynapsData data_;
@@ -24,6 +25,9 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override {
         QGraphicsEllipseItem::paint(painter, option, widget);
 
+        const qreal lod = option->levelOfDetailFromTransform(painter->worldTransform());
+        if (lod * UIConfig::synaps_info_font_size < 3.0)   // отсекает мелкий размер и NaN
+            return;
 
         // input or output text
         QPen pen{QColorConstants::Black};
@@ -37,8 +41,8 @@ public:
 
         symbol =
             "C:" + QString::number(data_.Ca, 'f', 2) +
-            " M:" + QString::number(data_.mediator, 'f', 2) +
-            " W:" + QString::number(data_.w, 'f', 3);
+            "\nM:" + QString::number(data_.mediator, 'f', 2) +
+            "\nW:" + QString::number(data_.w, 'f', 2);
 
         painter->drawText(boundingRect(), Qt::AlignCenter | Qt::TextWordWrap, symbol);
     }

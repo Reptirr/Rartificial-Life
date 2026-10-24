@@ -118,21 +118,13 @@ public:
         std::unique_ptr<Data> data;
 
         if (auto *neuron = storage_.get<Neuron>(id)) {
-            qDebug() << "neuron";
             data = mapper_.convertNeuron(neuron);
-
         } else if (auto *axon = storage_.get<Axon>(id)) {
-            qDebug() << "axon";
             data = mapper_.convertAxon(axon);
-
         } else if (auto *dendrite = storage_.get<Dendrite>(id)) {
-            qDebug() << "dendrite";
             data = mapper_.convertDendrite(dendrite);
-
         } else if (auto *synaps = storage_.get<Synaps>(id)) {
-            qDebug() << "synaps";
             data = mapper_.convertSynaps(synaps);
-
         } else {
             // fallback
             return;
