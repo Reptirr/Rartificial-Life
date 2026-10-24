@@ -25,6 +25,7 @@ public:
         data->dendrite = neuron->getDendrite();
         data->axon = neuron->getAxon();
         data->type = neuron->getType();
+        data->signal = neuron->getSignal();
 
         return data;
     }

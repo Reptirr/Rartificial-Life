@@ -10,3 +10,7 @@ enum class NeuronType {
     // for output neurons
     OUTPUT
 };
+
+static inline std::string_view toString(NeuronType type) {
+    return magic_enum::enum_name(type);
+}

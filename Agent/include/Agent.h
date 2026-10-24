@@ -20,23 +20,35 @@ class Agent {
     // при изменении частоты, он делает спайк а затем начинает с новой частотой
     std::unordered_map<std::string, int> input_counters;
 
-    int convertIntensityToFreq(const double intensity) {
-        const int res = intensity * (1 / 5); // refractor = 5
-        return res;    }
+    int convertIntensityToFreq(double intensity) {
+
+        /*
+         * если интенсивность = 1, то freq = 5
+         * если интенсивность = 0.5, то freq = 10
+         * если интенсивность = 0, то freq = 0
+         */
+
+        constexpr double MIN_PERIOD = 5.0;
+        if (intensity <= 0.0) return 0;
+        if (intensity > 1.0) intensity = 1.0;
+        return static_cast<int>(std::round(MIN_PERIOD / intensity));
+    }
 
 public:
     explicit Agent() {
-        brain_.init(200);
+
+    }
+
+    void createCommonNeurons(int num) {
+        brain_.init(num);
     }
 
     void tact() {
         // input neuron spike
         for (auto& [id, counter] : input_counters) {
-            counter--;
-
-            if (counter <= 0) {
+            if (counter > 0 && ++counter >= input_freqs.at(id)) {
                 brain_.getStorage().get<Neuron>(id)->manualSpike();
-                counter = input_freqs.at(id);
+                counter = 1;
             }
         }
 
@@ -51,7 +63,7 @@ public:
         int freq = convertIntensityToFreq(init_intensity);
 
         input_freqs.insert({res.at("neuron"), freq});
-        input_counters.insert({res.at("neuron"), freq});
+        input_counters.insert({res.at("neuron"), 1});
 
         return res.at("neuron");
     }
@@ -61,11 +73,11 @@ public:
         return brain_.createOutputNeuron(p).at("neuron");
     }
 
-    void setInputNeuronIntensivity(std::string id, double intensity) {
+    void setInputNeuronIntensivity(const std::string &id, const double intensity) {
         my_assert(input_freqs.contains(id));
         my_assert(input_counters.contains(id));
 
-        int freq = convertIntensityToFreq(intensity);
+        const int freq = convertIntensityToFreq(intensity);
 
         input_freqs.at(id) = freq;
     }

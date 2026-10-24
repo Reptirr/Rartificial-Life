@@ -27,6 +27,8 @@ public:
         brain_->setNewSynapsCallback([&](const std::string& s) { brain_view_->onNewSynaps(s); });
         brain_->setUpdateCallback([&](const std::string &s) { brain_view_->onUpdate(s); });
 
+        agent_.createCommonNeurons(100);
+
         worker_thread = std::thread([&] {
             BrainPoint input_p{-0.4, -0.4};
             for (int i = 0; i < 5; i++) {
@@ -35,9 +37,11 @@ public:
                 input_p += BrainPoint{0.0, 0.03};
             }
 
+            std::vector<std::string> outputs;
+
             BrainPoint output_p{0.4, 0.4};
             for (int i = 0; i < 5; i++) {
-                agent_.createOutputNeuron(output_p);
+                outputs.push_back(agent_.createOutputNeuron(output_p));
 
                 output_p += BrainPoint{0.0, 0.03};
             }
@@ -48,6 +52,13 @@ public:
 
             while (true) {
                 agent_.tact();
+
+                for (int i = 0; i < outputs.size(); i++) {
+                    const auto &id = outputs.at(i);
+
+                    // qDebug() << "O" << i << ": " << brain_->getStorage().get<Neuron>(id)->getSignal();
+                }
+
                 next += step;
                 std::this_thread::sleep_until(next);
             }
