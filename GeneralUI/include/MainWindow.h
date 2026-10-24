@@ -17,8 +17,8 @@ class MainWindow : public QMainWindow {
 
 public:
     MainWindow() {
-        brain_view_ = new BrainView(this, brain_->getStorage(), w, h);
         brain_ = agent_.getBrain();
+        brain_view_ = new BrainView(this, brain_->getStorage(), w, h);
 
         setFixedSize(w, h);
 
