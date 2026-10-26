@@ -3,7 +3,7 @@
 #include <Command.h>
 #include <Executable.h>
 #include <Executor.h>
-#include <NeuronType.h>
+#include <../../Model/include/NeuronType.h>
 #include <random>
 #include <string>
 
@@ -43,7 +43,7 @@ class Neuron : public Executable, public BrainComponent {
             }
         });
 
-        if (type_ == NeuronType::COMMON) {
+        if (type_ != NeuronType::INPUT) {
             executor_->push({
                 .type = HANDLE_CA_IN_DENDRITE,
                 .data = {
@@ -85,7 +85,7 @@ public:
             });
         }
 
-        data_collector_->onNewNeuron(this_id_);
+        data_collector_->onCreate(this_id_);
     }
 
     void addSignal(const std::string& signal_s) {

@@ -1,5 +1,6 @@
 #pragma once
 #include <BrainPoint.h>
+#include <SubMap.h>
 
 class DataCollector;
 class BrainMap;
@@ -21,6 +22,8 @@ public:
         data_collector_ = data_collector;
         onSetThisId();
     }
+
+    virtual void handleProtein(SubMap sub_map, Genome genome) {}
 
     double x() const { return point_.x; }
     double y() const { return point_.y; }

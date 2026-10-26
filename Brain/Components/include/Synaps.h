@@ -22,7 +22,7 @@ class Synaps : public Executable, public BrainComponent {
 
 protected:
     void onSetThisId() override {
-        data_collector_->onNewSynaps(this_id_);
+        data_collector_->onCreate(this_id_);
     }
 
 public:

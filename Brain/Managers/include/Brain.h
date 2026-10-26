@@ -4,11 +4,12 @@
 #include <Controller.h>
 #include <DataCollector.h>
 #include <Executor.h>
+#include <Genome.h>
 #include <Storage.h>
 #include <typedefs.h>
 
 class Brain {
-    Storage storage_{};
+    Storage storage_;
     Executor executor_;
     Controller controller_;
     BrainMap brain_map_{&storage_};
@@ -24,15 +25,17 @@ public:
 
     }
 
-    void init(int numberOfInitNeurons) {
+    void init(const Genome &genome, const int numberOfInitNeurons) {
+        storage_.setGenome(genome);
+
+        // выброс белков в карту сабов
+        controller_.injectProteins(genome.proteins);
+
         createRandomNeurons(numberOfInitNeurons);
     }
 
-    void setNewNeuronCallback(const StringConsumer &cons) {
-        data_collector_.setNewNeuronConsumer(cons);
-    }
-    void setNewSynapsCallback(const StringConsumer &cons) {
-        data_collector_.setNewSynapsConsumer(cons);
+    void setCreateCallback(const StringConsumer &cons) {
+        data_collector_.setCreateConsumer(cons);
     }
     void setUpdateCallback(const StringConsumer &cons) {
         data_collector_.setUpdateConsumer(cons);
@@ -53,9 +56,6 @@ public:
     }
 
 
-    std::string createSynaps(const std::string& axon_id, const std::string& dendrite_id) {
-        return controller_.createSynaps(dendrite_id, axon_id, -1);
-    }
 
     unsigned int tact() {
         return executor_.tact();

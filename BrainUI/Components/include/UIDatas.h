@@ -1,6 +1,6 @@
 #pragma once
 #include <BrainPoint.h>
-#include <NeuronType.h>
+#include <../../../Brain/Model/include/NeuronType.h>
 #include <string>
 
 struct Data {
@@ -41,4 +41,9 @@ struct SynapsData : Data {
     double mediator{};
     double Ca{};
     double w{};
+};
+
+struct ProteinData : Data {
+    QPointF pos;
+    double dist;
 };

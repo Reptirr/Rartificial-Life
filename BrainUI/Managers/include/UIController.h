@@ -1,5 +1,6 @@
 #pragma once
 #include <DendriteItem.h>
+#include <ProteinItem.h>
 #include <qgraphicsscene.h>
 #include <SceneUtils.h>
 #include <SynapsItem.h>
@@ -24,6 +25,10 @@ class UIController {
     }
     SynapsItem *createSynapsItem(const SynapsData &data) const {
         auto *item = new SynapsItem(ui_storage_, data);
+        return item;
+    }
+    ProteinItem *createProteinItem(const ProteinData &data) const {
+        auto *item = new ProteinItem(ui_storage_, data);
         return item;
     }
 
@@ -57,6 +62,13 @@ public:
     auto newSynaps(const std::string &synaps_id, const SynapsData &data) const {
         auto *item = createSynapsItem(data);
         ui_storage_.insertSynaps(synaps_id, item);
+        scene_->addItem(item);
+        return item;
+    }
+
+    auto newProtein(const std::string &protein_id, const ProteinData &data) const {
+        auto *item = createProteinItem(data);
+        ui_storage_.insertProtein(protein_id, item);
         scene_->addItem(item);
         return item;
     }

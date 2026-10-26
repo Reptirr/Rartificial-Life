@@ -14,14 +14,6 @@ std::string Storage::putImpl(std::unordered_map<std::string, T *> &map, T *item)
     return uuid;
 }
 
-template<typename T, typename Self>
-auto & Storage::mapFor(Self &self) {
-    if constexpr (std::is_same_v<T, Neuron>)        return self.neurons_;
-    else if constexpr (std::is_same_v<T, Axon>)     return self.axons_;
-    else if constexpr (std::is_same_v<T, Synaps>)   return self.synapses_;
-    else if constexpr (std::is_same_v<T, Dendrite>) return self.dendrites_;
-    else static_assert(always_false<T>, "Unknown type");
-}
 
 template<typename Map>
 std::string Storage::randomKey(const Map &m) {
@@ -31,13 +23,6 @@ std::string Storage::randomKey(const Map &m) {
     std::uniform_int_distribution<size_t> dist(0, m.size() - 1);
 
     return std::next(m.begin(), dist(rng))->first;
-}
-
-template<typename T>
-T * Storage::get(const std::string &uuid) const {
-    const auto &map = mapFor<T>(*this);
-    auto it = map.find(uuid);
-    return it != map.end() ? it->second : nullptr;
 }
 
 template<typename T>
@@ -89,4 +74,8 @@ BrainComponent * Storage::getBrainComponent(const std::string &uuid) const {
     if (auto *item = get<Synaps>(uuid))   return item;
 
     return nullptr;
+}
+
+std::unordered_map<std::string, Protein *> &Storage::proteins() {
+    return subs_;
 }

@@ -70,4 +70,13 @@ public:
 
         return data;
     }
+
+    std::unique_ptr<Data> convertProtein(const Protein *protein) {
+        auto data = std::make_unique<ProteinData>();
+
+        data->pos = scr(protein->point);
+        data->dist = protein->dist * w;
+
+        return data;
+    }
 };
