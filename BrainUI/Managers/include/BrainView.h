@@ -85,33 +85,33 @@ public:
         ui_timer_.start(16);
     }
 
-    void onNewNeuron(const std::string &neuron_id) {
-        auto *neuron = storage_.get<Neuron>(neuron_id);
-        auto *dendrite = storage_.get<Dendrite>(neuron->getDendrite()); // when there is input neuron it is null
-        auto *axon = storage_.get<Axon>(neuron->getAxon());
+    void onCreate(const std::string &id) {
+        if (auto *neuron = storage_.get<Neuron>(id)) {
+            // тут особый случай: надо заявить еще и аксон с дендритом(если не инпут)
+            auto *dendrite = storage_.get<Dendrite>(neuron->getDendrite()); // when there is input neuron it is null
+            auto *axon = storage_.get<Axon>(neuron->getAxon());
 
-        qDebug() << "handle new neuron: " << toString(neuron->getType());
-
-        batcher_.onCreate(
-            neuron_id,
-            mapper_.convertNeuron(neuron)
-        );
-        if (neuron->getType() != NeuronType::INPUT) { // because input neuron does not have dendrite
             batcher_.onCreate(
-                neuron->getDendrite(),
-                mapper_.convertDendrite(dendrite)
+                id,
+                mapper_.convertNeuron(neuron)
             );
+            if (neuron->getType() != NeuronType::INPUT) { // because input neuron does not have dendrite
+                batcher_.onCreate(
+                    neuron->getDendrite(),
+                    mapper_.convertDendrite(dendrite)
+                );
+            }
+            batcher_.onCreate(
+                neuron->getAxon(),
+                mapper_.convertAxon(axon)
+            );
+        } else if (auto *synaps = storage_.get<Synaps>(id)) {
+            batcher_.onCreate(id, mapper_.convertSynaps(synaps));
+        } else if (auto *protein = storage_.get<Protein>(id)) {
+            batcher_.onCreate(id, mapper_.convertProtein(protein));
+        } else {
+            my_assert(false);
         }
-        batcher_.onCreate(
-            neuron->getAxon(),
-            mapper_.convertAxon(axon)
-        );
-    }
-
-    void onNewSynaps(const std::string &synaps_id) {
-        auto *synaps = storage_.get<Synaps>(synaps_id);
-
-        batcher_.onCreate(synaps_id, mapper_.convertSynaps(synaps));
     }
 
     void onUpdate(const std::string &id) {
@@ -125,6 +125,8 @@ public:
             data = mapper_.convertDendrite(dendrite);
         } else if (auto *synaps = storage_.get<Synaps>(id)) {
             data = mapper_.convertSynaps(synaps);
+        } else if (auto *protein = storage_.get<Protein>(id)) {
+            data = mapper_.convertProtein(protein);
         } else {
             // fallback
             return;

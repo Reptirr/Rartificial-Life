@@ -2,6 +2,7 @@
 #include <UIDatas.h>
 #include <unordered_map>
 
+class ProteinItem;
 class UIComponent;
 class NeuronItem;
 class DendriteItem;
@@ -13,6 +14,8 @@ class UIStorage {
     std::unordered_map<std::string, NeuronItem *> neurons_;
     std::unordered_map<std::string, AxonItem *> axons_;
     std::unordered_map<std::string, SynapsItem *> synapses_;
+
+    std::unordered_map<std::string, ProteinItem *> proteins_;
 
     template <typename Map>
     static UIComponent *find(const Map &map, const std::string &id) {
@@ -32,6 +35,9 @@ public:
     SynapsItem *getSynaps(const std::string &synapse_id) const {
         return synapses_.at(synapse_id);
     }
+    ProteinItem *getProtein(const std::string &id) const {
+        return proteins_.at(id);
+    }
 
     DendriteItem *insertDendrite(const std::string &dendrite_id, DendriteItem *dendrite) {
         dendrites_.insert_or_assign(dendrite_id, dendrite);
@@ -48,6 +54,10 @@ public:
     SynapsItem *insertSynaps(const std::string &synapse_id, SynapsItem *synapse) {
         synapses_.insert_or_assign(synapse_id, synapse);
         return synapse;
+    }
+    ProteinItem *insertProtein(const std::string &id, ProteinItem *item) {
+        proteins_.insert_or_assign(id, item);
+        return item;
     }
 
     const std::unordered_map<std::string, DendriteItem *> &getDendrites() const {
@@ -68,6 +78,7 @@ public:
         if (auto *c = find(dendrites_, id)) return c;
         if (auto *c = find(axons_, id)) return c;
         if (auto *c = find(synapses_, id)) return c;
+        if (auto *c = find(proteins_, id)) return c;
         return nullptr;
     }
 };

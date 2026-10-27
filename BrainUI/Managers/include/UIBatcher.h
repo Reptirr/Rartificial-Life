@@ -64,6 +64,8 @@ public:
                 controller_.newAxon(id, *axon);
             } else if (const auto synapse = dynamic_cast<SynapsData*>(d)) {
                 controller_.newSynaps(id, *synapse);
+            } else if (const auto protein = dynamic_cast<ProteinData*>(d)) {
+                controller_.newProtein(id, *protein);
             } else {
                 my_assert(false);
             }

@@ -46,6 +46,7 @@ public:
     }
 
     void pushPlan(int inTact, Command cmd) {
+        if (inTact == 0) return;
         plan_commands_.push_back(PlanCommand{cmd, inTact});
     }
 

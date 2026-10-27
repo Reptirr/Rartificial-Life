@@ -28,7 +28,7 @@ add_executable(Rartificial_Life
         Brain/Managers/include/Controller.h
         Brain/Managers/src/Controller.cpp
         Brain/Managers/include/BrainMap.h
-        Brain/Components/include/ComponentTypes.h
+        Brain/Model/include/ComponentTypes.h
         Brain/Managers/src/BrainMap.cpp
         Brain/Utils/include/BrainPoint.h
         Brain/Managers/include/BrainAnalyzer.h
@@ -48,9 +48,13 @@ add_executable(Rartificial_Life
         Brain/Utils/include/typedefs.h
         BrainUI/Managers/include/UIBatcher.h
         GeneralUI/include/MainWindow.h
-        Brain/Components/include/NeuronType.h
+        Brain/Model/include/NeuronType.h
         Brain/Managers/src/Storage.cpp
         Agent/include/Agent.h
+        Brain/Managers/include/SubMap.h
+        Brain/Model/include/Genome.h
+        BrainUI/Components/include/ProteinItem.h
+        Brain/Model/include/Gen.h
 )
 
 target_link_libraries(Rartificial_Life PRIVATE Qt6::Widgets)
@@ -60,6 +64,7 @@ include_directories(Rartificial_Life
 
         Brain/Components/include
         Brain/Managers/include
+        Brain/Model/include
         Brain/Utils/include
 
         BrainUI/Managers/include

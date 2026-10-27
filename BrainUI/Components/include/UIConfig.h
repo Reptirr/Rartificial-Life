@@ -15,4 +15,5 @@ struct UIConfig {
     static constexpr qreal neuron_z = 1;
     static constexpr qreal dendrite_z = -1;
     static constexpr qreal axon_z = 0;
+    static constexpr qreal protein_z = -2;
 };

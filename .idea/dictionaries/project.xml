@@ -2,11 +2,18 @@
   <dictionary name="project">
     <words>
       <w>Dendrit</w>
+      <w>GENNAME</w>
       <w>acson</w>
       <w>creatings</w>
       <w>dendrit</w>
+      <w>dscr</w>
       <w>freqs</w>
+      <w>genblock</w>
+      <w>genblocks</w>
+      <w>iscr</w>
       <w>sinapses</w>
+      <w>генблоки</w>
+      <w>сабов</w>
     </words>
   </dictionary>
 </component>

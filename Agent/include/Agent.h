@@ -35,20 +35,18 @@ class Agent {
     }
 
 public:
-    explicit Agent() {
-
-    }
-
-    void createCommonNeurons(int num) {
-        brain_.init(num);
+    void init(const Genome &genome, int numOfInitNeurons) {
+        brain_.init(genome, numOfInitNeurons);
     }
 
     void tact() {
         // input neuron spike
         for (auto& [id, counter] : input_counters) {
-            if (counter > 0 && ++counter >= input_freqs.at(id)) {
+            const int freq = input_freqs.at(id);
+            if (freq == 0) continue;
+            if (++counter >= freq) {
                 brain_.getStorage().get<Neuron>(id)->manualSpike();
-                counter = 1;
+                counter = 0;
             }
         }
 
