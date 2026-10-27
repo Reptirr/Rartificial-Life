@@ -18,6 +18,8 @@ public:
         : Executable(executor), neuron_(std::move(neuron)) {
     }
 
+    void handleProtein(const SubMap &sub_map, const Genome &genome) override {}
+
     void addSignal(std::string val) {
         executor_->push(Command{
             .type = NEURON_GET_SIGNAL,

@@ -153,11 +153,10 @@ unsigned int Executor::tact() {
 
     // чекаем планы
     for (auto it = plan_commands_.begin(); it != plan_commands_.end(); ) {
-        if (it->inTact <= 0) {
+        if (--it->inTact <= 0) {
             dirties_.push(it->cmd);
-            it = plan_commands_.erase(it);  // erase возвращает следующий элемент
+            it = plan_commands_.erase(it);
         } else {
-            it->inTact--;
             ++it;
         }
     }

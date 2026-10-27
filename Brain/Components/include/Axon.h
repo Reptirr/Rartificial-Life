@@ -33,9 +33,16 @@ class Axon : public Executable, public BrainComponent {
     std::vector<AxonNode> nodes_{};
     int current_active_node_i{0};
     bool is_growing{};
-    double angle{};
+
     double step{0.09};
+    double angle{};
+    double angle_deviation{};
+    double default_step{};
+    double step_deviation{};
+    double search_dendrite_r{};
     int max_nodes = 200;
+
+
 
     static BrainPoint moveByAzimuth(const BrainPoint p, const double azimuth, const double length) {
         return { p.x + length * std::sin(azimuth),
@@ -57,6 +64,27 @@ protected:
 public:
     explicit Axon(Executor *executor, std::string neuron) : Executable(executor), neuron_(std::move(neuron)) {
 
+    }
+
+    void handleProtein(const SubMap &sub_map, const Genome &genome) override {
+        const auto proteins = sub_map.subsAtPoint(point_);
+
+        GenBlock genblock;
+        if (proteins.size() == 0) {
+            genblock = genome.genblocks.at(0);
+        } else {
+            genblock = genome.genblocks.at(proteins.at(0)->genblock_i);
+        }
+
+        auto dscr = [&](std::string s) {
+              return std::stod(genblock.at(s));
+        };
+
+        angle_deviation = dscr(Gen::AXON_ANGLE_DEVIATION);
+        default_step = dscr(Gen::AXON_DEFAULT_STEP);
+        step_deviation = dscr(Gen::AXON_STEP_DEVIATION);
+        search_dendrite_r = dscr(Gen::AXON_SEARCH_DENDRITE_R);
+        max_nodes = dscr(Gen::AXON_MAX_NODES);
     }
 
     void addSynaps(const std::string& synaps, int node_i) {
@@ -89,9 +117,12 @@ public:
             static std::random_device rd{};
             static std::mt19937 gen{rd()};
 
-            std::normal_distribution dist{0.0, 0.5};
-            angle += dist(gen);
+            std::normal_distribution angle_dist{0.0, angle_deviation};
+            angle += angle_dist(gen);
             angle = std::remainder(angle, 2.0 * std::numbers::pi);
+
+            std::normal_distribution step_dist{default_step, step_deviation};
+            step = step_dist(gen);
 
             point_ = moveByAzimuth(point_, angle, step);
 
@@ -104,7 +135,7 @@ public:
 
             current_active_node_i++;
 
-            for (auto dendrite_id : brain_map_->searchDendrite(point(), 0.06)) {
+            for (auto dendrite_id : brain_map_->searchDendrite(point(), search_dendrite_r)) {
                 executor_->push({
                     .type = CREATE_SYNAPS,
                     .data = {

@@ -54,6 +54,7 @@ add_executable(Rartificial_Life
         Brain/Managers/include/SubMap.h
         Brain/Model/include/Genome.h
         BrainUI/Components/include/ProteinItem.h
+        Brain/Model/include/Gen.h
 )
 
 target_link_libraries(Rartificial_Life PRIVATE Qt6::Widgets)

@@ -6,10 +6,11 @@ class Controller {
     Storage &storage_;
     Executor &executor_;
     BrainMap &brain_map_;
+    SubMap &sub_map_;
     DataCollector &data_collector_;
 
 public:
-    Controller(Storage &storage, Executor &executor, BrainMap &brain_map, DataCollector &data_collector);
+    Controller(Storage &storage, Executor &executor, BrainMap &brain_map, DataCollector &data_collector, SubMap &sub_map);
 
     std::unordered_map<std::string, std::string> createCommonNeuron();
     std::unordered_map<std::string, std::string> createInputNeuron(BrainPoint point);

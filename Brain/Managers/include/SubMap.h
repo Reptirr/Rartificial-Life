@@ -16,12 +16,12 @@ public:
         : storage_(storage), subs_(storage_.proteins()) {
     }
 
-    std::vector<std::string> subsAtPoint(BrainPoint p) const {
-        std::vector<std::string> res;
+    std::vector<Protein *> subsAtPoint(BrainPoint p) const {
+        std::vector<Protein *> res;
 
         for (auto [id, sub] : subs_) {
             if (dist(sub->point, p) <= sub->dist) {
-                res.push_back(id);
+                res.push_back(sub);
             }
         }
 

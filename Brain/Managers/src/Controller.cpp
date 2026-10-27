@@ -4,8 +4,8 @@
 #include <Neuron.h>
 #include <Synaps.h>
 
-Controller::Controller(Storage &storage, Executor &executor, BrainMap &brain_map, DataCollector &data_collector)
-    : storage_(storage), executor_(executor), brain_map_(brain_map), data_collector_(data_collector) {
+Controller::Controller(Storage &storage, Executor &executor, BrainMap &brain_map, DataCollector &data_collector, SubMap &sub_map)
+    : storage_(storage), executor_(executor), brain_map_(brain_map), sub_map_(sub_map), data_collector_(data_collector) {
 }
 
 std::unordered_map<std::string, std::string> Controller::createCommonNeuron() {
@@ -34,6 +34,9 @@ std::unordered_map<std::string, std::string> Controller::createCommonNeuron() {
     neuron->setInit(neuron_id, brain_map_, &data_collector_);
     axon->setInit(axon_id, brain_map_, &data_collector_);
 
+    neuron->handleProtein(sub_map_, storage_.getGenome());
+    dendrite->handleProtein(sub_map_, storage_.getGenome());
+    axon->handleProtein(sub_map_, storage_.getGenome());
 
     return {
         {"neuron", neuron_id},
@@ -56,6 +59,7 @@ std::string Controller::createSynaps(const std::string &dendrite_id, const std::
     axon->addSynaps(synaps_id, axon_node_from);
     dendrite->addSynaps(synaps_id);
 
+    synaps->handleProtein(sub_map_, storage_.getGenome());
 
     return synaps_id;
 }
@@ -74,6 +78,9 @@ std::unordered_map<std::string, std::string> Controller::createInputNeuron(Brain
     neuron->init(axon_id, "");
 
     axon->setInit(axon_id, brain_map_, &data_collector_);
+
+    neuron->handleProtein(sub_map_, storage_.getGenome());
+    axon->handleProtein(sub_map_, storage_.getGenome());
 
     return {
         {"neuron", neuron_id},
@@ -102,6 +109,10 @@ std::unordered_map<std::string, std::string> Controller::createOutputNeuron(Brai
     neuron->setInit(neuron_id, brain_map_, &data_collector_);
     axon->setInit(axon_id, brain_map_, &data_collector_);
 
+
+    neuron->handleProtein(sub_map_, storage_.getGenome());
+    dendrite->handleProtein(sub_map_, storage_.getGenome());
+    axon->handleProtein(sub_map_, storage_.getGenome());
 
     return {
         {"neuron", neuron_id},

@@ -27,18 +27,19 @@ public:
         brain_->setUpdateCallback([&](const std::string &s) { brain_view_->onUpdate(s); });
 
         worker_thread = std::thread([&] {
-            auto genome = Genome{
+            const auto genome = Genome{
                 .proteins = {
                     {
                         .point = {0, 0},
                         .dist = 0.03,
-                        .genblock_i = 1
+                        .genblock_i = 0
                     }
                 },
                 .genblocks = {
-                        {
-                            {GenNames::NEURON_THRESHOLD, "12"}
-                        }
+                    DefaultGenblock::get,
+                    {
+                        {Gen::SYNAPS_W_INIT, "10"}
+                    }
                 }
             };
 

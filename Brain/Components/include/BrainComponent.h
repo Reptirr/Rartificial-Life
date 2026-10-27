@@ -23,7 +23,7 @@ public:
         onSetThisId();
     }
 
-    virtual void handleProtein(SubMap sub_map, Genome genome) {}
+    virtual void handleProtein(const SubMap &sub_map, const Genome &genome) = 0;
 
     double x() const { return point_.x; }
     double y() const { return point_.y; }

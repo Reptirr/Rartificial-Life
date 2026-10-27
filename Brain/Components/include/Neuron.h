@@ -16,11 +16,13 @@ class Neuron : public Executable, public BrainComponent {
     std::string dendrite_{};
     NeuronType type_{};
 
-    double sum{};
+    // настраиваемые свойства
     double threshold{10};
-
-    bool can_spike{true};
     int refractor_ticks = 5;
+    int random_spike_ticks = 10;
+
+    double sum{};
+    bool can_spike{true};
 
     void spike() {
         if (!can_spike) return;
@@ -53,15 +55,9 @@ class Neuron : public Executable, public BrainComponent {
         }
     }
 
-protected:
-    void onSetThisId() override {
-
-    }
-
 public:
-    explicit Neuron(Executor *executor, NeuronType type)
+    explicit Neuron(Executor *executor, const NeuronType type)
         : Executable(executor), type_(type) {
-
     }
 
     /// use it for neuron creating: first create neuron, after create axon&dendrite, after use that method to finish init
@@ -73,11 +69,7 @@ public:
         my_assert(!this_id_.empty());
 
         if (type_ == NeuronType::COMMON) {
-            static std::random_device rd{};
-            static std::mt19937 gen(rd());
-            static std::uniform_int_distribution dist{0, 25};
-
-            executor_->pushPlan(dist(gen), {
+            executor_->pushPlan(random_spike_ticks, {
                 .type = RANDOM_NEURON_SPIKE,
                 .data = {
                     {"neuron", this_id_}
@@ -86,6 +78,26 @@ public:
         }
 
         data_collector_->onCreate(this_id_);
+    }
+
+    void handleProtein(const SubMap &sub_map, const Genome &genome) override {
+        const auto proteins = sub_map.subsAtPoint(point_);
+
+        GenBlock genblock;
+        if (proteins.size() == 0) {
+            genblock = genome.genblocks.at(0);
+        } else {
+            genblock = genome.genblocks.at(proteins.at(0)->genblock_i);
+        }
+
+        auto dscr = [&](std::string s) {
+            return std::stod(genblock.at(s));
+        };
+
+        threshold = dscr(Gen::NEURON_THRESHOLD);
+        refractor_ticks = dscr(Gen::NEURON_REFRACTOR_TICK);
+        random_spike_ticks = dscr(Gen::NEURON_RANDOM_SPIKE_TICK);
+
     }
 
     void addSignal(const std::string& signal_s) {
@@ -105,18 +117,16 @@ public:
         my_assert(type_ == NeuronType::INPUT);
         spike();
     }
-
     void onRandomSpike() {
         spike();
 
-        executor_->pushPlan(10, {
+        executor_->pushPlan(random_spike_ticks, {
             .type = RANDOM_NEURON_SPIKE,
             .data = {
                 {"neuron", this_id_}
             }
         });
     }
-
     void refractorReset() {
         can_spike = true;
     }
