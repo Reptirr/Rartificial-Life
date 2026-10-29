@@ -22,9 +22,7 @@ public:
 
         setFixedSize(w, h);
 
-        // connect logic with ui
-        brain_->setCreateCallback([&](const std::string &s) { brain_view_->onCreate(s); });
-        brain_->setUpdateCallback([&](const std::string &s) { brain_view_->onUpdate(s); });
+        brain_view_->connectWithBrain(brain_);
 
         worker_thread = std::thread([&] {
             const auto genome = Genome{
@@ -43,24 +41,24 @@ public:
                 }
             };
 
-            agent_.init(genome, 0);
+            agent_.init(genome, 1000);
 
             BrainPoint input_p{-0.4, -0.4};
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 800; i++) {
                 agent_.createInputNeuron(input_p, 0.5);
 
-                input_p += BrainPoint{0.0, 0.03};
+                input_p += BrainPoint{0.0, 0.0003};
             }
 
             BrainPoint output_p{0.4, 0.4};
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 50; i++) {
                 agent_.createOutputNeuron(output_p);
 
-                output_p += BrainPoint{0.0, 0.03};
+                output_p += BrainPoint{0.0, 0.0003};
             }
 
             // set tps to 100
-            auto step = std::chrono::milliseconds(10);
+            const auto step = std::chrono::milliseconds(10);
             auto next = std::chrono::steady_clock::now();
 
             while (true) {

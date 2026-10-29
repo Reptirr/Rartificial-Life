@@ -17,6 +17,7 @@ class BrainView : public QGraphicsView {
     UIController controller_{ui_storage_, scene_};
     UIBatcher batcher_{controller_, ui_storage_};
     UIMapper mapper_;
+    Brain *brain_{};
 
     QThread ui_thread;
     QTimer ui_timer_;
@@ -85,6 +86,13 @@ public:
         ui_timer_.start(16);
     }
 
+    void connectWithBrain(Brain *brain) {
+        brain_ = brain;
+
+        brain->setCreateCallback([&](const std::string &s) { this->onCreate(s); });
+        brain->setUpdateCallback([&](const std::string &s) { this->onUpdate(s); });
+    }
+
     void onCreate(const std::string &id) {
         if (auto *neuron = storage_.get<Neuron>(id)) {
             // тут особый случай: надо заявить еще и аксон с дендритом(если не инпут)
@@ -133,5 +141,10 @@ public:
         }
 
         batcher_.onUpdate(id, std::move(data));
+    }
+
+    ~BrainView() override {
+        if (brain_)
+            brain_->resetCallbacks();
     }
 };

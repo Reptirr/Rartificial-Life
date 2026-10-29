@@ -41,6 +41,10 @@ public:
     void setUpdateCallback(const StringConsumer &cons) {
         data_collector_.setUpdateConsumer(cons);
     }
+    void resetCallbacks() {
+        data_collector_.resetConsumers();
+    }
+
     Storage &getStorage() {
         return storage_;
     }

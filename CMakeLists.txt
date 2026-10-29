@@ -9,6 +9,20 @@ set(CMAKE_AUTORCC ON)   # rcc: для .qrc ресурсов
 
 find_package(Qt6 REQUIRED Widgets)
 
+# box2d
+include(FetchContent)
+
+set(BOX2D_SAMPLES OFF CACHE BOOL "" FORCE)
+set(BOX2D_UNIT_TESTS OFF CACHE BOOL "" FORCE)
+set(BOX2D_DOCS OFF CACHE BOOL "" FORCE)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+
+FetchContent_Declare(
+        box2d
+        GIT_REPOSITORY https://github.com/erincatto/box2d.git
+        GIT_TAG v3.2.0
+)
+FetchContent_MakeAvailable(box2d)
 
 add_executable(Rartificial_Life
         main.cpp
@@ -55,12 +69,25 @@ add_executable(Rartificial_Life
         Brain/Model/include/Genome.h
         BrainUI/Components/include/ProteinItem.h
         Brain/Model/include/Gen.h
+        World/Managers/include/WorldStorage.h
+        World/Components/include/WorldObject.h
+        World/Components/include/AgentBody.h
+        World/Managers/include/WorldController.h
+        World/Components/include/WorldEntity.h
+        World/Managers/include/World.h
+        World/Managers/src/WorldController.cpp
+        World/Managers/include/SenseGetter.h
+        World/Managers/src/SenseGetter.cpp
 )
 
-target_link_libraries(Rartificial_Life PRIVATE Qt6::Widgets)
+target_link_libraries(Rartificial_Life PRIVATE
+        Qt6::Widgets
+        box2d
+)
 
 include_directories(Rartificial_Life
         ${CMAKE_SOURCE_DIR}
+        ${box2d_SOURCE_DIR}/include
 
         Brain/Components/include
         Brain/Managers/include
@@ -71,9 +98,12 @@ include_directories(Rartificial_Life
         BrainUI/Components/include
         BrainUI/Utils/include
 
+        World/Components/include
+        World/Managers/include
+
         GeneralUI/include
 )
 
 target_compile_definitions(Rartificial_Life PRIVATE
-#    BRAIN_DEBUG
+    BRAIN_DEBUG
 )

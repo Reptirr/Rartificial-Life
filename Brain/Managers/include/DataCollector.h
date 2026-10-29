@@ -29,4 +29,9 @@ public:
     void setUpdateConsumer(const StringConsumer &cons) {
         updateConsumer = cons;
     }
+
+    void resetConsumers() {
+        createConsumer = nullptr;
+        updateConsumer = nullptr;
+    }
 };
