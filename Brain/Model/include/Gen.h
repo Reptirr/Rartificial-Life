@@ -42,7 +42,7 @@ struct DefaultGenblock {
         {Gen::AXON_DEFAULT_STEP,        "0.07"},  // шаг роста по плоскости -1..1
         {Gen::AXON_STEP_DEVIATION,      "0.005"}, // разброс длины шага
         {Gen::AXON_SEARCH_DENDRITE_R,   "0.03"},  // радиус поиска дендрита
-        {Gen::AXON_MAX_NODES,           "200"},   // потолок длины аксона
+        {Gen::AXON_MAX_NODES,           "50"},   // потолок длины аксона
 
         // synaps
         {Gen::SYNAPS_W_REDUCE_LR,       "0.01"},

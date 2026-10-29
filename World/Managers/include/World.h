@@ -7,7 +7,6 @@ class World {
     std::unique_ptr<WorldStorage> storage_;
     std::unique_ptr<WorldController> controller_;
 
-
 public:
     World() {
         auto wd = b2DefaultWorldDef();
@@ -16,11 +15,14 @@ public:
 
         storage_ = std::make_unique<WorldStorage>(world_id);
         controller_ = std::make_unique<WorldController>(*storage_);
-
     }
 
-    std::string addAgentBody(QPointF pos) const {
-        return controller_->addAgentBody(pos);
+    void tact(const double dt) {
+        b2World_Step(storage_->getWorldId(), dt, 2);
+    }
+
+    std::string addAgentBody(QPointF pos, int rays) const {
+        return controller_->addAgentBody(pos, rays);
     }
 
     std::string addObstacle(QPointF pos) const {

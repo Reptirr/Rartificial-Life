@@ -3,11 +3,11 @@
 #include <Command.h>
 #include <Executable.h>
 #include <Executor.h>
-#include <../../Model/include/NeuronType.h>
-#include <random>
+#include <NeuronType.h>
 #include <string>
+#include <QColor>
 
-#include "../../../my_assert.h"
+#include <my_assert.h>
 
 class Axon;
 
@@ -23,6 +23,9 @@ class Neuron : public Executable, public BrainComponent {
 
     double sum{};
     bool can_spike{true};
+
+    // only for input type
+    QColor color_;
 
     void spike() {
         if (!can_spike) return;
@@ -129,6 +132,17 @@ public:
     }
     void refractorReset() {
         can_spike = true;
+    }
+
+    // only for input type
+    void setColor(const QColor color) {
+        if (color_ != color) {
+            color_ = color;
+            data_collector_->onUpdate(this_id_);
+        }
+    }
+    QColor getColor() {
+        return color_;
     }
 
     // getters

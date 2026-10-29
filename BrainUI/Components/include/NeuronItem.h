@@ -50,7 +50,7 @@ public:
                 symbol = "C";
                 break;
             case NeuronType::INPUT:
-                symbol = "I";
+                symbol = "";
                 break;
             case NeuronType::OUTPUT:
                 symbol = "O";
@@ -60,5 +60,19 @@ public:
         symbol += "\nS: " + QString::number(data_.signal, 'f', 2);
 
         painter->drawText(boundingRect(), Qt::AlignCenter | Qt::TextWordWrap, symbol);
+
+        if (data_.type == NeuronType::INPUT) {
+            // рисуем квадратик цвета
+            painter->setPen(Qt::NoPen);
+            painter->setBrush(data_.color);
+            painter->drawRect(
+                QRectF{
+                    boundingRect().center().x()-UIConfig::neuron_type_font_size/2,
+                    boundingRect().center().y()-UIConfig::neuron_type_font_size/2,
+                    UIConfig::neuron_type_font_size,
+                    UIConfig::neuron_type_font_size
+                }
+            );
+        }
     }
 };

@@ -78,6 +78,9 @@ add_executable(Rartificial_Life
         World/Managers/src/WorldController.cpp
         World/Managers/include/SenseGetter.h
         World/Managers/src/SenseGetter.cpp
+        WorldUI/Managers/include/WorldView.h
+        WorldUI/Managers/include/QtDebugDraw.h
+        World/Managers/include/MoveController.h
 )
 
 target_link_libraries(Rartificial_Life PRIVATE
@@ -98,8 +101,12 @@ include_directories(Rartificial_Life
         BrainUI/Components/include
         BrainUI/Utils/include
 
+        Agent/include
+
         World/Components/include
         World/Managers/include
+
+        WorldUI/Managers/include
 
         GeneralUI/include
 )
