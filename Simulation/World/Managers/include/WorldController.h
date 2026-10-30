@@ -16,7 +16,7 @@ public:
     }
 
     // with storage work
-    std::string addAgentBody(QPointF pos, int rays) const;
+    std::string addAgentBody(QPointF pos, int rays, double fov) const;
 
-    std::string addObstacle(QPointF) const;
+    std::string addObstacle(QPointF, QRectF rect) const;
 };

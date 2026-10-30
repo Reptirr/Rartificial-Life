@@ -1,82 +1,67 @@
 #pragma once
 
-#include <Brain.h>
 #include <BrainView.h>
+#include <QHBoxLayout>
 #include <QMainWindow>
-#include <World.h>
+#include <Simulation.h>
 #include <WorldView.h>
-#include <Agent/include/Agent.h>
 
 class MainWindow : public QMainWindow {
-    Agent *agent_;
-    Brain *brain_;
+    std::unique_ptr<Simulation> simulation_;
+
     BrainView *brain_view_;
-
-    World *world_;
     WorldView *world_view_;
-
-    std::thread worker_thread;
-
-    Genome genome = {
-        .proteins = {
-            {
-                .point = {0, 0},
-                .dist = 0.03,
-                .genblock_i = 0
-            }
-        },
-        .genblocks = {
-            DefaultGenblock::get,
-            {
-                                {Gen::SYNAPS_W_INIT, "10"}
-            }
-        }
-    };
-
-    AgentConfig conf = {
-        .genome = genome,
-        .eyes = 1,
-        .pixels_in_eye = 12,
-        .first_input_neuron_pos = {.x = -0.8, .y = -0.95},
-        .space_between_input_neurons_ = {0.00, 0.04}
-    };
 
     int w = 1000;
     int h = 1000;
 
 public:
     MainWindow() {
-        world_ = new World();
-        world_view_ = new WorldView(world_->getStorage()->getWorldId());
+        // logic
+        int num_vision_pixels = 32;
+
+        std::vector<BrainPoint> vision_points;
+
+        BrainPoint p{.x = -0.95, .y = -0.95};
+        double step = 0.95*2 / (num_vision_pixels*3);
+        for (int i = 0; i < num_vision_pixels*3; i++) {
+            vision_points.push_back(p);
+            p += {.y = step};
+        }
+
+        // defs
+        auto agent_def = AgentDef{
+            .num_of_common_neurons = 10,
+            .pixels = num_vision_pixels,
+            .fov = std::numbers::pi, // 180
+            .vision_neurons = vision_points
+        };
+        auto obstacle_def = ObstacleDef{
+            .point = {10, 10},
+            .rect = {0, 0, 4, 4}
+        };
+        auto sim_def = SimulationDef{
+            .init_agents = {agent_def},
+            .obstacles = {obstacle_def},
+            .need_tps = 100
+        };
+
+        simulation_ = std::make_unique<Simulation>(sim_def);
+
+        // ui
+        brain_view_ = new BrainView(nullptr, w, h);
+        brain_view_->connectWithBrain(simulation_->getAgents().begin()->second->getBrain());
+        brain_view_->setBaseSize(1000, 1000);
+
+        world_view_ = new WorldView(simulation_->getWorld()->getStorage()->getWorldId());
+        setCentralWidget(world_view_);
+
+        // auto *main_lay = new QHBoxLayout(this);
+        // main_lay->addWidget(brain_view_);
+        // main_lay->addWidget(world_view_);
 
 
-        const auto agent_id = world_->addAgentBody({}, conf.pixels_in_eye);
-
-        agent_ = new Agent(world_->getStorage()->getAgentBody(agent_id));
-
-        brain_ = agent_->getBrain();
-        brain_view_ = new BrainView(this, brain_->getStorage(), w, h);
-
-        setFixedSize(w, h);
-
-        brain_view_->connectWithBrain(brain_);
-
-        worker_thread = std::thread([&] {
-            agent_->init(conf, 10);
-
-            // set tps to 100
-            const auto step = std::chrono::milliseconds(10);
-            auto next = std::chrono::steady_clock::now();
-
-            while (true) {
-                agent_->resolveSensors();
-                agent_->tact();
-                world_->tact(0.005); // 5мс
-
-                next += step;
-                std::this_thread::sleep_until(next);
-            }
-        });
+        simulation_->start();
     }
 
 

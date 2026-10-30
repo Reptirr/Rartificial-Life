@@ -17,16 +17,16 @@ public:
         controller_ = std::make_unique<WorldController>(*storage_);
     }
 
-    void tact(const double dt) {
+    void tick(const double dt) {
         b2World_Step(storage_->getWorldId(), dt, 2);
     }
 
-    std::string addAgentBody(QPointF pos, int rays) const {
-        return controller_->addAgentBody(pos, rays);
+    std::string addAgentBody(QPointF pos, int rays, double fov) const {
+        return controller_->addAgentBody(pos, rays, fov);
     }
 
-    std::string addObstacle(QPointF pos) const {
-        return controller_->addObstacle(pos);
+    std::string addObstacle(QPointF pos, QRectF rect) const {
+        return controller_->addObstacle(pos, rect);
     }
 
     const WorldStorage *getStorage() const {

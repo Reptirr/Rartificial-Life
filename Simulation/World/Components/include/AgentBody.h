@@ -8,11 +8,11 @@ class AgentBody : public WorldEntity {
 
     std::vector<QPointF> eyes = {{}};
     double angle{};
-    double fov{std::numbers::pi}; // 180 градусов
+    double fov_{std::numbers::pi}; // 180 градусов
     int rays_{};
 
 public:
-    explicit AgentBody(const int rays) : rays_(rays) {
+    explicit AgentBody(const int rays, double fov) : rays_(rays), fov_(fov) {
 
     }
 
@@ -20,7 +20,7 @@ public:
         return sense_getter_->getVision(
             eyes[eye_i],
             angle,
-            fov,
+            fov_,
             rays_,
             100,
             QColorConstants::Cyan,

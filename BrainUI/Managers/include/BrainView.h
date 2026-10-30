@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Brain.h>
 #include <Dendrite.h>
 #include <QGraphicsView>
 #include <Storage.h>
@@ -12,7 +13,7 @@
 
 class BrainView : public QGraphicsView {
     QGraphicsScene *scene_ = new QGraphicsScene(this);
-    Storage &storage_;
+    Storage *storage_;
     UIStorage ui_storage_{};
     UIController controller_{ui_storage_, scene_};
     UIBatcher batcher_{controller_, ui_storage_};
@@ -61,9 +62,8 @@ protected:
     }
 
 public:
-    BrainView(QWidget *parent, Storage &storage, int w, int h)
-        : QGraphicsView(parent),
-          storage_(storage), mapper_(w, h) {
+    BrainView(QWidget *parent, int w, int h)
+        : QGraphicsView(parent), mapper_(w, h) {
         setRenderHints(QPainter::Antialiasing);
         setTransformationAnchor(AnchorUnderMouse);
         setResizeAnchor(AnchorViewCenter);
@@ -88,16 +88,17 @@ public:
 
     void connectWithBrain(Brain *brain) {
         brain_ = brain;
+        storage_ = &brain_->getStorage();
 
         brain->setCreateCallback([&](const std::string &s) { this->onCreate(s); });
         brain->setUpdateCallback([&](const std::string &s) { this->onUpdate(s); });
     }
 
     void onCreate(const std::string &id) {
-        if (auto *neuron = storage_.get<Neuron>(id)) {
+        if (auto *neuron = storage_->get<Neuron>(id)) {
             // тут особый случай: надо заявить еще и аксон с дендритом(если не инпут)
-            auto *dendrite = storage_.get<Dendrite>(neuron->getDendrite()); // when there is input neuron it is null
-            auto *axon = storage_.get<Axon>(neuron->getAxon());
+            auto *dendrite = storage_->get<Dendrite>(neuron->getDendrite()); // when there is input neuron it is null
+            auto *axon = storage_->get<Axon>(neuron->getAxon());
 
             batcher_.onCreate(
                 id,
@@ -113,9 +114,9 @@ public:
                 neuron->getAxon(),
                 mapper_.convertAxon(axon)
             );
-        } else if (auto *synaps = storage_.get<Synaps>(id)) {
+        } else if (auto *synaps = storage_->get<Synaps>(id)) {
             batcher_.onCreate(id, mapper_.convertSynaps(synaps));
-        } else if (auto *protein = storage_.get<Protein>(id)) {
+        } else if (auto *protein = storage_->get<Protein>(id)) {
             batcher_.onCreate(id, mapper_.convertProtein(protein));
         } else {
             my_assert(false);
@@ -125,15 +126,15 @@ public:
     void onUpdate(const std::string &id) {
         std::unique_ptr<Data> data;
 
-        if (auto *neuron = storage_.get<Neuron>(id)) {
+        if (auto *neuron = storage_->get<Neuron>(id)) {
             data = mapper_.convertNeuron(neuron);
-        } else if (auto *axon = storage_.get<Axon>(id)) {
+        } else if (auto *axon = storage_->get<Axon>(id)) {
             data = mapper_.convertAxon(axon);
-        } else if (auto *dendrite = storage_.get<Dendrite>(id)) {
+        } else if (auto *dendrite = storage_->get<Dendrite>(id)) {
             data = mapper_.convertDendrite(dendrite);
-        } else if (auto *synaps = storage_.get<Synaps>(id)) {
+        } else if (auto *synaps = storage_->get<Synaps>(id)) {
             data = mapper_.convertSynaps(synaps);
-        } else if (auto *protein = storage_.get<Protein>(id)) {
+        } else if (auto *protein = storage_->get<Protein>(id)) {
             data = mapper_.convertProtein(protein);
         } else {
             // fallback

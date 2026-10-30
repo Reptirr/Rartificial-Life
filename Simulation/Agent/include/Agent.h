@@ -1,17 +1,10 @@
 #pragma once
 #include <AgentBody.h>
 #include <Brain.h>
+#include <Model.h>
 #include <my_assert.h>
 #include <Neuron.h>
 
-struct AgentConfig {
-    Genome genome;
-
-    int eyes{};
-    int pixels_in_eye{};
-    BrainPoint first_input_neuron_pos;
-    BrainPoint space_between_input_neurons_;
-};
 
 /*
  * внешка сама создает ему входные/выходные нейроны. и сама их обрабатывает
@@ -31,7 +24,6 @@ class Agent {
     // при изменении частоты, он делает спайк а затем начинает с новой частотой
     std::unordered_map<std::string, int> input_counters;
 
-    AgentConfig conf_{};
 
     // входные нейроны зрения
     std::unordered_set<std::string> input_vision_neurons;
@@ -53,18 +45,13 @@ class Agent {
 public:
     explicit Agent(AgentBody *agent_body) : agent_body_(agent_body) {}
 
-    void init(AgentConfig conf, int numOfInitNeurons) {
-        conf_ = conf;
+    void init(AgentDef conf, int numOfInitNeurons) {
         brain_.init(conf.genome, numOfInitNeurons);
 
-        BrainPoint pos = conf.first_input_neuron_pos;
-
         // создаем входные зрительные нейроны
-        for (auto i = 0; i < conf.eyes * conf.pixels_in_eye * 3; i++) { // 3 цвета
-            auto id = createInputNeuron(pos, 0);
+        for (auto p : conf.vision_neurons) { // 3 цвета
+            auto id = createInputNeuron(p, 0);
             input_vision_neurons.insert(id);
-
-            pos += conf.space_between_input_neurons_;
         }
     }
 
@@ -99,7 +86,7 @@ public:
         }
     }
 
-    void tact() {
+    void tick() {
         // input neuron spike
         for (auto& [id, counter] : input_counters) {
             const int freq = input_freqs.at(id);

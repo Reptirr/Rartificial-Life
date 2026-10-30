@@ -3,7 +3,7 @@
 #include <box2d/types.h>
 #include <box2d/box2d.h>
 
-std::string WorldController::addAgentBody(QPointF pos, int rays) const {
+std::string WorldController::addAgentBody(QPointF pos, int rays, double fov) const {
     auto bd = b2DefaultBodyDef();
     bd.position = {static_cast<float>(pos.x()), static_cast<float>(pos.y())};
     auto body = b2CreateBody(storage_.getWorldId(), &bd);
@@ -15,7 +15,7 @@ std::string WorldController::addAgentBody(QPointF pos, int rays) const {
     auto world_obj = new WorldObject(QColorConstants::White, body);
     auto id = storage_.putObject(world_obj);
 
-    auto agent_body = new AgentBody(rays);
+    auto agent_body = new AgentBody(rays, fov);
     storage_.putAgentBody(agent_body, id);
 
     world_obj->init(id);
@@ -24,13 +24,13 @@ std::string WorldController::addAgentBody(QPointF pos, int rays) const {
     return id;
 }
 
-std::string WorldController::addObstacle(QPointF pos) const {
+std::string WorldController::addObstacle(QPointF pos, QRectF rect) const {
     auto bd = b2DefaultBodyDef();
     bd.position = {static_cast<float>(pos.x()), static_cast<float>(pos.y())};
     auto body = b2CreateBody(storage_.getWorldId(), &bd);
 
     auto sd = b2DefaultShapeDef();
-    auto poly = b2MakeBox(0.5, 0.5);
+    auto poly = b2MakeBox(rect.width()/2, rect.height()/2);
     b2CreatePolygonShape(body, &sd, &poly);
 
     auto obj = new WorldObject(QColorConstants::Black, body);

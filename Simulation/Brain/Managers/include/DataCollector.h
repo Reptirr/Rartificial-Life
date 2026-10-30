@@ -1,5 +1,6 @@
 #pragma once
 #include <my_assert.h>
+#include <set>
 #include <typedefs.h>
 
 
@@ -9,9 +10,16 @@ class DataCollector {
     StringConsumer createConsumer;
     StringConsumer updateConsumer;
 
+    // при изменении консьюмера, говорим ему о том что у нас есть
+    mutable std::vector<std::string> creates_;
+    std::mutex mtx_;
+
 public:
     // events
-    void onCreate(const std::string &id) const {
+    void onCreate(const std::string &id) {
+        std::lock_guard lock(mtx_);
+        creates_.push_back(id);
+
         if (createConsumer)
             createConsumer(id);
     }
@@ -23,7 +31,12 @@ public:
 
     // setters
     void setCreateConsumer(const StringConsumer &cons) {
+        std::lock_guard lock(mtx_);
         createConsumer = cons;
+
+        for (const auto id : creates_) {
+            createConsumer(id);
+        }
     }
 
     void setUpdateConsumer(const StringConsumer &cons) {

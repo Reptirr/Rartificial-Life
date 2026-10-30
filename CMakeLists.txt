@@ -26,26 +26,26 @@ FetchContent_MakeAvailable(box2d)
 
 add_executable(Rartificial_Life
         main.cpp
-        Brain/Components/include/Neuron.h
-        Brain/Components/include/Axon.h
-        Brain/Components/include/Synaps.h
-        Brain/Components/include/Dendrite.h
-        "Brain/Managers/include/Executor.h"
-        Brain/Managers/include/Executable.h
-        Brain/Managers/include/Storage.h
-        Brain/Utils/include/UUIDGenerator.h
-        Brain/Managers/include/Command.h
-        Brain/Managers/src/Executor.cpp
-        Brain/Managers/include/Brain.h
-        Brain/Components/include/BrainComponent.h
+        Simulation/Brain/Components/include/Neuron.h
+        Simulation/Brain/Components/include/Axon.h
+        Simulation/Brain/Components/include/Synaps.h
+        Simulation/Brain/Components/include/Dendrite.h
+        "Simulation/Brain/Managers/include/Executor.h"
+        Simulation/Brain/Managers/include/Executable.h
+        Simulation/Brain/Managers/include/Storage.h
+        Simulation/Brain/Utils/include/UUIDGenerator.h
+        Simulation/Brain/Managers/include/Command.h
+        Simulation/Brain/Managers/src/Executor.cpp
+        Simulation/Brain/Managers/include/Brain.h
+        Simulation/Brain/Components/include/BrainComponent.h
         my_assert.h
-        Brain/Managers/include/Controller.h
-        Brain/Managers/src/Controller.cpp
-        Brain/Managers/include/BrainMap.h
-        Brain/Model/include/ComponentTypes.h
-        Brain/Managers/src/BrainMap.cpp
-        Brain/Utils/include/BrainPoint.h
-        Brain/Managers/include/BrainAnalyzer.h
+        Simulation/Brain/Managers/include/Controller.h
+        Simulation/Brain/Managers/src/Controller.cpp
+        Simulation/Brain/Managers/include/BrainMap.h
+        Simulation/Brain/Model/include/ComponentTypes.h
+        Simulation/Brain/Managers/src/BrainMap.cpp
+        Simulation/Brain/Utils/include/BrainPoint.h
+        Simulation/Brain/Managers/include/BrainAnalyzer.h
         BrainUI/Managers/include/BrainView.h
         BrainUI/Components/include/NeuronItem.h
         BrainUI/Components/include/UIConfig.h
@@ -58,29 +58,31 @@ add_executable(Rartificial_Life
         BrainUI/Components/include/UIDatas.h
         BrainUI/Utils/include/SceneUtils.h
         BrainUI/Managers/include/UIMapper.h
-        Brain/Managers/include/DataCollector.h
-        Brain/Utils/include/typedefs.h
+        Simulation/Brain/Managers/include/DataCollector.h
+        Simulation/Brain/Utils/include/typedefs.h
         BrainUI/Managers/include/UIBatcher.h
         GeneralUI/include/MainWindow.h
-        Brain/Model/include/NeuronType.h
-        Brain/Managers/src/Storage.cpp
-        Agent/include/Agent.h
-        Brain/Managers/include/SubMap.h
-        Brain/Model/include/Genome.h
+        Simulation/Brain/Model/include/NeuronType.h
+        Simulation/Brain/Managers/src/Storage.cpp
+        Simulation/Agent/include/Agent.h
+        Simulation/Brain/Managers/include/SubMap.h
+        Simulation/Brain/Model/include/Genome.h
         BrainUI/Components/include/ProteinItem.h
-        Brain/Model/include/Gen.h
-        World/Managers/include/WorldStorage.h
-        World/Components/include/WorldObject.h
-        World/Components/include/AgentBody.h
-        World/Managers/include/WorldController.h
-        World/Components/include/WorldEntity.h
-        World/Managers/include/World.h
-        World/Managers/src/WorldController.cpp
-        World/Managers/include/SenseGetter.h
-        World/Managers/src/SenseGetter.cpp
+        Simulation/Brain/Model/include/Gen.h
+        Simulation/World/Managers/include/WorldStorage.h
+        Simulation/World/Components/include/WorldObject.h
+        Simulation/World/Components/include/AgentBody.h
+        Simulation/World/Managers/include/WorldController.h
+        Simulation/World/Components/include/WorldEntity.h
+        Simulation/World/Managers/include/World.h
+        Simulation/World/Managers/src/WorldController.cpp
+        Simulation/World/Managers/include/SenseGetter.h
+        Simulation/World/Managers/src/SenseGetter.cpp
         WorldUI/Managers/include/WorldView.h
         WorldUI/Managers/include/QtDebugDraw.h
-        World/Managers/include/MoveController.h
+        Simulation/World/Managers/include/MoveController.h
+        Simulation/include/Simulation.h
+        Simulation/include/Model.h
 )
 
 target_link_libraries(Rartificial_Life PRIVATE
@@ -92,19 +94,21 @@ include_directories(Rartificial_Life
         ${CMAKE_SOURCE_DIR}
         ${box2d_SOURCE_DIR}/include
 
-        Brain/Components/include
-        Brain/Managers/include
-        Brain/Model/include
-        Brain/Utils/include
+        Simulation/Brain/Components/include
+        Simulation/Brain/Managers/include
+        Simulation/Brain/Model/include
+        Simulation/Brain/Utils/include
 
         BrainUI/Managers/include
         BrainUI/Components/include
         BrainUI/Utils/include
 
-        Agent/include
+        Simulation/Agent/include
 
-        World/Components/include
-        World/Managers/include
+        Simulation/World/Components/include
+        Simulation/World/Managers/include
+
+        Simulation/include
 
         WorldUI/Managers/include
 
