@@ -58,7 +58,8 @@ public:
         brain_view_ = new BrainView(nullptr, w, h);
         brain_view_->connectWithBrain(simulation_->getAgents().begin()->second->getBrain());
 
-        world_view_ = new WorldView(simulation_->getWorld()->getStorage()->getWorldId());
+        world_view_ = new WorldView(this);
+        world_view_->connectWorld(simulation_->getWorld());
 
         auto *splitter = new QSplitter(this);
         setCentralWidget(splitter);

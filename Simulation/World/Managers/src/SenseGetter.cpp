@@ -1,5 +1,6 @@
 #include <my_assert.h>
 #include <qcolor.h>
+#include <QPolygonF>
 #include <SenseGetter.h>
 #include <box2d/box2d.h>
 

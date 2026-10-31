@@ -2,6 +2,7 @@
 #include <qline.h>
 #include <WorldStorage.h>
 
+class QPolygonF;
 class QColor;
 
 class SenseGetter {

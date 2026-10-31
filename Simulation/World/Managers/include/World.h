@@ -1,11 +1,13 @@
 #pragma once
 #include <WorldController.h>
+#include <WorldDataCollector.h>
 #include <WorldStorage.h>
 #include <box2d/box2d.h>
 
 class World {
     std::unique_ptr<WorldStorage> storage_;
     std::unique_ptr<WorldController> controller_;
+    WorldDataCollector data_collector_;
 
 public:
     World() {
@@ -14,7 +16,7 @@ public:
         auto world_id = b2CreateWorld(&wd);
 
         storage_ = std::make_unique<WorldStorage>(world_id);
-        controller_ = std::make_unique<WorldController>(*storage_);
+        controller_ = std::make_unique<WorldController>(*storage_, data_collector_);
     }
 
     void tick(const double dt) {
@@ -31,5 +33,13 @@ public:
 
     const WorldStorage *getStorage() const {
         return storage_.get();
+    }
+
+    // data collector
+    void setCreateConsumer(const StringConsumer &cons) {
+        data_collector_.setCreateConsumer(cons);
+    }
+    void setUpdateConsumer(const StringConsumer &cons) {
+        data_collector_.setUpdateConsumer(cons);
     }
 };

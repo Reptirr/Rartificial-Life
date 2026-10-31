@@ -78,12 +78,20 @@ add_executable(Rartificial_Life
         Simulation/World/Managers/src/WorldController.cpp
         Simulation/World/Managers/include/SenseGetter.h
         Simulation/World/Managers/src/SenseGetter.cpp
-        WorldUI/Managers/include/WorldView.h
-        WorldUI/Managers/include/QtDebugDraw.h
         Simulation/World/Managers/include/MoveController.h
         Simulation/include/Simulation.h
         Simulation/include/Model.h
         BrainUI/Utils/include/SizeUtils.h
+        WorldUI/Managers/include/WorldView.h
+        WorldUI/Model/include/WorldUIDatas.h
+        WorldUI/Managers/include/WorldUIMapper.h
+        Simulation/World/Model/include/EntityKind.h
+        WorldUI/Managers/include/WorldUIBatcher.h
+        WorldUI/Managers/include/WorldUIStorage.h
+        WorldUI/Components/include/WorldObjectItem.h
+        WorldUI/Model/include/WorldUIConfig.h
+        WorldUI/Managers/include/WorldUIController.h
+        Simulation/World/Managers/include/WorldDataCollector.h
 )
 
 target_link_libraries(Rartificial_Life PRIVATE
@@ -100,22 +108,25 @@ include_directories(Rartificial_Life
         Simulation/Brain/Model/include
         Simulation/Brain/Utils/include
 
-        BrainUI/Managers/include
-        BrainUI/Components/include
-        BrainUI/Utils/include
-
         Simulation/Agent/include
 
         Simulation/World/Components/include
         Simulation/World/Managers/include
+        Simulation/World/Model/include
 
         Simulation/include
 
+        BrainUI/Managers/include
+        BrainUI/Components/include
+        BrainUI/Utils/include
+
+        WorldUI/Components/include
         WorldUI/Managers/include
+        WorldUI/Model/include
 
         GeneralUI/include
 )
 
 target_compile_definitions(Rartificial_Life PRIVATE
-    BRAIN_DEBUG
+#    BRAIN_DEBUG
 )

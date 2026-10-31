@@ -1,6 +1,5 @@
 #pragma once
-#include <my_assert.h>
-#include <set>
+
 #include <typedefs.h>
 
 
@@ -11,7 +10,7 @@ class DataCollector {
     StringConsumer updateConsumer;
 
     // при изменении консьюмера, говорим ему о том что у нас есть
-    mutable std::vector<std::string> creates_;
+    std::vector<std::string> creates_;
     std::mutex mtx_;
 
 public:
