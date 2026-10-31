@@ -23,6 +23,7 @@ struct AgentDef {
 struct ObstacleDef {
     QPointF point;
     QRectF rect;
+    QColor color;
 };
 
 struct SimulationDef {

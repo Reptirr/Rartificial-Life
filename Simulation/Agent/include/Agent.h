@@ -26,7 +26,7 @@ class Agent {
 
 
     // входные нейроны зрения
-    std::unordered_set<std::string> input_vision_neurons;
+    std::vector<std::string> input_vision_neurons;
 
     int convertIntensityToFreq(double intensity) {
 
@@ -51,7 +51,7 @@ public:
         // создаем входные зрительные нейроны
         for (auto p : conf.vision_neurons) { // 3 цвета
             auto id = createInputNeuron(p, 0);
-            input_vision_neurons.insert(id);
+            input_vision_neurons.push_back(id);
         }
     }
 
@@ -65,8 +65,9 @@ public:
             // получаем цвет
             auto color = colors.at(i / 3); // дробная часть отбрасывается
 
+
             // получаем значение канала
-            double canal{};
+            int canal{};
             switch (i%3) {
                 case 0: canal = color.red(); break;
                 case 1: canal = color.green(); break;
@@ -74,7 +75,7 @@ public:
             }
 
             // конвертируем в интенсивность
-            const double intens = canal / 255;
+            const double intens = canal / 255.0;
 
             // говорим нейрону его цвет
             brain_.getStorage().get<Neuron>(id)->setColor(color);

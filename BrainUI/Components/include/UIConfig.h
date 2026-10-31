@@ -1,14 +1,14 @@
 #pragma once
 
 struct UIConfig {
-    static constexpr double neuron_r = 14;
-    static constexpr double synaps_r = 7;
+    static constexpr double neuron_r = 14/5;
+    static constexpr double synaps_r = 7/5;
 
-    static constexpr double dendrite_width = 6;
-    static constexpr double axon_width = 6;
+    static constexpr double dendrite_width = 6/5;
+    static constexpr double axon_width = 6/5;
 
-    static constexpr double neuron_type_font_size = 6;
-    static constexpr double synaps_info_font_size = 1.88;
+    static constexpr double neuron_type_font_size = 6/5;
+    static constexpr double synaps_info_font_size = 1.88/5;
 
     // Z VALUES
     static constexpr qreal synaps_z = 2;

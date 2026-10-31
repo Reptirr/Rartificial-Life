@@ -83,6 +83,7 @@ add_executable(Rartificial_Life
         Simulation/World/Managers/include/MoveController.h
         Simulation/include/Simulation.h
         Simulation/include/Model.h
+        BrainUI/Utils/include/SizeUtils.h
 )
 
 target_link_libraries(Rartificial_Life PRIVATE

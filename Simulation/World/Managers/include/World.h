@@ -25,8 +25,8 @@ public:
         return controller_->addAgentBody(pos, rays, fov);
     }
 
-    std::string addObstacle(QPointF pos, QRectF rect) const {
-        return controller_->addObstacle(pos, rect);
+    std::string addObstacle(QPointF pos, QRectF rect, QColor color) const {
+        return controller_->addObstacle(pos, rect, color);
     }
 
     const WorldStorage *getStorage() const {

@@ -16,7 +16,7 @@ public:
 
         setZValue(UIConfig::synaps_z);
 
-        setPen({QColorConstants::Gray, 0.007});
+        setPen({QColorConstants::Gray, penWidthFromWidth(UIConfig::synaps_r*2)});
         setBrush({QColorConstants::Gray});
 
         update();

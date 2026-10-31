@@ -1,7 +1,7 @@
 #pragma once
 
 #include <BrainView.h>
-#include <QHBoxLayout>
+#include <QSplitter>
 #include <QMainWindow>
 #include <Simulation.h>
 #include <WorldView.h>
@@ -18,7 +18,7 @@ class MainWindow : public QMainWindow {
 public:
     MainWindow() {
         // logic
-        int num_vision_pixels = 32;
+        int num_vision_pixels = 320;
 
         std::vector<BrainPoint> vision_points;
 
@@ -31,19 +31,25 @@ public:
 
         // defs
         auto agent_def = AgentDef{
-            .num_of_common_neurons = 10,
+            .num_of_common_neurons = 100,
             .pixels = num_vision_pixels,
             .fov = std::numbers::pi, // 180
             .vision_neurons = vision_points
         };
         auto obstacle_def = ObstacleDef{
-            .point = {10, 10},
-            .rect = {0, 0, 4, 4}
+            .point = {15, 15},
+            .rect = {0, 0, 4, 4},
+            .color = QColorConstants::Black
+        };
+        auto obstacle_def1 = ObstacleDef{
+            .point = {10, -15},
+            .rect = {0, 0, 4, 8},
+            .color = QColorConstants::Green
         };
         auto sim_def = SimulationDef{
             .init_agents = {agent_def},
-            .obstacles = {obstacle_def},
-            .need_tps = 100
+            .obstacles = {obstacle_def1, obstacle_def},
+            .need_tps = 40
         };
 
         simulation_ = std::make_unique<Simulation>(sim_def);
@@ -51,14 +57,14 @@ public:
         // ui
         brain_view_ = new BrainView(nullptr, w, h);
         brain_view_->connectWithBrain(simulation_->getAgents().begin()->second->getBrain());
-        brain_view_->setBaseSize(1000, 1000);
 
         world_view_ = new WorldView(simulation_->getWorld()->getStorage()->getWorldId());
-        setCentralWidget(world_view_);
 
-        // auto *main_lay = new QHBoxLayout(this);
-        // main_lay->addWidget(brain_view_);
-        // main_lay->addWidget(world_view_);
+        auto *splitter = new QSplitter(this);
+        setCentralWidget(splitter);
+
+        splitter->addWidget(brain_view_);
+        splitter->addWidget(world_view_);
 
 
         simulation_->start();

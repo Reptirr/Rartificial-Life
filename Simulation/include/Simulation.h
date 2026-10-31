@@ -29,7 +29,7 @@ public:
     explicit Simulation(const SimulationDef &def) : dt_(def.dt), need_tps_(def.need_tps) {
         // создаем препятствия
         for (auto obstacle_def : def.obstacles) {
-            world_.addObstacle(obstacle_def.point, obstacle_def.rect);
+            world_.addObstacle(obstacle_def.point, obstacle_def.rect, obstacle_def.color);
         }
 
         // создаем агентов

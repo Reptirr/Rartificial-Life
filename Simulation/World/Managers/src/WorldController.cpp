@@ -24,7 +24,7 @@ std::string WorldController::addAgentBody(QPointF pos, int rays, double fov) con
     return id;
 }
 
-std::string WorldController::addObstacle(QPointF pos, QRectF rect) const {
+std::string WorldController::addObstacle(QPointF pos, QRectF rect, QColor color) const {
     auto bd = b2DefaultBodyDef();
     bd.position = {static_cast<float>(pos.x()), static_cast<float>(pos.y())};
     auto body = b2CreateBody(storage_.getWorldId(), &bd);
@@ -33,7 +33,7 @@ std::string WorldController::addObstacle(QPointF pos, QRectF rect) const {
     auto poly = b2MakeBox(rect.width()/2, rect.height()/2);
     b2CreatePolygonShape(body, &sd, &poly);
 
-    auto obj = new WorldObject(QColorConstants::Black, body);
+    auto obj = new WorldObject(color, body);
     auto id = storage_.putObject(obj);
 
     b2Body_SetUserData(body, obj);

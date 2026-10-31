@@ -2,6 +2,7 @@
 
 #include <QGraphicsEllipseItem>
 #include <qpen.h>
+#include <SizeUtils.h>
 #include <UIComponent.h>
 #include <UIConfig.h>
 
@@ -16,7 +17,7 @@ public:
 
         setZValue(UIConfig::neuron_z);
 
-        setPen(QPen{Qt::black, 2});
+        setPen(QPen{Qt::black, penWidthFromWidth(UIConfig::neuron_r*2)});
         setBrush(QBrush{QColorConstants::DarkCyan});
         update();
     }
