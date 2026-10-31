@@ -3,13 +3,14 @@
 #include <Brain.h>
 #include <Dendrite.h>
 #include <QGraphicsView>
-#include <Storage.h>
+#include <QOpenGlWidget>
+#include <QThread>
+#include <QTimer>
 #include <QWheelEvent>
+#include <Storage.h>
 #include <UIBatcher.h>
 #include <UIController.h>
 #include <UIMapper.h>
-#include <QThread>
-#include <QTimer>
 
 class BrainView : public QGraphicsView {
     QGraphicsScene *scene_ = new QGraphicsScene(this);
@@ -45,8 +46,6 @@ protected:
         scale(factor, factor);
         QPointF after = mapToScene(e->position().toPoint());
         translate(after.x() - before.x(), after.y() - before.y());
-
-        setRenderHint(QPainter::Antialiasing, transform().m11() > 1.5);
     }
     void resizeEvent(QResizeEvent* e) override {
         QGraphicsView::resizeEvent(e);
@@ -66,7 +65,6 @@ protected:
 public:
     BrainView(QWidget *parent, int w, int h)
         : QGraphicsView(parent), mapper_(w, h) {
-        setRenderHints(QPainter::Antialiasing);
         setTransformationAnchor(AnchorUnderMouse);
         setResizeAnchor(AnchorViewCenter);
         setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -76,6 +74,14 @@ public:
         setOptimizationFlags(DontSavePainterState
                              | DontAdjustForAntialiasing);
         scene_->setItemIndexMethod(QGraphicsScene::NoIndex);
+
+        // сглаживание
+        setViewport(new QOpenGLWidget);
+        setViewportUpdateMode(FullViewportUpdate);
+        setRenderHint(QPainter::Antialiasing);
+
+        setBackgroundBrush(QColorConstants::White);
+
 
         setFixedSize(w, h);
         scene_->setSceneRect(-w, -h, w*2, h*2);

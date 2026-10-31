@@ -12,7 +12,9 @@ protected:
 public:
     explicit WorldObjectItem(WorldObjectData data) : QGraphicsPolygonItem(data.poly), data_(data) {
         setPos(data_.point);
-        setPen(QPen{data_.color, WorldUIConfig::world_obj_pen_w});
+        QPen pen{data_.color, WorldUIConfig::world_obj_pen_w};
+        pen.setJoinStyle(Qt::MiterJoin);
+        setPen(pen);
         setBrush(data_.color);
     }
 
@@ -23,7 +25,8 @@ public:
      virtual void UIUpdate() {
         if (pos() != data_.point) setPos(data_.point);
         if (polygon() != data_.poly) setPolygon(data_.poly);
-        QPen p(data_.color, WorldUIConfig::world_obj_pen_w);
+        QPen p{data_.color, WorldUIConfig::world_obj_pen_w};
+        p.setJoinStyle(Qt::MiterJoin);
         if (pen() != p) setPen(p);
         setBrush(data_.color);
     }

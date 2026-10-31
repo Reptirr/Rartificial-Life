@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_AUTOMOC ON)   # moc: для Q_OBJECT, сигналов и слотов
 set(CMAKE_AUTORCC ON)   # rcc: для .qrc ресурсов
 
-find_package(Qt6 REQUIRED Widgets)
+find_package(Qt6 REQUIRED Widgets OpenGLWidgets)
 
 # box2d
 include(FetchContent)
@@ -92,10 +92,12 @@ add_executable(Rartificial_Life
         WorldUI/Model/include/WorldUIConfig.h
         WorldUI/Managers/include/WorldUIController.h
         Simulation/World/Managers/include/WorldDataCollector.h
+        WorldUI/Components/include/AgentBodyItem.h
 )
 
 target_link_libraries(Rartificial_Life PRIVATE
         Qt6::Widgets
+        Qt6::OpenGLWidgets
         box2d
 )
 

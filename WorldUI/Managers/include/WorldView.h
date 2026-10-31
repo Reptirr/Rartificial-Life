@@ -33,6 +33,7 @@ public:
         setRenderHints(QPainter::Antialiasing);
         setTransformationAnchor(AnchorUnderMouse);
         setDragMode(ScrollHandDrag);
+        setBackgroundBrush(QColorConstants::DarkGreen);
 
         setSceneRect(-500, -500, 1000, 1000);
 

@@ -1,14 +1,13 @@
 #pragma once
 #include <WorldObject.h>
+#include <WorldUIConfig.h>
 #include <WorldUIDatas.h>
 #include <box2d/box2d.h>
 
-constexpr int kArcSteps = 16;
-
 // точки дуги вокруг центра c, от угла a0 до a1
 inline void appendArc(QPolygonF& out, b2Vec2 c, float r, double a0, double a1) {
-    for (int i = 0; i <= kArcSteps; ++i) {
-        double a = a0 + (a1 - a0) * i / kArcSteps;
+    for (int i = 0; i <= WorldUIConfig::kArcSteps; ++i) {
+        double a = a0 + (a1 - a0) * i / WorldUIConfig::kArcSteps;
         out << QPointF(c.x + r * std::cos(a), c.y + r * std::sin(a));
     }
 }
@@ -42,7 +41,7 @@ inline QPolygonF convertShapeToQPolygonF(const b2ShapeId shape) {
             b2Polygon p = b2Shape_GetPolygon(shape);
             for (int i = 0; i < p.count; ++i)
                 res << QPointF(p.vertices[i].x, p.vertices[i].y);
-            break;   // p.radius (скругление углов) не учитывается
+            break;
         }
         case b2_chainSegmentShape: {
             const b2ChainSegment cs = b2Shape_GetChainSegment(shape);
@@ -55,7 +54,6 @@ inline QPolygonF convertShapeToQPolygonF(const b2ShapeId shape) {
     }
     return res;
 }
-
 
 
 class WorldUIMapper {
