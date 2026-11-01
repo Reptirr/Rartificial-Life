@@ -7,27 +7,38 @@
 
 class WorldObjectItem : public QGraphicsPolygonItem {
 protected:
-    WorldObjectData data_;
+    WorldObjectData *data_{}; // удаляет сам WorldObjectItem
+
+    virtual void onSetData() {}
+    virtual void onUIUpdate() {}
 
 public:
-    explicit WorldObjectItem(WorldObjectData data) : QGraphicsPolygonItem(data.poly), data_(data) {
-        setPos(data_.point);
-        QPen pen{data_.color, WorldUIConfig::world_obj_pen_w};
+    explicit WorldObjectItem(const WorldObjectData *data) : QGraphicsPolygonItem(data->poly) {
+        setPos(data->point);
+        QPen pen{data->color, WorldUIConfig::world_obj_pen_w};
         pen.setJoinStyle(Qt::MiterJoin);
         setPen(pen);
-        setBrush(data_.color);
+        setBrush(data->color);
     }
 
-    void setData(const WorldObjectData &data) {
+    void setData(WorldObjectData *data) {
+        delete data_;
         data_ = data;
+        onSetData();
     }
 
      virtual void UIUpdate() {
-        if (pos() != data_.point) setPos(data_.point);
-        if (polygon() != data_.poly) setPolygon(data_.poly);
-        QPen p{data_.color, WorldUIConfig::world_obj_pen_w};
+        if (pos() != data_->point) setPos(data_->point);
+        if (polygon() != data_->poly) setPolygon(data_->poly);
+        QPen p{data_->color, WorldUIConfig::world_obj_pen_w};
         p.setJoinStyle(Qt::MiterJoin);
         if (pen() != p) setPen(p);
-        setBrush(data_.color);
+        setBrush(data_->color);
+
+        onUIUpdate();
+    }
+
+    ~WorldObjectItem() override {
+        delete data_;
     }
 };

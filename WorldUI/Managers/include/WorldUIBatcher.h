@@ -4,11 +4,12 @@
 #include <unordered_map>
 #include <WorldUIController.h>
 #include <WorldUIDatas.h>
+#include <WorldUIMapper.h>
 #include <WorldUIStorage.h>
 
 struct WorldUIToCreate {
     std::string id;
-    WorldObjectData data;
+    WorldObjectData *data;
 };
 
 class WorldUIBatcher {
@@ -16,7 +17,7 @@ class WorldUIBatcher {
     WorldUIController &controller_;
 
     std::queue<WorldUIToCreate> to_create_;
-    std::unordered_map<std::string, WorldObjectData> to_update_;
+    std::unordered_map<std::string, WorldObjectData *> to_update_;
 
     std::mutex mtx_;
 
@@ -25,18 +26,18 @@ public:
         : storage_(storage), controller_(controller) {
     }
 
-    void onCreate(const std::string &id, const WorldObjectData &data) {
+    void onCreate(const std::string &id, WorldObjectData *data) {
         std::lock_guard lock(mtx_);
         to_create_.push(WorldUIToCreate{id, data});
     }
-    void onUpdate(const std::string &id, WorldObjectData data) {
+    void onUpdate(const std::string &id, WorldObjectData *data) {
         std::lock_guard lock(mtx_);
         to_update_.insert_or_assign(id, data);
     }
 
     void applyBatch() {
         std::queue<WorldUIToCreate> to_create;
-        std::unordered_map<std::string, WorldObjectData> to_update;
+        std::unordered_map<std::string, WorldObjectData *> to_update;
 
         {
             std::lock_guard lock(mtx_);

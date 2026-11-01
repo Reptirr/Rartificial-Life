@@ -57,20 +57,54 @@ inline QPolygonF convertShapeToQPolygonF(const b2ShapeId shape) {
 
 
 class WorldUIMapper {
-public:
-    static WorldObjectData convertWorldObject(const WorldObject *obj) {
-        WorldObjectData data{};
-
-        data.entity_kind = obj->getEntityKind();
-        data.entity_id = obj->getThisId();
-        data.color = obj->getColor();
+    static void fillData(WorldObjectData *data, const WorldObject *obj) {
+        data->entity_kind = obj->getEntityKind();
+        data->entity_id = obj->getThisId();
+        data->color = obj->getColor();
 
         auto pos = b2Body_GetPosition(obj->getBodyId());
-        data.point = QPointF{pos.x, pos.y};
+        data->point = QPointF{pos.x, pos.y};
 
         b2ShapeId shape;
         b2Body_GetShapes(obj->getBodyId(), &shape, 1);
-        data.poly = convertShapeToQPolygonF(shape);
+        data->poly = convertShapeToQPolygonF(shape);
+    }
+
+public:
+    static WorldObjectData *convertWorldObject(const WorldObject *obj) {
+        auto *data = new WorldObjectData;
+
+        fillData(data, obj);
+
+        return data;
+    }
+
+    static WorldObjectData *convertAgentBody(const WorldObject *obj, const WorldStorage *storage) {
+        const auto *agentbody = storage->getAgentBody(obj->getThisId());
+        auto *data = new AgentBodyData;
+
+        // world obj data
+        fillData(data, obj);
+
+        // agentbody data
+        data->azimuth = agentbody->getAzimuth();
+
+        return data;
+    }
+
+    static WorldObjectData *dataFromObjectId(const std::string &id, const WorldStorage *storage) {
+        const auto obj = storage->getObject(id);
+
+        auto *data = new WorldObjectData;
+
+        switch (obj->getEntityKind()) {
+            case EntityKind::NONE:
+                data = convertWorldObject(obj);
+                break;
+            case EntityKind::AGENT_BODY:
+                data = convertAgentBody(obj, storage);
+                break;
+        }
 
         return data;
     }

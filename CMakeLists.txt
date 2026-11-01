@@ -93,6 +93,8 @@ add_executable(Rartificial_Life
         WorldUI/Managers/include/WorldUIController.h
         Simulation/World/Managers/include/WorldDataCollector.h
         WorldUI/Components/include/AgentBodyItem.h
+        WorldUI/Components/include/AgentBodyItem.h
+        WorldUI/Utils/include/DrawUtils.h
 )
 
 target_link_libraries(Rartificial_Life PRIVATE
@@ -125,6 +127,7 @@ include_directories(Rartificial_Life
         WorldUI/Components/include
         WorldUI/Managers/include
         WorldUI/Model/include
+        WorldUI/Utils/include
 
         GeneralUI/include
 )

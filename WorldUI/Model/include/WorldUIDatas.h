@@ -10,4 +10,10 @@ struct WorldObjectData {
     QPointF point;
     QColor color;
     QPolygonF poly;
+
+    virtual ~WorldObjectData() {}
+};
+
+struct AgentBodyData : WorldObjectData {
+    double azimuth{};
 };

@@ -18,7 +18,7 @@ public:
         move_controller_ = move_controller;
     }
 
-    std::string getId() {
+    std::string getId() const {
         return this_id_;
     }
 

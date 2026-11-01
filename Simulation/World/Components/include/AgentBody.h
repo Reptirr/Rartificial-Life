@@ -16,7 +16,7 @@ public:
 
     }
 
-    std::vector<QColor> getVision(const int eye_i) {
+    std::vector<QColor> getVision(const int eye_i) const {
         return sense_getter_->getVision(
             eyes[eye_i],
             angle,
@@ -30,5 +30,11 @@ public:
 
     void setVel(const double v) const {
         move_controller_->setVel(this_id_, v);
+    }
+
+
+    // getters
+    double getAzimuth() const {
+        return angle;
     }
 };

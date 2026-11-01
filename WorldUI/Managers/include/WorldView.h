@@ -55,7 +55,7 @@ public:
 
         batcher_.onCreate(
             id,
-            WorldUIMapper::convertWorldObject(obj)
+            WorldUIMapper::dataFromObjectId(id, storage_)
         );
     }
     void onUpdate(const std::string &id) {
@@ -63,7 +63,7 @@ public:
 
         batcher_.onUpdate(
             id,
-            WorldUIMapper::convertWorldObject(obj)
+            WorldUIMapper::dataFromObjectId(id, storage_)
         );
     }
 };
