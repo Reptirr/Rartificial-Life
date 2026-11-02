@@ -64,7 +64,8 @@ public:
         auto sim_def = SimulationDef{
             .init_agents = {agent_def},
             .obstacles = {obstacle_def1, obstacle_def},
-            .need_tps = -1
+            .need_tps = -1,
+            .dt = 0.1
         };
 
         simulation_ = std::make_unique<Simulation>(sim_def);

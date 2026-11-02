@@ -21,6 +21,12 @@ public:
 
     void tick(const double dt) {
         b2World_Step(storage_->getWorldId(), dt, 2);
+        auto events = b2World_GetBodyEvents(storage_->getWorldId());
+        for (int i = 0; i < events.moveCount; i++) {
+            auto event = events.moveEvents[i];
+            auto *obj = static_cast<WorldObject *>(event.userData);
+            obj->onUpdate();
+        }
     }
 
     std::string addAgentBody(QPointF pos, int rays, double fov) const {

@@ -34,14 +34,14 @@ struct DefaultGenblock {
     inline static GenBlock get = {
         // neuron
         {Gen::NEURON_THRESHOLD,         "10.0"},
-        {Gen::NEURON_RANDOM_SPIKE_TICK, "0"},     // 0 = шумовых спайков нет
+        {Gen::NEURON_RANDOM_SPIKE_TICK, "10"},     // 0 = шумовых спайков нет
         {Gen::NEURON_REFRACTOR_TICK,    "3"},
 
         // axon
         {Gen::AXON_ANGLE_DEVIATION,     "0.6"},   // разброс угла, рад
         {Gen::AXON_DEFAULT_STEP,        "0.07"},  // шаг роста по плоскости -1..1
         {Gen::AXON_STEP_DEVIATION,      "0.005"}, // разброс длины шага
-        {Gen::AXON_SEARCH_DENDRITE_R,   "0.03"},  // радиус поиска дендрита
+        {Gen::AXON_SEARCH_DENDRITE_R,   "0.02"},  // радиус поиска дендрита
         {Gen::AXON_MAX_NODES,           "50"},   // потолок длины аксона
 
         // synaps

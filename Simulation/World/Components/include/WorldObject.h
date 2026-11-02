@@ -19,6 +19,9 @@ public:
         : data_collector_(data_collector), color_(color), body_id_(body_id) {
     }
 
+    void onUpdate() {
+        data_collector_.onUpdate(this_id_);
+    }
 
     void init(const std::string &entity_id, EntityKind entity_kind) {
         this_id_ = entity_id;
