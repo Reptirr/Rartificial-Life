@@ -12,7 +12,7 @@ class AgentBody : public WorldEntity {
     int rays_{};
 
 public:
-    explicit AgentBody(const int rays, double fov) : rays_(rays), fov_(fov) {
+    explicit AgentBody(const int rays, double fov) : fov_(fov), rays_(rays) {
 
     }
 
@@ -28,13 +28,12 @@ public:
         );
     }
 
-    void setVel(const double v) const {
-        move_controller_->setVel(this_id_, v);
-    }
-
-
     // getters
     double getAzimuth() const {
         return angle;
+    }
+
+    void applyAcceleration(b2Vec2 b2_vec2) {
+        move_controller_->setVel(this_id_, b2_vec2);
     }
 };

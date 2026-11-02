@@ -18,6 +18,11 @@ struct AgentDef {
     int pixels{};
     double fov{};
     std::vector<BrainPoint> vision_neurons;
+
+    // move
+    int directions{};
+    double max_a{5};
+    std::vector<BrainPoint> move_neurons;
 };
 
 struct ObstacleDef {

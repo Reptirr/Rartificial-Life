@@ -24,6 +24,9 @@ class Neuron : public Executable, public BrainComponent {
     double sum{};
     bool can_spike{true};
 
+    // сколько спайков было с прошлого вызова consumeSpikes()
+    int spikes_since_read_{0};
+
     // only for input type
     QColor color_;
 
@@ -31,6 +34,8 @@ class Neuron : public Executable, public BrainComponent {
         if (!can_spike) return;
 
         can_spike = false;
+        spikes_since_read_++;
+
         executor_->pushPlan(
             refractor_ticks,
             {
@@ -100,7 +105,6 @@ public:
         threshold = dscr(Gen::NEURON_THRESHOLD);
         refractor_ticks = dscr(Gen::NEURON_REFRACTOR_TICK);
         random_spike_ticks = dscr(Gen::NEURON_RANDOM_SPIKE_TICK);
-
     }
 
     void addSignal(const std::string& signal_s) {
@@ -134,6 +138,13 @@ public:
         can_spike = true;
     }
 
+    // сколько спайков было с прошлого вызова; сбрасывает счётчик
+    int consumeSpikes() {
+        const int n = spikes_since_read_;
+        spikes_since_read_ = 0;
+        return n;
+    }
+
     // only for input type
     void setColor(const QColor color) {
         if (color_ != color) {
@@ -141,7 +152,7 @@ public:
             data_collector_->onUpdate(this_id_);
         }
     }
-    QColor getColor() {
+    QColor getColor() const {
         return color_;
     }
 
@@ -157,5 +168,8 @@ public:
     }
     double getSignal() const {
         return sum;
+    }
+    int getRefractorTicks() const {
+        return refractor_ticks;
     }
 };

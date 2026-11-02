@@ -19,6 +19,7 @@ public:
     MainWindow() {
         // logic
         int num_vision_pixels = 320;
+        int num_move_dirs = 4;
 
         std::vector<BrainPoint> vision_points;
 
@@ -29,12 +30,26 @@ public:
             p += {.y = step};
         }
 
+        std::vector<BrainPoint> move_points;
+
+        p = {.x = 0.95, .y = 0.95};
+        step = 0.25  / num_move_dirs;
+        for (int i = 0; i < num_move_dirs; i++) {
+            move_points.push_back(p);
+            p -= {.y = step};
+        }
+
         // defs
         auto agent_def = AgentDef{
-            .num_of_common_neurons = 100,
+            .num_of_common_neurons = 1000,
+
             .pixels = num_vision_pixels,
             .fov = std::numbers::pi, // 180
-            .vision_neurons = vision_points
+            .vision_neurons = vision_points,
+
+            .directions = num_move_dirs,
+            .max_a = 5,
+            .move_neurons = move_points
         };
         auto obstacle_def = ObstacleDef{
             .point = {15, 15},
@@ -49,7 +64,7 @@ public:
         auto sim_def = SimulationDef{
             .init_agents = {agent_def},
             .obstacles = {obstacle_def1, obstacle_def},
-            .need_tps = 40
+            .need_tps = -1
         };
 
         simulation_ = std::make_unique<Simulation>(sim_def);

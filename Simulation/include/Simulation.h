@@ -23,6 +23,10 @@ class Simulation {
         for (auto *agent : agents_ | std::views::values)
             agent->tick();
         world_.tick(dt_);
+
+        // движения
+        for (auto *agent : agents_ | std::views::values)
+            agent->handleOutputs();
     }
 
 public:

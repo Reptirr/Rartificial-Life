@@ -9,7 +9,7 @@ class UIMapper {
     int w{},h{};
 
     QPointF scr(BrainPoint p) {
-        return toQPointF({p.x * w, p.y * h});
+        return toQPointF({p.x * w, -p.y * h}); // отражаем т.к. в отображении y направленна вверх
     }
 
 public:

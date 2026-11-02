@@ -10,13 +10,9 @@ public:
         : storage_(storage) {
     }
 
-    void setVel(const std::string &id, const double v) const {
+    void setVel(const std::string &id, const b2Vec2 vec) const {
         const auto obj = storage_.getObject(id);
         const auto body = obj->getBodyId();
-
-        auto [c, s] = b2Body_GetRotation(body);
-        const b2Vec2 dir = {.x = s, .y = c};
-        const auto vec = dir * v;
 
         b2Body_ApplyForceToCenter(body, vec, true);
     }
