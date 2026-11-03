@@ -4,25 +4,10 @@
 
 
 struct AgentDef {
-    Genome genome = {
-        .proteins = {},
-        .genblocks = {DefaultGenblock::get}
-    };
-    
     QPointF point;
 
-    // common
-    int num_of_common_neurons{};
-
-    // vision
-    int pixels{};
-    double fov{};
-    std::vector<BrainPoint> vision_neurons;
-
-    // move
-    int directions{};
-    double max_a{5};
-    std::vector<BrainPoint> move_neurons;
+    AgentBodyConfig agent_body_config;
+    AgentConfig agent_config;
 };
 
 struct ObstacleDef {

@@ -23,9 +23,7 @@ struct NeuronData : Data {
     double signal{};
 
     // for input neuron
-    QColor color;
-
-    double freq{};
+    double intens{};
 };
 
 struct AxonNodeData {

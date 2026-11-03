@@ -4,7 +4,7 @@
 #include <box2d/types.h>
 #include <box2d/box2d.h>
 
-std::string WorldController::addAgentBody(QPointF pos, int rays, double fov) const {
+std::string WorldController::addAgentBody(QPointF pos, AgentBodyConfig conf) const {
     auto bd = b2DefaultBodyDef();
     bd.position = {static_cast<float>(pos.x()), static_cast<float>(pos.y())};
     auto body = b2CreateBody(storage_.getWorldId(), &bd);
@@ -16,7 +16,7 @@ std::string WorldController::addAgentBody(QPointF pos, int rays, double fov) con
     auto world_obj = new WorldObject(QColorConstants::Green, body, collector_);
     auto id = storage_.putObject(world_obj);
 
-    auto agent_body = new AgentBody(rays, fov);
+    auto agent_body = new AgentBody(conf);
     storage_.putAgentBody(agent_body, id);
 
     world_obj->init(id, EntityKind::AGENT_BODY);

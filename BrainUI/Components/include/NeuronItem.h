@@ -46,10 +46,10 @@ public:
         QString symbol;
         switch (data_.type) {
             case NeuronType::COMMON: symbol = "C"; break;
-            case NeuronType::INPUT:  symbol = "";  break;
+            case NeuronType::INPUT:  symbol = "i: " + QString::number(data_.intens, 'f', 1);  break;
             case NeuronType::OUTPUT: symbol = "O"; break;
         }
-        symbol += "\nS: " + QString::number(data_.signal, 'f', 2);
+        if (data_.type != NeuronType::INPUT) symbol += "\nS: " + QString::number(data_.signal, 'f', 2);
 
         if (showText) {
             painter->save();
@@ -75,13 +75,6 @@ public:
             painter->drawText(textRect, Qt::AlignCenter | Qt::TextWordWrap, symbol);
             painter->restore();
         }
-
-        if (data_.type == NeuronType::INPUT) {
-            painter->setPen(Qt::NoPen);
-            painter->setBrush(data_.color);
-            const qreal s = UIConfig::neuron_type_font_size;
-            const QPointF c = boundingRect().center();
-            painter->drawRect(QRectF{c.x() - s / 2, c.y() - s / 2, s, s});
-        }
+\
     }
 };

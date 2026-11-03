@@ -17,7 +17,7 @@ class Simulation {
     void tick() {
         // сенсоры
         for (auto *agent : agents_ | std::views::values)
-            agent->resolveSensors();
+            agent->handleSensors();
 
         // обрабатываем
         for (auto *agent : agents_ | std::views::values)
@@ -25,8 +25,8 @@ class Simulation {
         world_.tick(dt_);
 
         // движения
-        for (auto *agent : agents_ | std::views::values)
-            agent->handleOutputs();
+        // for (auto *agent : agents_ | std::views::values)
+        //     agent->handleOutputs();
     }
 
 public:
@@ -38,10 +38,10 @@ public:
 
         // создаем агентов
         for (auto agent_def : def.init_agents) {
-            auto id = world_.addAgentBody(agent_def.point, agent_def.pixels,agent_def.fov);
+            auto id = world_.addAgentBody(agent_def.point, agent_def.agent_body_config);
             auto *agent = new Agent(world_.getStorage()->getAgentBody(id));
 
-            agent->init(agent_def, agent_def.num_of_common_neurons);
+            agent->init(agent_def.agent_config);
 
             agents_.insert({id, agent});
         }

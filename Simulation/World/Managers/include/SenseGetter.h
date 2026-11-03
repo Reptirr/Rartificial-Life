@@ -19,11 +19,9 @@ public:
 
 
     std::vector<QColor> getVision(
-        QPointF eye,
-        double azimuth,
+        std::string id,
         double fov,
         int rays,
-        float maxDist,
-        QColor default_color, const std::string &exclude_obj
+        float maxDist, QColor default_color, const std::string &exclude_obj
     ) const;
 };

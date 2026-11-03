@@ -21,35 +21,27 @@ public:
         int num_vision_pixels = 320;
         int num_move_dirs = 4;
 
-        std::vector<BrainPoint> vision_points;
-
-        BrainPoint p{.x = -0.95, .y = -0.95};
-        double step = 0.95*2 / (num_vision_pixels*3);
-        for (int i = 0; i < num_vision_pixels*3; i++) {
-            vision_points.push_back(p);
-            p += {.y = step};
-        }
-
-        std::vector<BrainPoint> move_points;
-
-        p = {.x = 0.95, .y = 0.95};
-        step = 0.25  / num_move_dirs;
-        for (int i = 0; i < num_move_dirs; i++) {
-            move_points.push_back(p);
-            p -= {.y = step};
-        }
-
         // defs
         auto agent_def = AgentDef{
-            .num_of_common_neurons = 1000,
-
-            .pixels = num_vision_pixels,
-            .fov = std::numbers::pi, // 180
-            .vision_neurons = vision_points,
-
-            .directions = num_move_dirs,
-            .max_a = 5,
-            .move_neurons = move_points
+            .agent_body_config = {
+                .rays = 64,
+                .fov = std::numbers::pi
+            },
+            .agent_config = {
+                .genome = {
+                    .proteins = {},
+                    .genblocks = {
+                        DefaultGenblock::get
+                    }
+                },
+                .num_of_common_neurons = 100,
+                .input_groups = {
+                    NeuronGroup{
+                        .num = 64*3,
+                        .align = BrainAlign::Left
+                    }
+                }
+            }
         };
         auto obstacle_def = ObstacleDef{
             .point = {15, 15},

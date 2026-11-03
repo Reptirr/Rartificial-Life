@@ -27,7 +27,7 @@ public:
         data->type = neuron->getType();
         data->signal = neuron->getSignal();
 
-        data->color = neuron->getColor();
+        data->intens = neuron->getIntens();
 
         return data;
     }

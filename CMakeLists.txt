@@ -95,6 +95,8 @@ add_executable(Rartificial_Life
         WorldUI/Components/include/AgentBodyItem.h
         WorldUI/Components/include/AgentBodyItem.h
         WorldUI/Utils/include/DrawUtils.h
+        Simulation/Agent/include/AgentConfig.h
+        Simulation/World/Model/include/AgentBodyConfig.h
 )
 
 target_link_libraries(Rartificial_Life PRIVATE

@@ -28,7 +28,7 @@ class Neuron : public Executable, public BrainComponent {
     int spikes_since_read_{0};
 
     // only for input type
-    QColor color_;
+    double intens_{};
 
     void spike() {
         if (!can_spike) return;
@@ -145,15 +145,16 @@ public:
         return n;
     }
 
-    // only for input type
-    void setColor(const QColor color) {
-        if (color_ != color) {
-            color_ = color;
+    // only for input neurons
+    void setIntensity(double intens) {
+        if (intens_ != intens) {
+            intens_ = intens;
+
             data_collector_->onUpdate(this_id_);
         }
     }
-    QColor getColor() const {
-        return color_;
+    double getIntens() const {
+        return intens_;
     }
 
     // getters

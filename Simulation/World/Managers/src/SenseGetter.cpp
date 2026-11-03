@@ -35,14 +35,16 @@ QLineF SenseGetter::rayByAzimuth(QPointF from, const double azimuth, const doubl
 }
 
 
-std::vector<QColor> SenseGetter::getVision(QPointF eye, const double azimuth, const double fov,
+std::vector<QColor> SenseGetter::getVision(std::string id, const double fov,
                                            const int rays, const float maxDist,
                                            const QColor default_color, const std::string &exclude_obj) const {
     std::vector<QColor> res;
     res.reserve(rays);
 
-    b2Pos from = {.x = static_cast<float>(eye.x()), .y = static_cast<float>(eye.y())};
+    auto from = b2Body_GetPosition(storage_.getObject(id)->getBodyId());
+    auto azimuth = b2Rot_GetAngle(b2Body_GetRotation(storage_.getObject(id)->getBodyId()));
 
+    
     const double ray_angle = fov / rays;
     double angle = azimuth - fov / 2 + ray_angle / 2; // центр сектора, а не его край
 

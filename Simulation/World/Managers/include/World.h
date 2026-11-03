@@ -29,8 +29,8 @@ public:
         }
     }
 
-    std::string addAgentBody(QPointF pos, int rays, double fov) const {
-        return controller_->addAgentBody(pos, rays, fov);
+    std::string addAgentBody(QPointF pos, AgentBodyConfig conf) const {
+        return controller_->addAgentBody(pos, conf);
     }
 
     std::string addObstacle(QPointF pos, QRectF rect, QColor color) const {

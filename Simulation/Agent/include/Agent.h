@@ -1,11 +1,16 @@
 #pragma once
 
 #include <AgentBody.h>
+#include <AgentConfig.h>
 #include <Model.h>
 
 class Agent {
     Brain brain_;
     AgentBody *agent_body_;
+
+    // --------------
+    // INPUT
+    // --------------
 
     // текущие частоты спайков на входные нейроны.
     // обозначает раз в сколько таков делать спайк
@@ -15,21 +20,11 @@ class Agent {
     // при изменении частоты, он делает спайк а затем начинает с новой частотой
     std::unordered_map<std::string, int> input_counters;
 
-    // входные нейроны зрения
-    std::vector<std::string> input_vision_neurons;
+    std::vector<std::string> input_neurons;
 
-    // выходные нейроны движения
-    int move_directions{};
-    std::vector<std::string> output_move_neurons;
 
-    // сглаженная частота спайков выходных нейронов (спайков за такт)
-    std::vector<float> output_smooth;
-
-    static constexpr float SMOOTH_K  = 0.1f;   // меньше = плавнее, но медленнее реакция
-    static constexpr float MAX_ACCEL = 10.0f;  // подбери под свою физику
 
     int convertIntensityToFreq(double intensity) {
-
         /*
          * если интенсивность = 1, то freq = 5
          * если интенсивность = 0.5, то freq = 10
@@ -41,13 +36,16 @@ class Agent {
         if (intensity > 1.0) intensity = 1.0;
         return static_cast<int>(std::round(MIN_PERIOD / intensity));
     }
-    void setInputNeuronIntensivity(const std::string &id, const double intensity) {
+    void setInputNeuronIntensity(const std::string &id, const double intensity) {
         my_assert(input_freqs.contains(id));
         my_assert(input_counters.contains(id));
 
         const int freq = convertIntensityToFreq(intensity);
 
         input_freqs.at(id) = freq;
+
+        auto *neuron = brain_.getStorage().get<Neuron>(id);
+        neuron->setIntensity(intensity);
     }
 
     std::string createInputNeuron(BrainPoint p, double init_intensity) {
@@ -68,87 +66,66 @@ class Agent {
 public:
     explicit Agent(AgentBody *agent_body) : agent_body_(agent_body) {}
 
-    void init(AgentDef conf, int numOfInitNeurons) {
-        brain_.init(conf.genome, numOfInitNeurons);
+    void init(AgentConfig conf) {
+        brain_.init(conf.genome, conf.num_of_common_neurons);
 
-        // создаем входные зрительные нейроны
-        for (auto p : conf.vision_neurons) { // 3 цвета
-            auto id = createInputNeuron(p, 0);
-            input_vision_neurons.push_back(id);
-        }
+        for (auto [num, align] : conf.input_groups) {
+            BrainPoint first_p{};
+            BrainPoint step_p{};
 
-        // создаем выходные нейроны движения
-        for (auto p : conf.move_neurons) {
-            auto id = createOutputNeuron(p);
-            output_move_neurons.push_back(id);
-        }
-        move_directions = conf.directions;
-
-        output_smooth.assign(output_move_neurons.size(), 0.0f);
-    }
-
-    void resolveSensors() {
-        // зрение
-        auto colors = agent_body_->getVision(0);
-        my_assert(colors.size()*3 == input_vision_neurons.size());
-
-        int i = 0;
-        for (auto id : input_vision_neurons) {
-            // получаем цвет
-            auto color = colors.at(i / 3); // дробная часть отбрасывается
-
-            // получаем значение канала
-            int canal{};
-            switch (i%3) {
-                case 0: canal = color.red(); break;
-                case 1: canal = color.green(); break;
-                case 2: canal = color.blue(); break;
+            switch (align) {
+                case BrainAlign::Top:
+                    step_p = {.x = 0.95 * 2 / num, .y = 0};
+                    first_p = {
+                        .x = 0.95 * 2 / num,
+                        .y = 0.95
+                    };
+                    break;
+                case BrainAlign::Right:
+                    step_p = {.x = 0, .y = -0.95 * 2 / num};
+                    first_p = {
+                        .x = 0.95,
+                        .y = 0.95 - 0.95 * 2 / num
+                    };
+                    break;
+                case BrainAlign::Bottom:
+                    step_p = {.x = -0.95 * 2 / num, .y = 0};
+                    first_p = {
+                        .x = 0.95 - 0.95 * 2 / num,
+                        .y = -0.95
+                    };
+                    break;
+                case BrainAlign::Left:
+                    step_p = {.x = 0, .y = 0.95 * 2 / num};
+                    first_p = {
+                        .x = -0.95,
+                        .y = -0.95 + 0.95 * 2 / num
+                    };
+                    break;
             }
 
-            // конвертируем в интенсивность
-            const double intens = canal / 255.0;
 
-            // говорим нейрону его цвет
-            brain_.getStorage().get<Neuron>(id)->setColor(color);
+            for (auto i = 0; i < num; i++) {
+                auto id = createInputNeuron(first_p, 0);
+                input_neurons.push_back(id);
 
-            // применяем на нейроне
-            setInputNeuronIntensivity(id, intens);
+                first_p += step_p;
+            }
 
-            i++;
         }
     }
 
-    // вызывать ровно один раз за такт, после tick()
-    void handleOutputs() {
-        my_assert(static_cast<int>(output_move_neurons.size()) == move_directions);
+    void handleSensors() {
+        auto input = agent_body_->getInput();
+        my_assert(input.size() == input_neurons.size());
 
-        b2Vec2 vec{0.0f, 0.0f};
 
-        for (int i = 0; i < move_directions; i++) {
-            auto *neuron = brain_.getStorage().get<Neuron>(output_move_neurons[i]);
+        for (int i = 0; i < input.size(); i++) {
+            auto id = input_neurons[i];
+            auto intens = input[i];
 
-            // спайки с прошлого вызова (счетчик сбрасывается)
-            const int spikes = neuron->consumeSpikes();
-            const float max_freq = 1.0f / std::max(1, neuron->getRefractorTicks());
-
-            // «мышца»: скользящее среднее по спайкам
-            output_smooth[i] += (static_cast<float>(spikes) - output_smooth[i]) * SMOOTH_K;
-
-            // нормируем в [0, 1]
-            const float out = std::min(output_smooth[i] / max_freq, 1.0f);
-
-            // направление нейрона i на окружности
-            const float angle = 2.0f * B2_PI * i / move_directions;
-            vec.x += std::cos(angle) * out;
-            vec.y += std::sin(angle) * out;
+            setInputNeuronIntensity(id, intens);
         }
-
-        // противоположные направления гасят друг друга,
-        // но суммарная длина может превысить 1
-        const float len = b2Length(vec);
-        if (len > 1.0f) vec = b2MulSV(1.0f / len, vec);
-
-        agent_body_->applyAcceleration(b2MulSV(MAX_ACCEL, vec));
     }
 
     void tick() {
