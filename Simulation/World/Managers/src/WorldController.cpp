@@ -6,6 +6,9 @@
 
 std::string WorldController::addAgentBody(QPointF pos, AgentBodyConfig conf) const {
     auto bd = b2DefaultBodyDef();
+    bd.type = b2_dynamicBody;
+    bd.linearDamping = 0.2;
+    bd.angularDamping = 0.2;
     bd.position = {static_cast<float>(pos.x()), static_cast<float>(pos.y())};
     auto body = b2CreateBody(storage_.getWorldId(), &bd);
 
@@ -13,11 +16,13 @@ std::string WorldController::addAgentBody(QPointF pos, AgentBodyConfig conf) con
     auto c = b2Circle{{}, 5.0};
     b2CreateCircleShape(body, &sd, &c);
 
-    auto world_obj = new WorldObject(QColorConstants::Green, body, collector_);
+    auto *world_obj = new WorldObject(QColorConstants::Green, body, collector_);
+    b2Body_SetUserData(body, world_obj);
     auto id = storage_.putObject(world_obj);
 
-    auto agent_body = new AgentBody(conf);
+    auto *agent_body = new AgentBody(conf);
     storage_.putAgentBody(agent_body, id);
+
 
     world_obj->init(id, EntityKind::AGENT_BODY);
     agent_body->init(id, &getter_, &move_);
@@ -27,10 +32,12 @@ std::string WorldController::addAgentBody(QPointF pos, AgentBodyConfig conf) con
 
 std::string WorldController::addObstacle(QPointF pos, QRectF rect, QColor color) const {
     auto bd = b2DefaultBodyDef();
+    bd.type = b2_staticBody;
     bd.position = {static_cast<float>(pos.x()), static_cast<float>(pos.y())};
     auto body = b2CreateBody(storage_.getWorldId(), &bd);
 
     auto sd = b2DefaultShapeDef();
+    sd.isSensor = false;
     auto poly = b2MakeBox(rect.width()/2, rect.height()/2);
     b2CreatePolygonShape(body, &sd, &poly);
 

@@ -25,7 +25,7 @@ class Neuron : public Executable, public BrainComponent {
     bool can_spike{true};
 
     // сколько спайков было с прошлого вызова consumeSpikes()
-    int spikes_since_read_{0};
+    bool spiked_{};
 
     // only for input type
     double intens_{};
@@ -34,7 +34,7 @@ class Neuron : public Executable, public BrainComponent {
         if (!can_spike) return;
 
         can_spike = false;
-        spikes_since_read_++;
+        spiked_ = true;
 
         executor_->pushPlan(
             refractor_ticks,
@@ -139,10 +139,8 @@ public:
     }
 
     // сколько спайков было с прошлого вызова; сбрасывает счётчик
-    int consumeSpikes() {
-        const int n = spikes_since_read_;
-        spikes_since_read_ = 0;
-        return n;
+    bool isSpiked() const {
+        return spiked_;
     }
 
     // only for input neurons

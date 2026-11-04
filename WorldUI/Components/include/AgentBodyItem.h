@@ -25,8 +25,15 @@ public:
         : WorldObjectItem(data) {
     }
 
+    QRectF boundingRect() const override {
+        auto res = WorldObjectItem::boundingRect();
+        res.adjust(0, 0, WorldUIConfig::agent_angle_length + WorldUIConfig::agent_angle_head_size, 0);
+
+        return res;
+    }
+
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override {
-        // рисуем поворот
+        // рисуем стрелку поворота
         const QPen pen{WorldUIConfig::agent_angle_color, WorldUIConfig::agent_angle_w, Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin};
         const QBrush brush{WorldUIConfig::agent_angle_color};
         painter->setPen(pen);
@@ -35,8 +42,8 @@ public:
 
         drawArrow(
             *painter,
-            pos(),
-            moveByAzimuth(pos(), my_data_->azimuth, WorldUIConfig::agent_angle_length),
+            {},
+            moveByAzimuth({}, my_data_->azimuth, WorldUIConfig::agent_angle_length),
             WorldUIConfig::agent_angle_head_size
         );
 

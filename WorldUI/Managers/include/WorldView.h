@@ -34,6 +34,7 @@ public:
         setTransformationAnchor(AnchorUnderMouse);
         setDragMode(ScrollHandDrag);
         setBackgroundBrush(QColorConstants::DarkGreen);
+        setViewportUpdateMode(FullViewportUpdate);
 
         setSceneRect(-500, -500, 1000, 1000);
 

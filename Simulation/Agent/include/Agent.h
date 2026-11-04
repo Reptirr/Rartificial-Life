@@ -21,6 +21,7 @@ class Agent {
     std::unordered_map<std::string, int> input_counters;
 
     std::vector<std::string> input_neurons;
+    std::vector<std::string> output_neurons;
 
 
 
@@ -47,6 +48,12 @@ class Agent {
         auto *neuron = brain_.getStorage().get<Neuron>(id);
         neuron->setIntensity(intensity);
     }
+    bool getNeuronSpiked(const std::string &id) {
+        auto *neuron = brain_.getStorage().get<Neuron>(id);
+        auto isSpiked = neuron->isSpiked();
+
+        return isSpiked;
+    }
 
     std::string createInputNeuron(BrainPoint p, double init_intensity) {
         auto res = brain_.createInputNeuron(p);
@@ -63,47 +70,64 @@ class Agent {
         return brain_.createOutputNeuron(p).at("neuron");
     }
 
+    // utils
+    void align_helper(BrainAlign align, int num, BrainPoint &first_p, BrainPoint &step_p) {
+        if (num <= 0)
+            return;
+
+        constexpr double edge = 0.95;
+        constexpr double corner_offset = 0.05;
+
+        const double span = edge - corner_offset;
+        const double step = num > 1 ? (span * 2) / (num - 1) : 0.0;
+
+        switch (align) {
+            case BrainAlign::Top:
+                step_p = {.x = step, .y = 0};
+                first_p = {
+                    .x = num > 1 ? -span : 0.0,
+                    .y = edge
+                };
+                break;
+
+            case BrainAlign::Right:
+                step_p = {.x = 0, .y = -step};
+                first_p = {
+                    .x = edge,
+                    .y = num > 1 ? span : 0.0
+                };
+                break;
+
+            case BrainAlign::Bottom:
+                step_p = {.x = -step, .y = 0};
+                first_p = {
+                    .x = num > 1 ? span : 0.0,
+                    .y = -edge
+                };
+                break;
+
+            case BrainAlign::Left:
+                step_p = {.x = 0, .y = step};
+                first_p = {
+                    .x = -edge,
+                    .y = num > 1 ? -span : 0.0
+                };
+                break;
+        }
+    }
+
 public:
     explicit Agent(AgentBody *agent_body) : agent_body_(agent_body) {}
 
     void init(AgentConfig conf) {
         brain_.init(conf.genome, conf.num_of_common_neurons);
 
+        // input
         for (auto [num, align] : conf.input_groups) {
             BrainPoint first_p{};
             BrainPoint step_p{};
 
-            switch (align) {
-                case BrainAlign::Top:
-                    step_p = {.x = 0.95 * 2 / num, .y = 0};
-                    first_p = {
-                        .x = 0.95 * 2 / num,
-                        .y = 0.95
-                    };
-                    break;
-                case BrainAlign::Right:
-                    step_p = {.x = 0, .y = -0.95 * 2 / num};
-                    first_p = {
-                        .x = 0.95,
-                        .y = 0.95 - 0.95 * 2 / num
-                    };
-                    break;
-                case BrainAlign::Bottom:
-                    step_p = {.x = -0.95 * 2 / num, .y = 0};
-                    first_p = {
-                        .x = 0.95 - 0.95 * 2 / num,
-                        .y = -0.95
-                    };
-                    break;
-                case BrainAlign::Left:
-                    step_p = {.x = 0, .y = 0.95 * 2 / num};
-                    first_p = {
-                        .x = -0.95,
-                        .y = -0.95 + 0.95 * 2 / num
-                    };
-                    break;
-            }
-
+            align_helper(align, num, first_p, step_p);
 
             for (auto i = 0; i < num; i++) {
                 auto id = createInputNeuron(first_p, 0);
@@ -112,6 +136,21 @@ public:
                 first_p += step_p;
             }
 
+        }
+
+        // output
+        for (auto [num, align] : conf.output_groups) {
+            BrainPoint first_p{};
+            BrainPoint step_p{};
+
+            align_helper(align, num, first_p, step_p);
+
+            for (auto i = 0; i < num; i++) {
+                auto id = createOutputNeuron(first_p);
+                output_neurons.push_back(id);
+
+                first_p += step_p;
+            }
         }
     }
 
@@ -126,6 +165,18 @@ public:
 
             setInputNeuronIntensity(id, intens);
         }
+    }
+
+    void handleOutputs() {
+        std::vector<bool> output; // intensity
+
+        for (auto id : output_neurons) {
+            auto neuron = brain_.getStorage().get<Neuron>(id);
+
+            output.push_back(neuron->isSpiked());
+        }
+
+        agent_body_->handleOutput(output);
     }
 
     void tick() {

@@ -27,9 +27,11 @@ public:
         onSetData();
     }
 
-     virtual void UIUpdate() {
-        if (pos() != data_->point) setPos(data_->point);
-        if (polygon() != data_->poly) setPolygon(data_->poly);
+     void UIUpdate() {
+        if (pos() != data_->point)
+            setPos(data_->point);
+        if (polygon() != data_->poly)
+            setPolygon(data_->poly);
         QPen p{data_->color, WorldUIConfig::world_obj_pen_w};
         p.setJoinStyle(Qt::MiterJoin);
         if (pen() != p) setPen(p);

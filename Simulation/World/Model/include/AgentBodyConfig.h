@@ -1,10 +1,15 @@
 #pragma once
 
 struct AgentBodyConfig {
+    // ---------
+    // INPUT
+    // ---------
     int rays{};
     double fov{}; // radian
 
-    int getInputSize() {
-        return rays * 3; // 3 colors per ray
-    }
+    // ---------
+    // OUTPUT
+    // ---------
+    int move_dirs{};
+
 };

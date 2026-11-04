@@ -24,7 +24,9 @@ public:
         auto events = b2World_GetBodyEvents(storage_->getWorldId());
         for (int i = 0; i < events.moveCount; i++) {
             auto event = events.moveEvents[i];
-            auto *obj = static_cast<WorldObject *>(event.userData);
+            auto *obj = static_cast<WorldObject *>(b2Body_GetUserData(event.bodyId));
+            my_assert(obj != nullptr);
+
             obj->onUpdate();
         }
     }

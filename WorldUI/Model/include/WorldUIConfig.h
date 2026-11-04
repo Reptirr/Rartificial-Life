@@ -4,7 +4,7 @@ struct WorldUIConfig {
     static constexpr int kArcSteps = 30;
 
     // world obj
-    static constexpr double world_obj_pen_w = 5;
+    static constexpr double world_obj_pen_w = 0;
 
     // agent
     static constexpr double agent_angle_head_size = 1;

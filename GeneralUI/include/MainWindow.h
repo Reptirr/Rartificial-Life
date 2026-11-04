@@ -17,15 +17,13 @@ class MainWindow : public QMainWindow {
 
 public:
     MainWindow() {
-        // logic
-        int num_vision_pixels = 320;
-        int num_move_dirs = 4;
-
         // defs
         auto agent_def = AgentDef{
             .agent_body_config = {
                 .rays = 64,
-                .fov = std::numbers::pi
+                .fov = std::numbers::pi,
+
+                .move_dirs = 40
             },
             .agent_config = {
                 .genome = {
@@ -34,28 +32,47 @@ public:
                         DefaultGenblock::get
                     }
                 },
-                .num_of_common_neurons = 100,
+                .num_of_common_neurons = 777,
                 .input_groups = {
                     NeuronGroup{
                         .num = 64*3,
                         .align = BrainAlign::Left
                     }
+                },
+                .output_groups = {
+                    NeuronGroup{
+                        .num = 40,
+                        .align = BrainAlign::Top
+                    }
                 }
             }
         };
-        auto obstacle_def = ObstacleDef{
-            .point = {15, 15},
-            .rect = {0, 0, 4, 4},
+        // верхняя и нижняя: длинные, перекрывают углы
+        auto wall_top = ObstacleDef{
+            .point = {0, 15},
+            .rect = {0, 0, 24, 2},
+            .color = QColorConstants::Gray
+        };
+        auto wall_bottom = ObstacleDef{
+            .point = {0, -15},
+            .rect = {0, 0, 24, 2},
             .color = QColorConstants::Black
         };
-        auto obstacle_def1 = ObstacleDef{
-            .point = {10, -15},
-            .rect = {0, 0, 4, 8},
-            .color = QColorConstants::Green
+
+        // левая и правая: помещаются между верхней и нижней
+        auto wall_left = ObstacleDef{
+            .point = {-15, 0},
+            .rect = {0, 0, 2, 20},
+            .color = QColorConstants::Red
+        };
+        auto wall_right = ObstacleDef{
+            .point = {15, 0},
+            .rect = {0, 0, 2, 20},
+            .color = QColorConstants::DarkYellow
         };
         auto sim_def = SimulationDef{
             .init_agents = {agent_def},
-            .obstacles = {obstacle_def1, obstacle_def},
+            .obstacles = {wall_bottom, wall_right, wall_top, wall_left},
             .need_tps = -1,
             .dt = 0.1
         };

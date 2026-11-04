@@ -19,4 +19,5 @@ struct AgentConfig {
     int num_of_common_neurons{};
 
     std::vector<NeuronGroup> input_groups;
+    std::vector<NeuronGroup> output_groups;
 };
