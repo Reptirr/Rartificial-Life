@@ -101,6 +101,12 @@ add_executable(Rartificial_Life
         WorldUI/Utils/include/DrawUtils.h
         Simulation/Agent/include/AgentConfig.h
         Simulation/World/Model/include/AgentBodyConfig.h
+        Simulation/include/SimulationController.h
+        Simulation/include/SimulationStorage.h
+        Simulation/Agent/src/Agent.cpp
+        Simulation/include/AgentLifeController.h
+        Simulation/include/GenomeRandomizer.h
+        RandomGenerator.h
 )
 
 target_link_libraries(Rartificial_Life PRIVATE

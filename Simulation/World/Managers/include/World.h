@@ -4,6 +4,8 @@
 #include <WorldStorage.h>
 #include <box2d/box2d.h>
 
+struct AgentBodyConfig;
+
 class World {
     std::unique_ptr<WorldStorage> storage_;
     std::unique_ptr<WorldController> controller_;
@@ -31,8 +33,8 @@ public:
         }
     }
 
-    std::string addAgentBody(QPointF pos, AgentBodyConfig conf) const {
-        return controller_->addAgentBody(pos, conf);
+    std::string addAgentBody(const AgentBodyConfig &conf, AgentLifeController *life_controller) const {
+        return controller_->addAgentBody(conf, life_controller);
     }
 
     std::string addObstacle(QPointF pos, QRectF rect, QColor color) const {

@@ -1,5 +1,5 @@
 #pragma once
-#include <../../Brain/Model/include/Genome.h>
+#include <Genome.h>
 #include <vector>
 
 enum class BrainAlign {

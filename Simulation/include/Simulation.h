@@ -1,12 +1,15 @@
 #pragma once
 #include <Agent.h>
+#include <SimulationController.h>
+#include <SimulationStorage.h>
 #include <thread>
 #include <World.h>
 
 
 class Simulation {
     World world_;
-    std::unordered_map<std::string, Agent *> agents_;
+    SimulationStorage storage_;
+    SimulationController controller_{world_, storage_};
 
     double dt_;
     int need_tps_;
@@ -16,16 +19,16 @@ class Simulation {
 
     void tick() {
         // сенсоры
-        for (auto *agent : agents_ | std::views::values)
+        for (auto *agent : storage_.agents() | std::views::values)
             agent->handleSensors();
 
         // обрабатываем
-        for (auto *agent : agents_ | std::views::values)
+        for (auto *agent : storage_.agents() | std::views::values)
             agent->tick();
         world_.tick(dt_);
 
         // движения
-        for (auto *agent : agents_ | std::views::values)
+        for (auto *agent : storage_.agents() | std::views::values)
             agent->handleOutputs();
     }
 
@@ -38,12 +41,7 @@ public:
 
         // создаем агентов
         for (auto agent_def : def.init_agents) {
-            auto id = world_.addAgentBody(agent_def.point, agent_def.agent_body_config);
-            auto *agent = new Agent(world_.getStorage()->getAgentBody(id));
-
-            agent->init(agent_def.agent_config);
-
-            agents_.insert({id, agent});
+            controller_.createAgent(agent_def);
         }
     }
 
@@ -77,7 +75,7 @@ public:
     World *getWorld() {
         return &world_;
     }
-    std::unordered_map<std::string, Agent *> getAgents() {
-        return agents_;
+    const std::unordered_map<std::string, Agent *>& getAgents() {
+        return storage_.agents();
     }
 };

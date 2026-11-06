@@ -1,4 +1,5 @@
 #pragma once
+#include <AgentBody.h>
 #include <WorldObject.h>
 #include <WorldUIConfig.h>
 #include <WorldUIDatas.h>

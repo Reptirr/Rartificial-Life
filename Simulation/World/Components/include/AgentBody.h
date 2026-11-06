@@ -2,11 +2,13 @@
 #include <AgentBodyConfig.h>
 #include <my_assert.h>
 #include <qcolor.h>
+#include <SimulationController.h>
 #include <WorldController.h>
 #include <WorldEntity.h>
 
 class AgentBody : public WorldEntity {
     AgentBodyConfig conf_;
+    AgentLifeController *sim_controller_;
 
     double angle{};
 
@@ -22,7 +24,8 @@ class AgentBody : public WorldEntity {
     }
 
 public:
-    explicit AgentBody(AgentBodyConfig conf) : conf_(conf) {
+    explicit AgentBody(const AgentBodyConfig &conf, AgentLifeController *sim_controller)
+        : conf_(conf), sim_controller_(sim_controller) {
 
     }
 

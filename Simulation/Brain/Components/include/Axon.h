@@ -77,7 +77,8 @@ public:
         }
 
         auto dscr = [&](std::string s) {
-              return std::stod(genblock.at(s));
+            if (genblock.contains(s)) return std::stod(genblock.at(s));
+            return std::stod(genome.genblocks.at(0).at(s));
         };
 
         angle_deviation = dscr(Gen::AXON_ANGLE_DEVIATION);

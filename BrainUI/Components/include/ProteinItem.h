@@ -10,6 +10,7 @@ class ProteinItem : public QGraphicsEllipseItem, public UIComponent {
 
 public:
     ProteinItem(UIStorage &storage, const ProteinData &data) : QGraphicsEllipseItem(-data.dist, -data.dist, data.dist * 2, data.dist * 2), UIComponent(storage), data_(data) {
+        setPos(data_.pos - QGraphicsEllipseItem::boundingRect().center());
         setZValue(UIConfig::protein_z);
 
         ProteinItem::UIUpdate();

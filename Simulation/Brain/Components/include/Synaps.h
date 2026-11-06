@@ -51,7 +51,8 @@ public:
         }
 
         auto dscr = [&](std::string s) {
-            return std::stod(genblock.at(s));
+            if (genblock.contains(s)) return std::stod(genblock.at(s));
+            return std::stod(genome.genblocks.at(0).at(s));
         };
 
         w_reduce_lr = dscr(Gen::SYNAPS_W_REDUCE_LR);

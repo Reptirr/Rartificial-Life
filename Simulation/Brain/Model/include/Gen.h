@@ -27,8 +27,29 @@ namespace Gen {
     GENNAME SYNAPS_W_INIT = "synaps_w_init";
     GENNAME SYNAPS_CA_DECAY = "synaps_ca_decay";
     GENNAME SYNAPS_MED_REDUCE_VAL = "synaps_med_reduce_val";
-}
 
+    inline const std::vector<std::string>& all() {
+        static const std::vector names = {
+            NEURON_THRESHOLD, NEURON_RANDOM_SPIKE_TICK, NEURON_REFRACTOR_TICK,
+            AXON_ANGLE_DEVIATION, AXON_DEFAULT_STEP, AXON_STEP_DEVIATION,
+            AXON_SEARCH_DENDRITE_R, AXON_MAX_NODES,
+            SYNAPS_W_REDUCE_LR, SYNAPS_W_PRODUCE_LR, SYNAPS_W_MIN,
+            SYNAPS_W_MAX, SYNAPS_W_INIT, SYNAPS_CA_DECAY, SYNAPS_MED_REDUCE_VAL
+        };
+
+        return names;
+    }
+
+    inline int count() {
+        return all().size();
+    }
+
+    inline std::string fromInt(int i) {
+        return all().at(i);
+    }
+
+}
+#undef GENNAME
 
 struct DefaultGenblock {
     inline static GenBlock get = {

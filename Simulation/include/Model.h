@@ -1,11 +1,10 @@
 #pragma once
-#include <Genome.h>
+#include <AgentBodyConfig.h>
+#include <AgentConfig.h>
 #include <QRect>
 
 
 struct AgentDef {
-    QPointF point;
-
     AgentBodyConfig agent_body_config;
     AgentConfig agent_config;
 };

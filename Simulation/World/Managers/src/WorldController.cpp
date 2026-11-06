@@ -1,15 +1,16 @@
 #include <AgentBody.h>
+#include <AgentLifeController.h>
 #include <QRect>
 #include <WorldController.h>
 #include <box2d/types.h>
 #include <box2d/box2d.h>
 
-std::string WorldController::addAgentBody(QPointF pos, AgentBodyConfig conf) const {
+std::string WorldController::addAgentBody(AgentBodyConfig conf, AgentLifeController *sim_controller) const {
     auto bd = b2DefaultBodyDef();
     bd.type = b2_dynamicBody;
     bd.linearDamping = 0.2;
     bd.angularDamping = 0.2;
-    bd.position = {static_cast<float>(pos.x()), static_cast<float>(pos.y())};
+    bd.position = {static_cast<float>(conf.pos.x), static_cast<float>(conf.pos.y)};
     auto body = b2CreateBody(storage_.getWorldId(), &bd);
 
     auto sd = b2DefaultShapeDef();
@@ -20,7 +21,7 @@ std::string WorldController::addAgentBody(QPointF pos, AgentBodyConfig conf) con
     b2Body_SetUserData(body, world_obj);
     auto id = storage_.putObject(world_obj);
 
-    auto *agent_body = new AgentBody(conf);
+    auto *agent_body = new AgentBody(conf, sim_controller);
     storage_.putAgentBody(agent_body, id);
 
 

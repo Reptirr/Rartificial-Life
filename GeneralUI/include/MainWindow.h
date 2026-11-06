@@ -1,8 +1,11 @@
 #pragma once
 
+#include <AgentConfig.h>
 #include <BrainView.h>
-#include <QSplitter>
+#include <GenomeRandomizer.h>
+#include <Model.h>
 #include <QMainWindow>
+#include <QSplitter>
 #include <Simulation.h>
 #include <WorldView.h>
 
@@ -20,18 +23,14 @@ public:
         // defs
         auto agent_def = AgentDef{
             .agent_body_config = {
+                .pos = {},
                 .rays = 64,
                 .fov = std::numbers::pi,
 
                 .move_dirs = 40
             },
             .agent_config = {
-                .genome = {
-                    .proteins = {},
-                    .genblocks = {
-                        DefaultGenblock::get
-                    }
-                },
+                .genome = GenomeRandomizer::randomizing(),
                 .num_of_common_neurons = 777,
                 .input_groups = {
                     NeuronGroup{

@@ -5,6 +5,7 @@
 #include <WorldDataCollector.h>
 #include <WorldStorage.h>
 
+class AgentLifeController;
 class QRectF;
 
 class WorldController {
@@ -21,7 +22,7 @@ public:
     }
 
     // with storage work
-    std::string addAgentBody(QPointF pos, AgentBodyConfig conf) const;
+    std::string addAgentBody(AgentBodyConfig conf, AgentLifeController *sim_controller) const;
 
     std::string addObstacle(QPointF, QRectF rect, QColor color) const;
 };
