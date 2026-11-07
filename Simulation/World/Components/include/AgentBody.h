@@ -8,7 +8,6 @@
 
 class AgentBody : public WorldEntity {
     AgentBodyConfig conf_;
-    AgentLifeController *sim_controller_;
 
     double angle{};
 
@@ -24,12 +23,12 @@ class AgentBody : public WorldEntity {
     }
 
 public:
-    explicit AgentBody(const AgentBodyConfig &conf, AgentLifeController *sim_controller)
-        : conf_(conf), sim_controller_(sim_controller) {
+    explicit AgentBody(const AgentBodyConfig &conf)
+        : conf_(conf) {
 
     }
 
-    std::vector<double> getInput() {
+    std::vector<double> getInput() const {
         std::vector<double> input;
 
         for (auto color : getVision()) {
@@ -53,9 +52,10 @@ public:
 
         return input;
     }
-
     void handleOutput(std::vector<bool> neurons) {
         my_assert(neurons.size() == conf_.move_dirs);
+
+        b2Vec2 out_move{};
 
         for (int i = 0; i < conf_.move_dirs; i++) {
             bool move = neurons[i];
@@ -63,7 +63,37 @@ public:
 
             b2Vec2 dir = { .x = static_cast<float>(std::sin(move_angle)), .y = static_cast<float>(std::cos(move_angle)) };
 
-            move_controller_->setVel(this_id_, dir * move);
+            out_move += dir * move;
+        }
+
+
+        executor_->push({
+            .type = WorldCommandType::AGENT_BODY_MOVE,
+            .data = {
+                {"agentbody", this_id_},
+                {"vec_x", std::to_string(out_move.x)},
+                {"vec_y", std::to_string(out_move.y)}
+            }
+        });
+    }
+
+    void onEat() {}
+
+    void onCollision(const WorldEntity *other) override {
+        switch (other->kind()) {
+            case EntityKind::FOOD: {
+                executor_->push({
+                    .type = WorldCommandType::AGENT_BODY_EAT_FOOD,
+                    .data = {
+                        {"agentbody", this_id_},
+                        {"food", other->getId()}
+                    }
+                });
+
+                return;
+            }
+
+            default:;
         }
     }
 
@@ -71,5 +101,9 @@ public:
     // getters
     double getAzimuth() const {
         return angle;
+    }
+
+    EntityKind kind() const override {
+        return EntityKind::AGENT_BODY;
     }
 };

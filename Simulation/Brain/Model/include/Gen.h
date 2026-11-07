@@ -68,8 +68,8 @@ struct DefaultGenblock {
         // synaps
         {Gen::SYNAPS_W_REDUCE_LR,       "0.01"},
         {Gen::SYNAPS_W_PRODUCE_LR,      "0.01"},
-        {Gen::SYNAPS_W_MIN,             "-1.0"},
-        {Gen::SYNAPS_W_MAX,             "1.0"},
+        {Gen::SYNAPS_W_MIN,             "-2.0"},
+        {Gen::SYNAPS_W_MAX,             "2.0"},
         {Gen::SYNAPS_W_INIT,            "1.0"},
         {Gen::SYNAPS_CA_DECAY,          "0.1"},
         {Gen::SYNAPS_MED_REDUCE_VAL,    "0.5"},

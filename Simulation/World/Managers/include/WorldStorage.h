@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Food.h>
 #include <string>
 #include <unordered_map>
 #include <UUIDGenerator.h>
@@ -18,7 +19,9 @@ class WorldStorage {
     b2WorldId world_id_;
 
     std::unordered_map<std::string, WorldObject *> objects_;
+
     std::unordered_map<std::string, AgentBody *> agent_bodies_;
+    std::unordered_map<std::string, Food *> food_;
 
 public:
     explicit WorldStorage(const b2WorldId &world_id)
@@ -33,6 +36,9 @@ public:
     WorldObject *getObject(const std::string &id) const {
         return objects_.at(id);
     }
+    bool removeObject(const std::string &id) {
+        return objects_.erase(id);
+    }
 
     void putAgentBody(AgentBody *agent_body, std::string id) {
         agent_bodies_.insert({id, agent_body});
@@ -40,6 +46,21 @@ public:
     AgentBody *getAgentBody(const std::string &id) const {
         return agent_bodies_.at(id);
     }
+    bool removeAgentBody(const std::string &id) {
+        return agent_bodies_.erase(id);
+    }
+
+    void putFood(Food *food, const std::string& id) {
+        food_.insert({id, food});
+    }
+    Food *getFood(const std::string &id) {
+        return food_.at(id);
+    }
+    bool removeFood(const std::string &id) {
+        return food_.erase(id);
+    }
+
+    WorldEntity *getEntity(const std::string &id);
 
     const std::unordered_map<std::string, WorldObject *> &getObjects() const {
         return objects_;

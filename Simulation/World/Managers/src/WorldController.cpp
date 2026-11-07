@@ -5,12 +5,12 @@
 #include <box2d/types.h>
 #include <box2d/box2d.h>
 
-std::string WorldController::addAgentBody(AgentBodyConfig conf, AgentLifeController *sim_controller) const {
+std::string WorldController::addAgentBody(AgentBodyConfig conf) const {
     auto bd = b2DefaultBodyDef();
     bd.type = b2_dynamicBody;
     bd.linearDamping = 0.2;
     bd.angularDamping = 0.2;
-    bd.position = {static_cast<float>(conf.pos.x), static_cast<float>(conf.pos.y)};
+    bd.position = conf.pos;
     auto body = b2CreateBody(storage_.getWorldId(), &bd);
 
     auto sd = b2DefaultShapeDef();
@@ -21,12 +21,12 @@ std::string WorldController::addAgentBody(AgentBodyConfig conf, AgentLifeControl
     b2Body_SetUserData(body, world_obj);
     auto id = storage_.putObject(world_obj);
 
-    auto *agent_body = new AgentBody(conf, sim_controller);
+    auto *agent_body = new AgentBody(conf);
     storage_.putAgentBody(agent_body, id);
 
 
     world_obj->init(id, EntityKind::AGENT_BODY);
-    agent_body->init(id, &getter_, &move_);
+    agent_body->init(id, &getter_, executor_);
 
     return id;
 }
@@ -50,4 +50,32 @@ std::string WorldController::addObstacle(QPointF pos, QRectF rect, QColor color)
     b2Body_SetUserData(body, obj);
 
     return id;
+}
+
+void WorldController::remove(const std::string &id) {
+    auto *obj = storage_.getObject(id);
+
+    switch (obj->getEntityKind()) {
+        case EntityKind::NONE:
+            break;
+        case EntityKind::AGENT_BODY: {
+            auto *agentbody = storage_.getAgentBody(id);
+            storage_.removeAgentBody(id);
+            delete agentbody;
+            break;
+        }
+        case EntityKind::FOOD: {
+            auto *food = storage_.getFood(id);
+            storage_.removeFood(id);
+            delete food;
+            break;
+        }
+    }
+    storage_.removeObject(id);
+
+    // delete b2box body
+    b2DestroyBody(obj->getBodyId());
+
+    // delete obj
+    delete obj;
 }

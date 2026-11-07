@@ -82,7 +82,6 @@ add_executable(Rartificial_Life
         Simulation/World/Managers/src/WorldController.cpp
         Simulation/World/Managers/include/SenseGetter.h
         Simulation/World/Managers/src/SenseGetter.cpp
-        Simulation/World/Managers/include/MoveController.h
         Simulation/include/Simulation.h
         Simulation/include/Model.h
         BrainUI/Utils/include/SizeUtils.h
@@ -107,6 +106,10 @@ add_executable(Rartificial_Life
         Simulation/include/AgentLifeController.h
         Simulation/include/GenomeRandomizer.h
         RandomGenerator.h
+        Simulation/World/Managers/include/WorldExecutor.h
+        Simulation/World/Managers/src/WorldExecutor.cpp
+        Simulation/World/Components/include/Food.h
+        Simulation/World/Managers/src/WorldStorage.cpp
 )
 
 target_link_libraries(Rartificial_Life PRIVATE

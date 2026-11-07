@@ -3,5 +3,6 @@
 enum class EntityKind {
     NONE,
 
-    AGENT_BODY
+    AGENT_BODY,
+    FOOD
 };
