@@ -11,7 +11,6 @@ class Simulation {
     SimulationStorage storage_;
     SimulationController controller_{world_, storage_};
 
-    double dt_;
     int need_tps_;
 
     std::atomic<bool> running{};
@@ -25,7 +24,7 @@ class Simulation {
         // обрабатываем
         for (auto *agent : storage_.agents() | std::views::values)
             agent->tick();
-        world_.tick(dt_);
+        world_.tick();
 
         // движения
         for (auto *agent : storage_.agents() | std::views::values)
@@ -33,7 +32,7 @@ class Simulation {
     }
 
 public:
-    explicit Simulation(const SimulationDef &def) : dt_(def.dt), need_tps_(def.need_tps) {
+    explicit Simulation(const SimulationDef &def) : world_(def.dt), need_tps_(def.need_tps) {
         // создаем препятствия
         for (auto obstacle_def : def.obstacles) {
             world_.addObstacle(obstacle_def.point, obstacle_def.rect, obstacle_def.color);

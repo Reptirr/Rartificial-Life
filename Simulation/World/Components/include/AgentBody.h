@@ -1,15 +1,14 @@
 #pragma once
+
 #include <AgentBodyConfig.h>
+#include <AgentConfig.h>
 #include <my_assert.h>
 #include <qcolor.h>
-#include <SimulationController.h>
 #include <WorldController.h>
 #include <WorldEntity.h>
 
 class AgentBody : public WorldEntity {
     AgentBodyConfig conf_;
-
-    double angle{};
 
     std::vector<QColor> getVision() const {
         return sense_getter_->getVision(
@@ -26,6 +25,36 @@ public:
     explicit AgentBody(const AgentBodyConfig &conf)
         : conf_(conf) {
 
+    }
+
+    std::vector<NeuronGroup> getInputNeuronGroups() const {
+        std::vector<NeuronGroup> groups;
+
+        // vision
+        groups.push_back({
+            .num = conf_.rays*3,
+            .align = BrainAlign::Left
+        });
+
+        return groups;
+    }
+
+    std::vector<NeuronGroup> getOutputNeuronGroups() const {
+        std::vector<NeuronGroup> groups;
+
+        // move
+        groups.push_back({
+            .num = conf_.move_dirs,
+            .align = BrainAlign::Top_Right
+        });
+
+        // rotate
+        groups.push_back({
+            .num = 1,
+            .align = BrainAlign::Top_Left
+        });
+
+        return groups;
     }
 
     std::vector<double> getInput() const {
@@ -53,20 +82,20 @@ public:
         return input;
     }
     void handleOutput(std::vector<bool> neurons) {
-        my_assert(neurons.size() == conf_.move_dirs);
+        my_assert(neurons.size() == conf_.move_dirs+1);
 
+        int i = 0;
+
+        // move
         b2Vec2 out_move{};
-
-        for (int i = 0; i < conf_.move_dirs; i++) {
+        for (; i < conf_.move_dirs; i++) {
             bool move = neurons[i];
-            double move_angle = (i+1) / static_cast<double>(conf_.move_dirs) * std::numbers::pi*2 + angle;
+            double move_angle = i / static_cast<double>(conf_.move_dirs) * std::numbers::pi*2;
 
             b2Vec2 dir = { .x = static_cast<float>(std::sin(move_angle)), .y = static_cast<float>(std::cos(move_angle)) };
 
             out_move += dir * move;
         }
-
-
         executor_->push({
             .type = WorldCommandType::AGENT_BODY_MOVE,
             .data = {
@@ -75,6 +104,17 @@ public:
                 {"vec_y", std::to_string(out_move.y)}
             }
         });
+
+        // rotate
+        if (neurons[i]) {
+            executor_->push({
+                .type = WorldCommandType::AGENT_BODY_ROTATE,
+                .data = {
+                    {"agentbody", this_id_},
+                    {"force", std::to_string(0.1 * neurons[i])}
+                }
+            });
+        }
     }
 
     void onEat() {}
@@ -95,12 +135,6 @@ public:
 
             default:;
         }
-    }
-
-
-    // getters
-    double getAzimuth() const {
-        return angle;
     }
 
     EntityKind kind() const override {

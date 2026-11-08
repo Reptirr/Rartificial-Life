@@ -73,7 +73,7 @@ public:
             .init_agents = {agent_def},
             .obstacles = {wall_bottom, wall_right, wall_top, wall_left},
             .need_tps = -1,
-            .dt = 0.1
+            .dt = 0.01
         };
 
         simulation_ = std::make_unique<Simulation>(sim_def);

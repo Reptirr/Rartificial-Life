@@ -57,41 +57,53 @@ void Agent::align_helper(BrainAlign align, int num, BrainPoint &first_p, BrainPo
 
     constexpr double edge = 0.95;
     constexpr double corner_offset = 0.05;
+    constexpr double span = edge - corner_offset;
+    constexpr double mid_gap = corner_offset;   // зазор в середине стороны между половинками
 
-    const double span = edge - corner_offset;
-    const double step = num > 1 ? (span * 2) / (num - 1) : 0.0;
+    enum class Side { Top, Right, Bottom, Left };
+    Side side = Side::Top;
+    double t_from = -span;   // отрезок вдоль стороны, по часовой
+    double t_to   =  span;
 
     switch (align) {
-        case BrainAlign::Top:
-            step_p = {.x = step, .y = 0};
-            first_p = {
-                .x = num > 1 ? -span : 0.0,
-                .y = edge
-            };
-            break;
+        // целые стороны
+        case BrainAlign::Top:    side = Side::Top;    break;
+        case BrainAlign::Right:  side = Side::Right;  break;
+        case BrainAlign::Bottom: side = Side::Bottom; break;
+        case BrainAlign::Left:   side = Side::Left;   break;
 
-        case BrainAlign::Right:
-            step_p = {.x = 0, .y = -step};
-            first_p = {
-                .x = edge,
-                .y = num > 1 ? span : 0.0
-            };
-            break;
+        // первая по ходу часовой стрелки половина стороны
+        case BrainAlign::Top_Left:     side = Side::Top;    t_to = -mid_gap; break;
+        case BrainAlign::Right_Top:    side = Side::Right;  t_to = -mid_gap; break;
+        case BrainAlign::Bottom_Right: side = Side::Bottom; t_to = -mid_gap; break;
+        case BrainAlign::Left_Bottom:  side = Side::Left;   t_to = -mid_gap; break;
 
-        case BrainAlign::Bottom:
-            step_p = {.x = -step, .y = 0};
-            first_p = {
-                .x = num > 1 ? span : 0.0,
-                .y = -edge
-            };
-            break;
+        // вторая половина
+        case BrainAlign::Top_Right:    side = Side::Top;    t_from = mid_gap; break;
+        case BrainAlign::Right_Bottom: side = Side::Right;  t_from = mid_gap; break;
+        case BrainAlign::Bottom_Left:  side = Side::Bottom; t_from = mid_gap; break;
+        case BrainAlign::Left_Top:     side = Side::Left;   t_from = mid_gap; break;
+    }
 
-        case BrainAlign::Left:
-            step_p = {.x = 0, .y = step};
-            first_p = {
-                .x = -edge,
-                .y = num > 1 ? -span : 0.0
-            };
+    const double step = num > 1 ? (t_to - t_from) / (num - 1) : 0.0;
+    const double t0   = num > 1 ? t_from : (t_from + t_to) / 2.0;   // один нейрон по центру отрезка
+
+    switch (side) {
+        case Side::Top:
+            first_p = {.x =  t0,   .y =  edge};
+            step_p  = {.x =  step, .y =  0};
+            break;
+        case Side::Right:
+            first_p = {.x =  edge, .y = -t0};
+            step_p  = {.x =  0,    .y = -step};
+            break;
+        case Side::Bottom:
+            first_p = {.x = -t0,   .y = -edge};
+            step_p  = {.x = -step, .y =  0};
+            break;
+        case Side::Left:
+            first_p = {.x = -edge, .y =  t0};
+            step_p  = {.x =  0,    .y =  step};
             break;
     }
 }

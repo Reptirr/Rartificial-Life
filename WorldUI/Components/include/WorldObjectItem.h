@@ -36,6 +36,8 @@ public:
         p.setJoinStyle(Qt::MiterJoin);
         if (pen() != p) setPen(p);
         setBrush(data_->color);
+        if (data_->angle != rotation())
+            setRotation(data_->angle);
 
         onUIUpdate();
     }

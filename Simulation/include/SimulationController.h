@@ -1,6 +1,7 @@
 #pragma once
 
 
+#include <AgentBody.h>
 #include <Model.h>
 #include <SimulationStorage.h>
 #include <string>
@@ -20,8 +21,14 @@ public:
         life_controller_ = life_controller;
     }
 
-    std::string createAgent(const AgentDef &agent_def) {
+    std::string createAgent(AgentDef &agent_def) {
         auto id = world_.addAgentBody(agent_def.agent_body_config, life_controller_);
+        auto *agentbody = world_.getStorage()->getAgentBody(id);
+
+        // set agent config groups
+        agent_def.agent_config.input_groups = agentbody->getInputNeuronGroups();
+        agent_def.agent_config.output_groups = agentbody->getOutputNeuronGroups();
+
         auto agent = new Agent(world_.getStorage()->getAgentBody(id));
         agent->init(agent_def.agent_config);
 

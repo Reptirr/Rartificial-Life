@@ -55,7 +55,7 @@ struct DefaultGenblock {
     inline static GenBlock get = {
         // neuron
         {Gen::NEURON_THRESHOLD,         "10.0"},
-        {Gen::NEURON_RANDOM_SPIKE_TICK, "0"},     // 0 = шумовых спайков нет
+        {Gen::NEURON_RANDOM_SPIKE_TICK, "10"},     // 0 = шумовых спайков нет
         {Gen::NEURON_REFRACTOR_TICK,    "3"},
 
         // axon

@@ -1,6 +1,7 @@
 #pragma once
 #include <AgentBodyConfig.h>
 #include <GenomeRandomizer.h>
+#include <SimulationController.h>
 #include <SimulationStorage.h>
 
 struct toBirth {

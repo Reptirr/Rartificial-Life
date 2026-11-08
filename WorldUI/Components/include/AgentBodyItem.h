@@ -43,7 +43,7 @@ public:
         drawArrow(
             *painter,
             {},
-            moveByAzimuth({}, my_data_->azimuth, WorldUIConfig::agent_angle_length),
+            moveByAzimuth({}, data_->angle, WorldUIConfig::agent_angle_length),
             WorldUIConfig::agent_angle_head_size
         );
 

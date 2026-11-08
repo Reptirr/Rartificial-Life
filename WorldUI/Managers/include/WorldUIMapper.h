@@ -69,6 +69,10 @@ class WorldUIMapper {
         b2ShapeId shape;
         b2Body_GetShapes(obj->getBodyId(), &shape, 1);
         data->poly = convertShapeToQPolygonF(shape);
+
+        auto rot = b2Body_GetRotation(obj->getBodyId());
+        auto rad = b2Rot_GetAngle(rot);
+        data->angle = qRadiansToDegrees(rad);
     }
 
 public:
@@ -86,9 +90,6 @@ public:
 
         // world obj data
         fillData(data, obj);
-
-        // agentbody data
-        data->azimuth = agentbody->getAzimuth();
 
         return data;
     }

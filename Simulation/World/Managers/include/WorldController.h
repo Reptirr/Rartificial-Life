@@ -14,11 +14,12 @@ class WorldController {
     SenseGetter getter_;
     WorldDataCollector &collector_;
     WorldExecutor *executor_;
+    double dt_;
 
 
 public:
-    explicit WorldController(WorldStorage &storage, WorldDataCollector &collector, WorldExecutor *executor)
-        : storage_(storage), getter_(storage), collector_(collector), executor_(executor) {
+    explicit WorldController(WorldStorage &storage, WorldDataCollector &collector, WorldExecutor *executor, const double dt)
+        : storage_(storage), getter_(storage), collector_(collector), executor_(executor), dt_(dt) {
 
     }
 
@@ -30,8 +31,15 @@ public:
     void remove(const std::string &id);
     void setVel(const std::string &id, const b2Vec2 vec) const {
         const auto obj = storage_.getObject(id);
-        const auto body = obj->getBodyId();
 
-        b2Body_ApplyForceToCenter(body, vec, true);
+        const auto body = obj->getBodyId();
+        const b2Vec2 world = b2Body_GetWorldVector(body, vec);  // учитывает поворот тела
+
+        b2Body_ApplyForceToCenter(body, world, true);
+    }
+    void rotate(const std::string &id, const double force) const {
+        const auto obj = storage_.getObject(id);
+
+        b2Body_ApplyAngularImpulse(obj->getBodyId(), force / dt_, true);
     }
 };

@@ -12,20 +12,22 @@ class World {
     std::unique_ptr<WorldExecutor> executor_;
     WorldDataCollector data_collector_;
 
+    double dt_;
+
 public:
-    World() {
+    World(double dt) : dt_(dt) {
         auto wd = b2DefaultWorldDef();
         wd.gravity = {};
         auto world_id = b2CreateWorld(&wd);
 
         storage_ = std::make_unique<WorldStorage>(world_id);
         executor_ = std::make_unique<WorldExecutor>();
-        controller_ = std::make_unique<WorldController>(*storage_, data_collector_, executor_.get());
+        controller_ = std::make_unique<WorldController>(*storage_, data_collector_, executor_.get(), dt);
         executor_->init(storage_.get(), controller_.get());
     }
 
-    void tick(const double dt) {
-        b2World_Step(storage_->getWorldId(), dt, 2);
+    void tick() {
+        b2World_Step(storage_->getWorldId(), dt_, 2);
 
         auto body_events = b2World_GetBodyEvents(storage_->getWorldId());
         for (int i = 0; i < body_events.moveCount; i++) {

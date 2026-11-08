@@ -27,6 +27,17 @@ void WorldExecutor::handleCmdFabric(const WorldCommand &cmd) {
             auto vec_y = std::stod(data.at("vec_y"));
 
             controller_->setVel(agentbody_id, {(float)vec_x, (float)vec_y});
+
+            return;
+        }
+
+        case WorldCommandType::AGENT_BODY_ROTATE: {
+            auto agentbody_id = data.at("agentbody");
+            auto force = std::stod(data.at("force"));
+
+            controller_->rotate(agentbody_id, force);
+
+            return;
         }
     }
 }

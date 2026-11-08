@@ -10,7 +10,8 @@ enum class WorldCommandType {
     NONE,
 
     AGENT_BODY_EAT_FOOD,
-    AGENT_BODY_MOVE
+    AGENT_BODY_MOVE,
+    AGENT_BODY_ROTATE
 };
 
 struct WorldCommand {

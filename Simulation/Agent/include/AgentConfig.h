@@ -6,7 +6,19 @@ enum class BrainAlign {
     Top,
     Right,
     Bottom,
-    Left
+    Left,
+
+    Top_Left,
+    Top_Right,
+
+    Right_Top,
+    Right_Bottom,
+
+    Bottom_Left,
+    Bottom_Right,
+
+    Left_Top,
+    Left_Bottom
 };
 
 struct NeuronGroup {
