@@ -9,7 +9,7 @@ std::string WorldController::addAgentBody(AgentBodyConfig conf) const {
     auto bd = b2DefaultBodyDef();
     bd.type = b2_dynamicBody;
     bd.linearDamping = 0.2;
-    bd.angularDamping = 60;
+    bd.angularDamping = 45;
     bd.position = conf.pos;
     auto body = b2CreateBody(storage_.getWorldId(), &bd);
 
@@ -48,6 +48,31 @@ std::string WorldController::addObstacle(QPointF pos, QRectF rect, QColor color)
     obj->init(id, EntityKind::NONE);
 
     b2Body_SetUserData(body, obj);
+
+    return id;
+}
+
+std::string WorldController::addFood(QPointF pos) const {
+    auto bd = b2DefaultBodyDef();
+    bd.type = b2_staticBody;
+    bd.position = {static_cast<float>(pos.x()), static_cast<float>(pos.y())};
+
+    auto body = b2CreateBody(storage_.getWorldId(), &bd);
+
+    auto sd = b2DefaultShapeDef();
+    sd.isSensor = false;
+    auto c = b2Circle{{}, 3.0};
+    b2CreateCircleShape(body, &sd, &c);
+
+    auto *obj = new WorldObject(QColorConstants::DarkYellow, body, collector_);
+    auto id = storage_.putObject(obj);
+    b2Body_SetUserData(body, obj);
+
+    auto *food = new Food();
+    storage_.putFood(food, id);
+
+    obj->init(id, EntityKind::FOOD);
+    food->init(id, &getter_, executor_);
 
     return id;
 }

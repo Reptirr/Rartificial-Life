@@ -11,5 +11,5 @@ struct WorldUIConfig {
     static constexpr double agent_angle_length = 15;
     static constexpr double agent_angle_w = 1;
     static constexpr QColor agent_angle_color = QColorConstants::Black;
-
+    static constexpr double agent_font_size = 3;
 };

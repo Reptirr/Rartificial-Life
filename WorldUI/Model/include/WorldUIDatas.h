@@ -16,5 +16,5 @@ struct WorldObjectData {
 };
 
 struct AgentBodyData : WorldObjectData {
-
+    double energy{};
 };

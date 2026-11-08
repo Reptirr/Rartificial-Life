@@ -26,6 +26,7 @@ public:
     // adders
     std::string addAgentBody(AgentBodyConfig conf) const;
     std::string addObstacle(QPointF, QRectF rect, QColor color) const;
+    std::string addFood(QPointF) const;
 
     // changers
     void remove(const std::string &id);

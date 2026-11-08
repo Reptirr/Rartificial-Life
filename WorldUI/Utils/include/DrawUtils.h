@@ -27,3 +27,41 @@ inline void drawArrow(QPainter& p, const QPointF& from, const QPointF& to,
     p.setBrush(p.pen().color());          // залить наконечник тем же цветом
     p.drawPolygon(QPolygonF() << to << p1 << p2);
 }
+
+inline void drawScalableText(QPainter *painter,
+                             const QStyleOptionGraphicsItem *option,
+                             const QRectF &boundingRect,
+                             const QString &symbol,
+                             const qreal fontSize)   // размер шрифта в пикселях в координатах сцены
+{
+    const qreal lod = option->levelOfDetailFromTransform(painter->worldTransform());
+    const qreal screenFontSize = fontSize * lod;     // размер шрифта в пикселях на экране
+
+    constexpr qreal kMinReadableFontSize = 6.0;      // порог в пикселях, подбери глазами
+    if (screenFontSize < kMinReadableFontSize)
+        return;
+
+    painter->save();
+
+    const QPointF center = boundingRect.center();
+
+    // убираем масштаб на время рисования текста
+    painter->translate(center);
+    painter->scale(1.0 / lod, 1.0 / lod);
+    painter->translate(-center);
+
+    QFont font;   // шрифт по умолчанию, а не остаток от прошлой отрисовки
+    font.setPixelSize(qMax(1, qRound(screenFontSize)));
+    font.setHintingPreference(QFont::PreferNoHinting);
+    painter->setFont(font);
+    painter->setPen(Qt::black);
+
+    // прямоугольник в экранных единицах, чтобы перенос слов работал правильно
+    QRectF textRect{0, 0, boundingRect.width() * lod, boundingRect.height() * lod};
+    textRect.moveCenter(center);
+
+    painter->setClipRect(textRect);   // текст не вылезает за пределы элемента
+    painter->drawText(textRect, Qt::AlignCenter | Qt::TextWordWrap, symbol);
+
+    painter->restore();
+}

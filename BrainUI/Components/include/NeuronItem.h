@@ -75,6 +75,5 @@ public:
             painter->drawText(textRect, Qt::AlignCenter | Qt::TextWordWrap, symbol);
             painter->restore();
         }
-\
     }
 };

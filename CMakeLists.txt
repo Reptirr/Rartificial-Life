@@ -110,6 +110,7 @@ add_executable(Rartificial_Life
         Simulation/World/Managers/src/WorldExecutor.cpp
         Simulation/World/Components/include/Food.h
         Simulation/World/Managers/src/WorldStorage.cpp
+        WorldUI/Components/include/FoodItem.h
 )
 
 target_link_libraries(Rartificial_Life PRIVATE

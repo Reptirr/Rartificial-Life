@@ -56,6 +56,20 @@ public:
             while (running.load()) {
                 tick();
 
+                auto food_num = world_.getStorage()->getFood().size();
+
+                if (food_num < 100) {
+                    for (int i = 0; i < 100 - food_num; i++) {
+                        QPointF pos = {
+                            Rng::randReal(-100, 100),
+                            Rng::randReal(-100, 100)
+                        };
+
+                        world_.addFood(pos);
+                    }
+
+                }
+
                 if (need_tps_ != -1) {
                     next += step;
                     std::this_thread::sleep_until(next);

@@ -91,6 +91,17 @@ public:
         // world obj data
         fillData(data, obj);
 
+        data->energy = agentbody->getEnergy();
+
+        return data;
+    }
+    static WorldObjectData *convertFood(const WorldObject *obj, const WorldStorage *storage) {
+        const auto *food = storage->getFood(obj->getThisId());
+        auto *data = new AgentBodyData;
+
+        // world obj data
+        fillData(data, obj);
+
         return data;
     }
 
@@ -106,6 +117,11 @@ public:
             case EntityKind::AGENT_BODY:
                 data = convertAgentBody(obj, storage);
                 break;
+            case EntityKind::FOOD:
+                data = convertFood(obj, storage);
+                break;
+
+            default: my_assert(false);
         }
 
         return data;

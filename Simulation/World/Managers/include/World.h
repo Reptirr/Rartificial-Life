@@ -67,6 +67,10 @@ public:
     std::string addObstacle(QPointF pos, QRectF rect, QColor color) const {
         return controller_->addObstacle(pos, rect, color);
     }
+    std::string addFood(QPointF pos) const {
+        return controller_->addFood(pos);
+    }
+
 
     const WorldStorage *getStorage() const {
         return storage_.get();

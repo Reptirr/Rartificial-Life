@@ -71,7 +71,7 @@ public:
         };
         auto sim_def = SimulationDef{
             .init_agents = {agent_def},
-            .obstacles = {wall_bottom, wall_right, wall_top, wall_left},
+            .obstacles = {},
             .need_tps = -1,
             .dt = 0.01
         };

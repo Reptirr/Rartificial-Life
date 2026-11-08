@@ -32,4 +32,8 @@ public:
         std::uniform_real_distribution dist(from, to);
         return dist(engine());
     }
+
+    static void seed(unsigned int s) {
+        engine().seed(s);
+    }
 };

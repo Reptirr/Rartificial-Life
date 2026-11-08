@@ -1,5 +1,6 @@
 #pragma once
 #include <AgentBodyItem.h>
+#include <FoodItem.h>
 #include <WorldUIStorage.h>
 
 class WorldUIController {
@@ -22,6 +23,11 @@ public:
             case EntityKind::AGENT_BODY:
                 item = new AgentBodyItem(data);
                 break;
+            case EntityKind::FOOD:
+                item = new FoodItem(data);
+                break;
+
+            default: my_assert(false);
         }
 
         // !!!костыль

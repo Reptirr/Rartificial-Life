@@ -21,6 +21,9 @@ class AgentBody : public WorldEntity {
         );
     }
 
+    // vars
+    double energy{100};
+
 public:
     explicit AgentBody(const AgentBodyConfig &conf)
         : conf_(conf) {
@@ -57,7 +60,8 @@ public:
         return groups;
     }
 
-    std::vector<double> getInput() const {
+    // executes every tact
+    std::vector<double> getInput() {
         std::vector<double> input;
 
         for (auto color : getVision()) {
@@ -79,6 +83,10 @@ public:
             }
         }
 
+        // !костыль!
+        energy -= 0.05;
+
+
         return input;
     }
     void handleOutput(std::vector<bool> neurons) {
@@ -94,7 +102,7 @@ public:
 
             b2Vec2 dir = { .x = static_cast<float>(std::sin(move_angle)), .y = static_cast<float>(std::cos(move_angle)) };
 
-            out_move += dir * move;
+            out_move += dir * move * 2;
         }
         executor_->push({
             .type = WorldCommandType::AGENT_BODY_MOVE,
@@ -111,13 +119,15 @@ public:
                 .type = WorldCommandType::AGENT_BODY_ROTATE,
                 .data = {
                     {"agentbody", this_id_},
-                    {"force", std::to_string(0.1 * neurons[i])}
+                    {"force", std::to_string(3 * neurons[i])}
                 }
             });
         }
     }
 
-    void onEat() {}
+    void onEat() {
+        energy += 10;
+    }
 
     void onCollision(const WorldEntity *other) override {
         switch (other->kind()) {
@@ -139,5 +149,10 @@ public:
 
     EntityKind kind() const override {
         return EntityKind::AGENT_BODY;
+    }
+
+    // getters
+    double getEnergy() const {
+        return energy;
     }
 };

@@ -53,7 +53,7 @@ public:
     void putFood(Food *food, const std::string& id) {
         food_.insert({id, food});
     }
-    Food *getFood(const std::string &id) {
+    Food *getFood(const std::string &id) const {
         return food_.at(id);
     }
     bool removeFood(const std::string &id) {
@@ -64,6 +64,9 @@ public:
 
     const std::unordered_map<std::string, WorldObject *> &getObjects() const {
         return objects_;
+    }
+    const std::unordered_map<std::string, Food *> &getFood() const {
+        return food_;
     }
     const b2WorldId &getWorldId() const {
         return world_id_;

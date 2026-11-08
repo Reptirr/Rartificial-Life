@@ -43,10 +43,21 @@ public:
         drawArrow(
             *painter,
             {},
-            moveByAzimuth({}, data_->angle, WorldUIConfig::agent_angle_length),
+            {0, WorldUIConfig::agent_angle_length},
             WorldUIConfig::agent_angle_head_size
         );
 
         WorldObjectItem::paint(painter, option, widget);
+
+        auto symbol = QString("E:") + QString::number(my_data_->energy, 'f', 2);
+
+        // рисуем значения
+        drawScalableText(
+            painter,
+            option,
+             WorldObjectItem::boundingRect(),
+            symbol,
+            WorldUIConfig::agent_font_size
+        );
     }
 };
