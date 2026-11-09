@@ -26,6 +26,10 @@ public:
         executor_->init(storage_.get(), controller_.get());
     }
 
+    void init(SimulationController *controller) const {
+        controller_->init(controller);
+    }
+
     void tick() {
         b2World_Step(storage_->getWorldId(), dt_, 2);
 
@@ -60,7 +64,7 @@ public:
         executor_->apply(); // moves, births, deaths, removes
     }
 
-    std::string addAgentBody(const AgentBodyConfig &conf, AgentLifeController *life_controller) const {
+    std::string addAgentBody(const AgentBodyConfig &conf) const {
         return controller_->addAgentBody(conf);
     }
 

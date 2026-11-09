@@ -39,5 +39,13 @@ void WorldExecutor::handleCmdFabric(const WorldCommand &cmd) {
 
             return;
         }
+
+        case WorldCommandType::AGENT_BODY_DEATH: {
+            auto agentbody_id = data.at("agentbody");
+
+            controller_->remove(agentbody_id);
+
+            return;
+        }
     }
 }

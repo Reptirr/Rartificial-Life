@@ -33,6 +33,8 @@ class Simulation {
 
 public:
     explicit Simulation(const SimulationDef &def) : world_(def.dt), need_tps_(def.need_tps) {
+        world_.init(&controller_);
+
         // создаем препятствия
         for (auto obstacle_def : def.obstacles) {
             world_.addObstacle(obstacle_def.point, obstacle_def.rect, obstacle_def.color);
@@ -90,5 +92,9 @@ public:
     }
     const std::unordered_map<std::string, Agent *>& getAgents() {
         return storage_.agents();
+    }
+
+    ~Simulation() {
+        stop(true);
     }
 };

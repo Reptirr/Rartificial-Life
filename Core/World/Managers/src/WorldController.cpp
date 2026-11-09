@@ -1,5 +1,4 @@
 #include <AgentBody.h>
-#include <AgentLifeController.h>
 #include <QRect>
 #include <WorldController.h>
 #include <box2d/types.h>
@@ -84,6 +83,7 @@ void WorldController::remove(const std::string &id) {
         case EntityKind::NONE:
             break;
         case EntityKind::AGENT_BODY: {
+
             auto *agentbody = storage_.getAgentBody(id);
             storage_.removeAgentBody(id);
             delete agentbody;

@@ -48,13 +48,13 @@ public:
         // move
         groups.push_back({
             .num = conf_.move_dirs,
-            .align = BrainAlign::Top_Right
+            .align = BrainAlign::Right_Top
         });
 
         // rotate
         groups.push_back({
             .num = 1,
-            .align = BrainAlign::Top_Left
+            .align = BrainAlign::Right_Bottom
         });
 
         return groups;
@@ -84,8 +84,15 @@ public:
         }
 
         // !костыль!
-        energy -= 0.05;
-
+        energy -= 0.005;
+        if (energy <= 0) {
+            executor_->push({
+                .type = WorldCommandType::AGENT_BODY_DEATH,
+                .data = {
+                    {"agentbody", this_id_}
+                }
+            });
+        }
 
         return input;
     }
@@ -102,7 +109,7 @@ public:
 
             b2Vec2 dir = { .x = static_cast<float>(std::sin(move_angle)), .y = static_cast<float>(std::cos(move_angle)) };
 
-            out_move += dir * move * 2;
+            out_move += dir * move * 6;
         }
         executor_->push({
             .type = WorldCommandType::AGENT_BODY_MOVE,

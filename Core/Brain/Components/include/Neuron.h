@@ -1,13 +1,13 @@
 #pragma once
 #include <BrainComponent.h>
 #include <Command.h>
+#include <DataCollector.h>
 #include <Executable.h>
 #include <Executor.h>
 #include <NeuronType.h>
 #include <string>
-#include <QColor>
-
 #include <my_assert.h>
+#include <SubMap.h>
 
 class Axon;
 
@@ -140,8 +140,10 @@ public:
     }
 
     // сколько спайков было с прошлого вызова; сбрасывает счётчик
-    bool isSpiked() const {
-        return spiked_;
+    bool isSpiked() {
+        auto before = spiked_;
+        spiked_ = false;
+        return before;
     }
 
     // only for input neurons

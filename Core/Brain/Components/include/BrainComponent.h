@@ -1,10 +1,12 @@
 #pragma once
 #include <BrainPoint.h>
-#include <SubMap.h>
 
+struct Genome;
+class SubMap;
 class DataCollector;
 class BrainMap;
 
+/// does not act on other components in destructor
 class BrainComponent {
 protected:
     BrainPoint point_{};

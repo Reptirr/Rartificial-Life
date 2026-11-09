@@ -79,3 +79,22 @@ BrainComponent * Storage::getBrainComponent(const std::string &uuid) const {
 std::unordered_map<std::string, Protein *> &Storage::proteins() {
     return subs_;
 }
+
+Storage::~Storage() {
+    // удаляем тут все
+    for (auto *neuron : neurons_ | std::views::values) {
+        delete neuron;
+    }
+    for (auto *dendrite : neurons_ | std::views::values) {
+        delete dendrite;
+    }
+    for (auto *axon : axons_ | std::views::values) {
+        delete axon;
+    }
+    for (auto *synaps : synapses_ | std::views::values) {
+        delete synaps;
+    }
+    for (auto *protein : subs_ | std::views::values) {
+        delete protein;
+    }
+}

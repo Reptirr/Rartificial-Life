@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Genome.h>
+#include <Neuron.h>
 #include <unordered_set>
 #include <UUIDGenerator.h>
 
@@ -83,4 +84,6 @@ public:
     }
 
     std::unordered_map<std::string, Protein *> &proteins();
+
+    ~Storage();
 };

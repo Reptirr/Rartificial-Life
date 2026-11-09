@@ -1,6 +1,7 @@
 #pragma once
 #include <AgentBodyConfig.h>
 #include <AgentConfig.h>
+#include <QColor>
 #include <QRect>
 
 
