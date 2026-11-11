@@ -1,4 +1,5 @@
 #pragma once
+#include <EntityKind.h>
 #include <QColor>
 #include <QPolygonF>
 #include <string>

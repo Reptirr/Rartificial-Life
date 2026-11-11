@@ -40,6 +40,7 @@ public:
     }
 
     void applyBatch() {
+        std::unordered_set<UIComponent *> creates;
         std::queue<ToCreate> to_create;
         std::unordered_map<std::string, std::unique_ptr<Data>> updates;
 
@@ -57,18 +58,22 @@ public:
             auto d = creating.data.get();
 
             if (const auto neuron = dynamic_cast<NeuronData*>(d)) {
-                controller_.newNeuron(id, *neuron);
+                creates.insert(controller_.newNeuron(id, *neuron));
             } else if (const auto dendrite = dynamic_cast<DendriteData*>(d)) {
-                controller_.newDendrite(id, *dendrite);
+                creates.insert(controller_.newDendrite(id, *dendrite));
             } else if (const auto axon = dynamic_cast<AxonData*>(d)) {
-                controller_.newAxon(id, *axon);
+                creates.insert(controller_.newAxon(id, *axon));
             } else if (const auto synapse = dynamic_cast<SynapsData*>(d)) {
-                controller_.newSynaps(id, *synapse);
+                creates.insert(controller_.newSynaps(id, *synapse));
             } else if (const auto protein = dynamic_cast<ProteinData*>(d)) {
-                controller_.newProtein(id, *protein);
+                creates.insert(controller_.newProtein(id, *protein));
             } else {
                 my_assert(false);
             }
+        }
+
+        for (auto comp : creates) {
+            comp->UIUpdate(); // двухфазное обновление
         }
 
         for (auto& [component_id, data] : updates) {

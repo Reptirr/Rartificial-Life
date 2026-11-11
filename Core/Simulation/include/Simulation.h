@@ -4,6 +4,7 @@
 #include <SimulationStorage.h>
 #include <thread>
 #include <World.h>
+#include <WorldView.h>
 
 
 class Simulation {
@@ -85,6 +86,19 @@ public:
         running = false;
         if (worker_thread_.joinable() && join)
             worker_thread_.join();
+    }
+
+    void connectUIBrain(BrainView *view, const std::string &agent) const {
+        auto *brain = storage_.getAgent(agent)->getBrain();
+
+        view->connectWithBrain(brain);
+    }
+    void connectUIWorld(WorldView *view) {
+        view->connectWorld(&world_);
+    }
+
+    void setOnAgentDeathConsumer(const StringConsumer &cons) {
+        controller_.setOnAgentDeathConsumer(cons);
     }
 
     World *getWorld() {

@@ -21,7 +21,6 @@ class BrainView : public QGraphicsView {
     UIMapper mapper_;
     Brain *brain_{};
 
-    QThread ui_thread;
     QTimer ui_timer_;
 
     void fitAll() {
@@ -130,7 +129,6 @@ public:
             my_assert(false);
         }
     }
-
     void onUpdate(const std::string &id) {
         std::unique_ptr<Data> data;
 

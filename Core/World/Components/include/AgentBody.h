@@ -111,14 +111,15 @@ public:
 
             out_move += dir * move * 6;
         }
-        executor_->push({
-            .type = WorldCommandType::AGENT_BODY_MOVE,
-            .data = {
-                {"agentbody", this_id_},
-                {"vec_x", std::to_string(out_move.x)},
-                {"vec_y", std::to_string(out_move.y)}
-            }
-        });
+        if (out_move != b2Vec2{0, 0})
+            executor_->push({
+                .type = WorldCommandType::AGENT_BODY_MOVE,
+                .data = {
+                    {"agentbody", this_id_},
+                    {"vec_x", std::to_string(out_move.x)},
+                    {"vec_y", std::to_string(out_move.y)}
+                }
+            });
 
         // rotate
         if (neurons[i]) {

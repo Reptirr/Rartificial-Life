@@ -1,41 +1,23 @@
 #pragma once
 #include <AgentBodyItem.h>
+#include <EntityKind.h>
 #include <FoodItem.h>
 #include <WorldUIStorage.h>
 
+class WorldView;
+
 class WorldUIController {
     WorldUIStorage &storage_;
+    WorldView *view_{};
     QGraphicsScene *scene_{};
 
 public:
-    WorldUIController(WorldUIStorage &storage, QGraphicsScene *scene)
+    WorldUIController(WorldUIStorage &storage, QGraphicsScene *scene, WorldView *view)
         : storage_(storage),
-          scene_(scene) {
+          scene_(scene), view_(view) {
     }
 
-    void newWorldObject(const std::string &id, WorldObjectData *data) const {
-        WorldObjectItem *item{};
-
-        switch (data->entity_kind) {
-            case EntityKind::NONE:
-                item = new WorldObjectItem(data);
-                break;
-            case EntityKind::AGENT_BODY:
-                item = new AgentBodyItem(data);
-                break;
-            case EntityKind::FOOD:
-                item = new FoodItem(data);
-                break;
-
-            default: my_assert(false);
-        }
-
-        // !!!костыль
-        item->setData(data);
-
-        storage_.putObject(id, item);
-        scene_->addItem(item);
-    }
+    void newWorldObject(const std::string &id, WorldObjectData *data);
 
     void updateWorldObject(const std::string &id, WorldObjectData *data) const {
         auto item = storage_.getObject(id);

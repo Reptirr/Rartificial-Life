@@ -7,8 +7,8 @@
 std::string WorldController::addAgentBody(AgentBodyConfig conf) const {
     auto bd = b2DefaultBodyDef();
     bd.type = b2_dynamicBody;
-    bd.linearDamping = 0.2;
-    bd.angularDamping = 45;
+    bd.linearDamping = 0.1;
+    bd.angularDamping = 25;
     bd.position = conf.pos;
     auto body = b2CreateBody(storage_.getWorldId(), &bd);
 

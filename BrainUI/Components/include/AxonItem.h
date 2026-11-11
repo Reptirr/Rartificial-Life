@@ -78,5 +78,6 @@ public:
     void setData(Data *d) override {
         if (const auto *data = dynamic_cast<AxonData *>(d))
             data_ = *data;
+        else my_assert(false);
     }
 };

@@ -1,14 +1,21 @@
 #pragma once
+#include <QGraphicsScene>
+#include <QGraphicsView>
+#include <QTimer>
+#include <QWheelEvent>
+#include <World.h>
 #include <WorldUIBatcher.h>
 #include <WorldUIController.h>
 #include <WorldUIMapper.h>
 #include <WorldUIStorage.h>
 
 class WorldView : public QGraphicsView {
+    Q_OBJECT
+
     const WorldStorage *storage_{};
     WorldUIStorage ui_storage_;
     QGraphicsScene *scene_ = new QGraphicsScene(this);
-    WorldUIController controller_{ui_storage_, scene_};
+    WorldUIController controller_{ui_storage_, scene_, this};
     WorldUIBatcher batcher_{ui_storage_, controller_};
 
     QTimer timer_;
@@ -26,6 +33,14 @@ protected:
 
         event->accept();
     }
+
+public slots:
+    void onAgentOpen(std::string id) {
+        emit agentOpen(id);
+    }
+
+signals:
+    void agentOpen(std::string id);
 
 public:
     explicit WorldView(QWidget *parent) : QGraphicsView(parent) {

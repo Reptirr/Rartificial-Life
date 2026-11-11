@@ -1,6 +1,7 @@
 #pragma once
 
 #include <AgentConfig.h>
+#include <AgentTabs.h>
 #include <BrainView.h>
 #include <GenomeRandomizer.h>
 #include <Model.h>
@@ -10,10 +11,13 @@
 #include <WorldView.h>
 
 class MainWindow : public QMainWindow {
+    Q_OBJECT
+
     std::unique_ptr<Simulation> simulation_;
 
-    BrainView *brain_view_;
-    WorldView *world_view_;
+    QSplitter *splitter_{};
+    AgentTabs *agent_tabs_{};
+    WorldView *world_view_{};
 
     int w = 1000;
     int h = 1000;
@@ -46,29 +50,6 @@ public:
                 }
             }
         };
-        // верхняя и нижняя: длинные, перекрывают углы
-        auto wall_top = ObstacleDef{
-            .point = {0, 15},
-            .rect = {0, 0, 24, 2},
-            .color = QColorConstants::Gray
-        };
-        auto wall_bottom = ObstacleDef{
-            .point = {0, -15},
-            .rect = {0, 0, 24, 2},
-            .color = QColorConstants::Black
-        };
-
-        // левая и правая: помещаются между верхней и нижней
-        auto wall_left = ObstacleDef{
-            .point = {-15, 0},
-            .rect = {0, 0, 2, 20},
-            .color = QColorConstants::Red
-        };
-        auto wall_right = ObstacleDef{
-            .point = {15, 0},
-            .rect = {0, 0, 2, 20},
-            .color = QColorConstants::DarkYellow
-        };
         auto sim_def = SimulationDef{
             .init_agents = {agent_def},
             .obstacles = {},
@@ -78,18 +59,21 @@ public:
 
         simulation_ = std::make_unique<Simulation>(sim_def);
 
-        // ui
-        brain_view_ = new BrainView(nullptr, w, h);
-        brain_view_->connectWithBrain(simulation_->getAgents().begin()->second->getBrain());
+        agent_tabs_ = new AgentTabs;
 
         world_view_ = new WorldView(this);
         world_view_->connectWorld(simulation_->getWorld());
 
-        auto *splitter = new QSplitter(this);
-        setCentralWidget(splitter);
+        connect(world_view_, &WorldView::agentOpen, this, [&](const std::string &id) {
+            auto *brain = simulation_->getAgents().at(id)->getBrain();
+            agent_tabs_->onAgentOpen(id, brain);
+        });
 
-        splitter->addWidget(brain_view_);
-        splitter->addWidget(world_view_);
+        splitter_ = new QSplitter(this);
+        setCentralWidget(splitter_);
+
+        splitter_->addWidget(agent_tabs_);
+        splitter_->addWidget(world_view_);
 
 
         simulation_->start();

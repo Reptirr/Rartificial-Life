@@ -5,12 +5,21 @@
 #include <WorldUIConfig.h>
 #include <WorldUIDatas.h>
 
-class WorldObjectItem : public QGraphicsPolygonItem {
+class WorldObjectItem : public QObject, public QGraphicsPolygonItem {
+    Q_OBJECT
+
 protected:
     WorldObjectData *data_{}; // удаляет сам WorldObjectItem
 
     virtual void onSetData() {}
     virtual void onUIUpdate() {}
+
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override {
+        emit mouseDoubleClick(data_->entity_id);
+    }
+
+signals:
+    void mouseDoubleClick(std::string id);
 
 public:
     explicit WorldObjectItem(const WorldObjectData *data) : QGraphicsPolygonItem(data->poly) {

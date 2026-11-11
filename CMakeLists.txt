@@ -112,6 +112,8 @@ add_executable(Rartificial_Life
         WorldUI/Components/include/FoodItem.h
         Core/Brain/Managers/src/SubMap.cpp
         Core/Simulation/src/SimulationController.cpp
+        GeneralUI/include/AgentTabs.h
+        WorldUI/Managers/src/WorldUIController.cpp
 )
 
 target_link_libraries(Rartificial_Life PRIVATE

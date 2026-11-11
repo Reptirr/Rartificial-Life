@@ -1,9 +1,10 @@
 #pragma once
 
+#include <cmath>
+#include <QLineF>
 #include <QPainter>
 #include <QPolygonF>
-#include <QLineF>
-#include <cmath>
+#include <QStyleOptionGraphicsItem>
 
 inline void drawArrow(QPainter& p, const QPointF& from, const QPointF& to,
                       qreal headSize = 10.0)

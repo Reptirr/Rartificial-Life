@@ -23,7 +23,9 @@ public:
             createConsumer(id);
     }
 
-    void onUpdate(const std::string &id) const {
+    void onUpdate(const std::string &id) {
+        std::lock_guard lock(mtx_);
+
         if (updateConsumer)
             updateConsumer(id);
     }
@@ -39,10 +41,14 @@ public:
     }
 
     void setUpdateConsumer(const StringConsumer &cons) {
+        std::lock_guard lock(mtx_);
+
         updateConsumer = cons;
     }
 
     void resetConsumers() {
+        std::lock_guard lock(mtx_);
+
         createConsumer = nullptr;
         updateConsumer = nullptr;
     }

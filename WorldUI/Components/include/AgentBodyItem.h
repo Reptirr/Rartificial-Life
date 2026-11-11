@@ -25,6 +25,8 @@ public:
         : WorldObjectItem(data) {
     }
 
+
+
     QRectF boundingRect() const override {
         auto res = WorldObjectItem::boundingRect();
         res.adjust(0, 0, WorldUIConfig::agent_angle_length + WorldUIConfig::agent_angle_head_size, 0);
