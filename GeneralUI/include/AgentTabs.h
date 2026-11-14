@@ -26,7 +26,8 @@ public slots:
             return;
         }
 
-        auto *view = new BrainView(this, 1000, 1000);
+        auto *view = new BrainView(this);
+        view->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         view->connectWithBrain(brain);
         views_.insert({id, view});
 
@@ -35,8 +36,6 @@ public slots:
 
 public:
     AgentTabs() {
-        setFixedSize(1000, 1000);
-
         connect(this, &QTabWidget::tabCloseRequested, this, &AgentTabs::closeTabAt);
 
         setTabsClosable(true);

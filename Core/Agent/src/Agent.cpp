@@ -163,7 +163,8 @@ void Agent::handleOutputs() {
     for (auto id : output_neurons) {
         auto neuron = brain_.getStorage().get<Neuron>(id);
 
-        output.push_back(neuron->isSpiked());
+        bool spiked = neuron->isSpiked();
+        output.push_back(spiked);
     }
 
     agent_body_->handleOutput(output);

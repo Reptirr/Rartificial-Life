@@ -14,12 +14,25 @@ protected:
     virtual void onSetData() {}
     virtual void onUIUpdate() {}
 
+    bool press{};
+
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override {
         emit mouseDoubleClick(data_->entity_id);
     }
 
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override {
+        press = true;
+    }
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override {
+        if (press) {
+            mouseClick(data_->entity_id);
+            press = false;
+        }
+    }
+
 signals:
     void mouseDoubleClick(std::string id);
+    void mouseClick(std::string id);
 
 public:
     explicit WorldObjectItem(const WorldObjectData *data) : QGraphicsPolygonItem(data->poly) {

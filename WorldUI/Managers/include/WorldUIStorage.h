@@ -16,4 +16,9 @@ public:
         std::lock_guard lock(mtx_);
         return objects_.at(id);
     }
+
+    void removeObject(const std::string &id) {
+        std::lock_guard lock(mtx_);
+        objects_.erase(id);
+    }
 };

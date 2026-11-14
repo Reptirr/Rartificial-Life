@@ -61,8 +61,8 @@ public:
 
                 auto food_num = world_.getStorage()->getFood().size();
 
-                if (food_num < 100) {
-                    for (int i = 0; i < 100 - food_num; i++) {
+                if (food_num < 10000) {
+                    for (int i = 0; i < 10000 - food_num; i++) {
                         QPointF pos = {
                             Rng::randReal(-100, 100),
                             Rng::randReal(-100, 100)

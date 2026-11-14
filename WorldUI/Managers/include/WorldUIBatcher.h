@@ -18,6 +18,7 @@ class WorldUIBatcher {
 
     std::queue<WorldUIToCreate> to_create_;
     std::unordered_map<std::string, WorldObjectData *> to_update_;
+    std::unordered_set<std::string> to_remove_;
 
     std::mutex mtx_;
 
@@ -34,16 +35,22 @@ public:
         std::lock_guard lock(mtx_);
         to_update_.insert_or_assign(id, data);
     }
+    void onRemove(const std::string &id) {
+        std::lock_guard lock(mtx_);
+        to_remove_.insert(id);
+    }
 
     void applyBatch() {
         std::queue<WorldUIToCreate> to_create;
         std::unordered_map<std::string, WorldObjectData *> to_update;
+        std::unordered_set<std::string> to_remove;
 
         {
             std::lock_guard lock(mtx_);
 
             to_create.swap(to_create_);
             to_update.swap(to_update_);
+            to_remove.swap(to_remove_);
         }
 
         // creates
@@ -56,6 +63,11 @@ public:
         // updates
         for (auto [id, data] : to_update) {
             controller_.updateWorldObject(id, data);
+        }
+
+        // removes
+        for (auto id : to_remove) {
+            controller_.removeWorldObject(id);
         }
     }
 };

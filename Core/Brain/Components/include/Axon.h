@@ -6,6 +6,7 @@
 #include <Executable.h>
 #include <Executor.h>
 #include <random>
+#include <RandomGenerator.h>
 #include <string>
 #include <unordered_set>
 #include <utility>
@@ -26,6 +27,8 @@ struct AxonNode {
 class Synaps;
 
 class Axon : public Executable, public BrainComponent {
+    SubMap *sub_map_{};
+
     std::unordered_set<std::string> synapses_{};
     std::string neuron_{};
 
@@ -41,6 +44,8 @@ class Axon : public Executable, public BrainComponent {
     double step_deviation{};
     double search_dendrite_r{};
     int max_nodes = 200;
+    std::unordered_set<std::string> move_proteins_;
+    std::unordered_set<std::string> avoid_proteins_;
 
 
 
@@ -58,7 +63,12 @@ protected:
         });
 
         is_growing = true;
-        handleGrow();
+        executor_->pushPlan(2, {
+            .type = AXON_GREW,
+            .data = {
+                {"axon", this_id_}
+            }
+        });
     }
 
 public:
@@ -66,7 +76,8 @@ public:
 
     }
 
-    void handleProtein(const SubMap &sub_map, const Genome &genome) override {
+    void handleProtein(SubMap &sub_map, const Genome &genome) override {
+        sub_map_ = &sub_map;
         const auto proteins = sub_map.subsAtPoint(point_);
 
         GenBlock genblock;
@@ -75,6 +86,10 @@ public:
         } else {
             genblock = genome.genblocks.at(proteins.at(0)->genblock_i);
         }
+
+        // move/avoid proteins
+        move_proteins_ = genblock.axon_move_proteins;
+        avoid_proteins_ = genblock.axon_avoid_proteins;
 
         auto dscr = [&](std::string s) {
             if (genblock.contains(s)) return std::stod(genblock.at(s));
@@ -115,15 +130,55 @@ public:
                 return;
             }
 
-            static std::random_device rd{};
-            static std::mt19937 gen{rd()};
+            constexpr double influence = 0.1;
 
-            std::normal_distribution angle_dist{0.0, angle_deviation};
-            angle += angle_dist(gen);
-            angle = std::remainder(angle, 2.0 * std::numbers::pi);
+            bool has_influence = false;
 
-            std::normal_distribution step_dist{default_step, step_deviation};
-            step = step_dist(gen);
+            for (const auto* protein : sub_map_->subsAtPoint(point_)) {
+                const auto id = protein->id;
+
+                const bool move = move_proteins_.contains(id);
+                const bool avoid = avoid_proteins_.contains(id);
+
+                if (!move && !avoid)
+                    continue;
+
+                has_influence = true;
+
+                const double dx = point_.x - protein->point.x;
+                const double dy = point_.y - protein->point.y;
+
+                double target_angle = std::atan2(-dx, -dy);
+
+                // для избегания разворачиваем направление на 180
+                if (avoid)
+                    target_angle += std::numbers::pi;
+
+                const double delta = std::remainder(target_angle - angle, 2*std::numbers::pi);
+
+                angle += delta * influence;
+            }
+
+            if (!has_influence)
+                angle = Rng::normal(angle, angle_deviation);
+
+            angle = std::remainder(angle, 2*std::numbers::pi);
+
+            // меняем направление на центр при выходе за границу
+            if (!(point_.x >= -1.0 && point_.x <= 1.0 &&
+                point_.y >= -1.0 && point_.y <= 1.0)) {
+
+                double target_angle = std::atan2(-point_.x, -point_.y);
+                double delta = std::remainder(
+                    target_angle - angle,
+                    2.0 * std::numbers::pi
+                );
+
+                angle += delta * 0.1;
+            }
+
+            // move
+            step = Rng::normal(default_step, step_deviation);
 
             point_ = moveByAzimuth(point_, angle, step);
 
@@ -136,6 +191,7 @@ public:
 
             current_active_node_i++;
 
+            // check for dendrites
             for (auto dendrite_id : brain_map_->searchDendrite(point(), search_dendrite_r)) {
                 executor_->push({
                     .type = CREATE_SYNAPS,
@@ -151,7 +207,7 @@ public:
                 return;
             }
 
-
+            // reproduce event
             executor_->pushPlan(2, {
                 .type = AXON_GREW,
                 .data = {

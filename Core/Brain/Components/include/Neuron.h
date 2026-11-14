@@ -88,7 +88,7 @@ public:
         data_collector_->onCreate(this_id_);
     }
 
-    void handleProtein(const SubMap &sub_map, const Genome &genome) override {
+    void handleProtein(SubMap &sub_map, const Genome &genome) override {
         const auto proteins = sub_map.subsAtPoint(point_);
 
         GenBlock genblock;

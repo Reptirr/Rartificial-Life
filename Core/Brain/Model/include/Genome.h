@@ -6,6 +6,8 @@
 #define GEN_NAME inline const std::string
 
 struct Protein {
+    std::string id;
+
     BrainPoint point;
     double dist{};
 

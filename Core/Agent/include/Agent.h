@@ -9,7 +9,7 @@ class Agent {
     AgentConfig conf_;
 
     Brain brain_;
-    AgentBody *agent_body_;
+    AgentBody *agent_body_{};
 
     // --------------
     // INPUT

@@ -38,18 +38,23 @@ inline void drawScalableText(QPainter *painter,
     const qreal lod = option->levelOfDetailFromTransform(painter->worldTransform());
     const qreal screenFontSize = fontSize * lod;     // размер шрифта в пикселях на экране
 
-    constexpr qreal kMinReadableFontSize = 6.0;      // порог в пикселях, подбери глазами
+    constexpr qreal kMinReadableFontSize = 7.0;      // порог в пикселях, подбери глазами
     if (screenFontSize < kMinReadableFontSize)
         return;
 
-    painter->save();
-
+    // убираем поворот
     const QPointF center = boundingRect.center();
 
-    // убираем масштаб на время рисования текста
+    painter->save();
+
+    const QTransform transform = painter->worldTransform();
+    const qreal rotation = std::atan2(transform.m12(), transform.m11());
+
     painter->translate(center);
+    painter->rotate(-qRadiansToDegrees(rotation));
     painter->scale(1.0 / lod, 1.0 / lod);
     painter->translate(-center);
+
 
     QFont font;   // шрифт по умолчанию, а не остаток от прошлой отрисовки
     font.setPixelSize(qMax(1, qRound(screenFontSize)));

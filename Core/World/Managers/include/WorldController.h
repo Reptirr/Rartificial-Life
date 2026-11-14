@@ -36,13 +36,12 @@ public:
 
     // changers
     void remove(const std::string &id);
-    void setVel(const std::string &id, const b2Vec2 vec) const {
+    void setVel(const std::string &id, b2Vec2 vec) const {
         const auto obj = storage_.getObject(id);
-
         const auto body = obj->getBodyId();
-        const b2Vec2 world = b2Body_GetWorldVector(body, vec);  // учитывает поворот тела
 
-        b2Body_ApplyForceToCenter(body, world, true);
+        const b2Vec2 world = b2Body_GetWorldVector(body, vec);
+        b2Body_SetLinearVelocity(body, world);
     }
     void rotate(const std::string &id, const double force) const {
         const auto obj = storage_.getObject(id);

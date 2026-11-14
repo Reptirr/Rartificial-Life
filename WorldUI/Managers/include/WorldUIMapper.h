@@ -5,11 +5,24 @@
 #include <WorldUIDatas.h>
 #include <box2d/box2d.h>
 
+inline QPointF toScreen(b2Vec2 p) {
+    return {
+        p.x * WorldUIConfig::pixelsPerMeter,
+        p.y * WorldUIConfig::pixelsPerMeter
+    };
+}
+
 // точки дуги вокруг центра c, от угла a0 до a1
 inline void appendArc(QPolygonF& out, b2Vec2 c, float r, double a0, double a1) {
     for (int i = 0; i <= WorldUIConfig::kArcSteps; ++i) {
         double a = a0 + (a1 - a0) * i / WorldUIConfig::kArcSteps;
-        out << QPointF(c.x + r * std::cos(a), c.y + r * std::sin(a));
+
+        b2Vec2 p{
+            static_cast<float>(c.x + r * std::cos(a)),
+            static_cast<float>(c.y + r * std::sin(a))
+        };
+
+        out << toScreen(p);
     }
 }
 
@@ -35,19 +48,19 @@ inline QPolygonF convertShapeToQPolygonF(const b2ShapeId shape) {
         }
         case b2_segmentShape: {
             b2Segment s = b2Shape_GetSegment(shape);
-            res << QPointF(s.point1.x, s.point1.y) << QPointF(s.point2.x, s.point2.y);
+            res << toScreen(s.point1) << toScreen(s.point1);
             break;
         }
         case b2_polygonShape: {
             b2Polygon p = b2Shape_GetPolygon(shape);
             for (int i = 0; i < p.count; ++i)
-                res << QPointF(p.vertices[i].x, p.vertices[i].y);
+                res << toScreen(p.vertices[i]);
             break;
         }
         case b2_chainSegmentShape: {
             const b2ChainSegment cs = b2Shape_GetChainSegment(shape);
-            res << QPointF(cs.segment.point1.x, cs.segment.point1.y)
-                << QPointF(cs.segment.point2.x, cs.segment.point2.y);
+            res << toScreen(cs.segment.point1)
+                << toScreen(cs.segment.point2);
             break;
         }
         case b2_shapeTypeCount:
@@ -64,7 +77,7 @@ class WorldUIMapper {
         data->color = obj->getColor();
 
         auto pos = b2Body_GetPosition(obj->getBodyId());
-        data->point = QPointF{pos.x, pos.y};
+        data->point = toScreen(pos);
 
         b2ShapeId shape;
         b2Body_GetShapes(obj->getBodyId(), &shape, 1);

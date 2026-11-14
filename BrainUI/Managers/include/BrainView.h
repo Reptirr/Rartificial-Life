@@ -18,7 +18,7 @@ class BrainView : public QGraphicsView {
     UIStorage ui_storage_{};
     UIController controller_{ui_storage_, scene_};
     UIBatcher batcher_{controller_, ui_storage_};
-    UIMapper mapper_;
+    UIMapper mapper_{1000, 1000};
     Brain *brain_{};
 
     QTimer ui_timer_;
@@ -62,8 +62,8 @@ protected:
     }
 
 public:
-    BrainView(QWidget *parent, int w, int h)
-        : QGraphicsView(parent), mapper_(w, h) {
+    BrainView(QWidget *parent)
+        : QGraphicsView(parent){
         setTransformationAnchor(AnchorUnderMouse);
         setResizeAnchor(AnchorViewCenter);
         setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -81,9 +81,6 @@ public:
 
         setBackgroundBrush(QColorConstants::White);
 
-
-        setFixedSize(w, h);
-        scene_->setSceneRect(-w, -h, w*2, h*2);
 
         setScene(scene_);
 

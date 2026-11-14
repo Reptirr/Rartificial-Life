@@ -19,8 +19,11 @@ class MainWindow : public QMainWindow {
     AgentTabs *agent_tabs_{};
     WorldView *world_view_{};
 
-    int w = 1000;
-    int h = 1000;
+protected:
+    void closeEvent(QCloseEvent *event) override {
+        qDebug() << "MainWindow closeEvent";
+        QMainWindow::closeEvent(event);
+    }
 
 public:
     MainWindow() {
@@ -35,26 +38,14 @@ public:
             },
             .agent_config = {
                 .genome = GenomeRandomizer::randomizing(),
-                .num_of_common_neurons = 777,
-                .input_groups = {
-                    NeuronGroup{
-                        .num = 64*3,
-                        .align = BrainAlign::Left
-                    }
-                },
-                .output_groups = {
-                    NeuronGroup{
-                        .num = 40,
-                        .align = BrainAlign::Top
-                    }
-                }
+                .num_of_common_neurons = 100
             }
         };
         auto sim_def = SimulationDef{
             .init_agents = {agent_def},
             .obstacles = {},
             .need_tps = -1,
-            .dt = 0.01
+            .dt = 1/60.0
         };
 
         simulation_ = std::make_unique<Simulation>(sim_def);
@@ -68,6 +59,9 @@ public:
             auto *brain = simulation_->getAgents().at(id)->getBrain();
             agent_tabs_->onAgentOpen(id, brain);
         });
+
+        agent_tabs_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        world_view_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
         splitter_ = new QSplitter(this);
         setCentralWidget(splitter_);

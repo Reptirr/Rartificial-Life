@@ -109,7 +109,7 @@ public:
 
             b2Vec2 dir = { .x = static_cast<float>(std::sin(move_angle)), .y = static_cast<float>(std::cos(move_angle)) };
 
-            out_move += dir * move * 6;
+            out_move += dir * move * 0.5;
         }
         if (out_move != b2Vec2{0, 0})
             executor_->push({
@@ -127,7 +127,7 @@ public:
                 .type = WorldCommandType::AGENT_BODY_ROTATE,
                 .data = {
                     {"agentbody", this_id_},
-                    {"force", std::to_string(3 * neurons[i])}
+                    {"force", std::to_string(0.7 * neurons[i])}
                 }
             });
         }
@@ -135,6 +135,7 @@ public:
 
     void onEat() {
         energy += 10;
+        data_collector_->onUpdate(this_id_);
     }
 
     void onCollision(const WorldEntity *other) override {

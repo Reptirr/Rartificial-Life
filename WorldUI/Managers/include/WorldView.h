@@ -21,6 +21,10 @@ class WorldView : public QGraphicsView {
     QTimer timer_;
 
 protected:
+    void drawBackground(QPainter *painter, const QRectF &rect) override {
+
+    }
+
     void wheelEvent(QWheelEvent *event) override {
         const int dy = event->angleDelta().y();
         if (dy == 0) {
@@ -51,7 +55,7 @@ public:
         setBackgroundBrush(QColorConstants::DarkGreen);
         setViewportUpdateMode(FullViewportUpdate);
 
-        setSceneRect(-500, -500, 1000, 1000);
+        setSceneRect(-500*WorldUIConfig::pixelsPerMeter, -500*WorldUIConfig::pixelsPerMeter, 1000*WorldUIConfig::pixelsPerMeter, 1000*WorldUIConfig::pixelsPerMeter);
 
         connect(&timer_, &QTimer::timeout, [&] {
             batcher_.applyBatch();
@@ -64,22 +68,22 @@ public:
 
         world->setCreateConsumer([&](const std::string &id) { onCreate(id); });
         world->setUpdateConsumer([&](const std::string &id) { onUpdate(id); });
+        world->setRemoveConsumer([&](const std::string &id) { onRemove(id); });
     }
 
     void onCreate(const std::string &id) {
-        const auto *obj = storage_->getObject(id);
-
         batcher_.onCreate(
             id,
             WorldUIMapper::dataFromObjectId(id, storage_)
         );
     }
     void onUpdate(const std::string &id) {
-        const auto *obj = storage_->getObject(id);
-
         batcher_.onUpdate(
             id,
             WorldUIMapper::dataFromObjectId(id, storage_)
         );
+    }
+    void onRemove(const std::string &id) {
+        batcher_.onRemove(id);
     }
 };

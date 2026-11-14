@@ -3,7 +3,9 @@
 #include <EntityKind.h>
 #include <qcolor.h>
 #include <WorldDataCollector.h>
+#include <box2d/box2d.h>
 #include <box2d/id.h>
+#include <qdebug.h>
 
 class WorldObject {
     WorldDataCollector &data_collector_;

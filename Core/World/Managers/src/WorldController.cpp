@@ -7,13 +7,15 @@
 std::string WorldController::addAgentBody(AgentBodyConfig conf) const {
     auto bd = b2DefaultBodyDef();
     bd.type = b2_dynamicBody;
-    bd.linearDamping = 0.1;
-    bd.angularDamping = 25;
+    bd.linearDamping = 0.001;
+    bd.angularDamping = 0.4;
     bd.position = conf.pos;
     auto body = b2CreateBody(storage_.getWorldId(), &bd);
 
     auto sd = b2DefaultShapeDef();
-    auto c = b2Circle{{}, 5.0};
+    sd.density = 1;
+    sd.enableContactEvents = true;
+    auto c = b2Circle{{}, 0.3};
     b2CreateCircleShape(body, &sd, &c);
 
     auto *world_obj = new WorldObject(QColorConstants::Green, body, collector_);
@@ -25,7 +27,7 @@ std::string WorldController::addAgentBody(AgentBodyConfig conf) const {
 
 
     world_obj->init(id, EntityKind::AGENT_BODY);
-    agent_body->init(id, &getter_, executor_);
+    agent_body->init(id, &getter_, executor_, &collector_);
 
     return id;
 }
@@ -60,7 +62,9 @@ std::string WorldController::addFood(QPointF pos) const {
 
     auto sd = b2DefaultShapeDef();
     sd.isSensor = false;
-    auto c = b2Circle{{}, 3.0};
+    sd.density = 1;
+    sd.enableContactEvents = true;
+    auto c = b2Circle{{}, 0.06};
     b2CreateCircleShape(body, &sd, &c);
 
     auto *obj = new WorldObject(QColorConstants::DarkYellow, body, collector_);
@@ -71,12 +75,15 @@ std::string WorldController::addFood(QPointF pos) const {
     storage_.putFood(food, id);
 
     obj->init(id, EntityKind::FOOD);
-    food->init(id, &getter_, executor_);
+    food->init(id, &getter_, executor_, &collector_);
 
     return id;
 }
 
 void WorldController::remove(const std::string &id) {
+    // delete from ui
+    collector_.onRemove(id);
+
     auto *obj = storage_.getObject(id);
 
     switch (obj->getEntityKind()) {

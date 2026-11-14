@@ -1,6 +1,7 @@
 #pragma once
 
 struct WorldUIConfig {
+    static constexpr int pixelsPerMeter = 25;
     static constexpr int kArcSteps = 30;
 
     // world obj
@@ -11,5 +12,5 @@ struct WorldUIConfig {
     static constexpr double agent_angle_length = 15;
     static constexpr double agent_angle_w = 1;
     static constexpr QColor agent_angle_color = QColorConstants::Black;
-    static constexpr double agent_font_size = 3;
+    static constexpr double agent_font_size = 5;
 };

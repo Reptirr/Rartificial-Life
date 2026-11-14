@@ -1,8 +1,13 @@
 #pragma once
 #include <map>
 #include <string>
+#include <unordered_set>
 
-using GenBlock = std::map<std::string, std::string>;
+struct GenBlock : std::unordered_map<std::string, std::string> {
+    // axon
+    std::unordered_set<std::string> axon_move_proteins;
+    std::unordered_set<std::string> axon_avoid_proteins;
+};
 
 #define GENNAME inline const std::string
 
@@ -18,6 +23,8 @@ namespace Gen {
     GENNAME AXON_STEP_DEVIATION = "axon_step_deviation";
     GENNAME AXON_SEARCH_DENDRITE_R = "axon_search_dendrite_r";
     GENNAME AXON_MAX_NODES = "axon_max_nodes";
+    GENNAME AXON_MOVE_PROTEINS = "axon_move_proteins";
+    GENNAME AXON_AVOID_PROTEINS = "axon_avoid_proteins";
 
     // synaps
     GENNAME SYNAPS_W_REDUCE_LR = "synaps_w_reduce_lr";
@@ -39,11 +46,9 @@ namespace Gen {
 
         return names;
     }
-
     inline int count() {
         return all().size();
     }
-
     inline std::string fromInt(int i) {
         return all().at(i);
     }
@@ -53,25 +58,29 @@ namespace Gen {
 
 struct DefaultGenblock {
     inline static GenBlock get = {
-        // neuron
-        {Gen::NEURON_THRESHOLD,         "10.0"},
-        {Gen::NEURON_RANDOM_SPIKE_TICK, "0"},     // 0 = шумовых спайков нет
-        {Gen::NEURON_REFRACTOR_TICK,    "3"},
+        {
+            // neuron
+            {Gen::NEURON_THRESHOLD,         "10.0"},
+            {Gen::NEURON_RANDOM_SPIKE_TICK, "0"},     // 0 = шумовых спайков нет
+            {Gen::NEURON_REFRACTOR_TICK,    "3"},
 
-        // axon
-        {Gen::AXON_ANGLE_DEVIATION,     "0.6"},   // разброс угла, рад
-        {Gen::AXON_DEFAULT_STEP,        "0.07"},  // шаг роста по плоскости -1..1
-        {Gen::AXON_STEP_DEVIATION,      "0.005"}, // разброс длины шага
-        {Gen::AXON_SEARCH_DENDRITE_R,   "0.02"},  // радиус поиска дендрита
-        {Gen::AXON_MAX_NODES,           "50"},   // потолок длины аксона
+            // axon
+            {Gen::AXON_ANGLE_DEVIATION,     "0.6"},   // разброс угла, рад
+            {Gen::AXON_DEFAULT_STEP,        "0.07"},  // шаг роста по плоскости -1..1
+            {Gen::AXON_STEP_DEVIATION,      "0.005"}, // разброс длины шага
+            {Gen::AXON_SEARCH_DENDRITE_R,   "0.02"},  // радиус поиска дендрита
+            {Gen::AXON_MAX_NODES,           "200"},   // потолок длины аксона
+            {Gen::AXON_MOVE_PROTEINS,       ""},
+            {Gen::AXON_AVOID_PROTEINS,      ""},
 
-        // synaps
-        {Gen::SYNAPS_W_REDUCE_LR,       "0.01"},
-        {Gen::SYNAPS_W_PRODUCE_LR,      "0.01"},
-        {Gen::SYNAPS_W_MIN,             "-2.0"},
-        {Gen::SYNAPS_W_MAX,             "2.0"},
-        {Gen::SYNAPS_W_INIT,            "1.0"},
-        {Gen::SYNAPS_CA_DECAY,          "0.1"},
-        {Gen::SYNAPS_MED_REDUCE_VAL,    "0.5"},
+            // synaps
+            {Gen::SYNAPS_W_REDUCE_LR,       "0.01"},
+            {Gen::SYNAPS_W_PRODUCE_LR,      "0.1"},
+            {Gen::SYNAPS_W_MIN,             "-15.0"},
+            {Gen::SYNAPS_W_MAX,             "15.0"},
+            {Gen::SYNAPS_W_INIT,            "1.0"},
+            {Gen::SYNAPS_CA_DECAY,          "0.1"},
+            {Gen::SYNAPS_MED_REDUCE_VAL,    "0.5"},
+        }
     };
 };

@@ -18,6 +18,7 @@ public:
     World(double dt) : dt_(dt) {
         auto wd = b2DefaultWorldDef();
         wd.gravity = {};
+        wd.enableContinuous = true;
         auto world_id = b2CreateWorld(&wd);
 
         storage_ = std::make_unique<WorldStorage>(world_id);
@@ -31,7 +32,7 @@ public:
     }
 
     void tick() {
-        b2World_Step(storage_->getWorldId(), dt_, 2);
+        b2World_Step(storage_->getWorldId(), dt_, 4);
 
         auto body_events = b2World_GetBodyEvents(storage_->getWorldId());
         for (int i = 0; i < body_events.moveCount; i++) {
@@ -86,5 +87,8 @@ public:
     }
     void setUpdateConsumer(const StringConsumer &cons) {
         data_collector_.setUpdateConsumer(cons);
+    }
+    void setRemoveConsumer(const StringConsumer &cons) {
+        data_collector_.setRemoveConsumer(cons);
     }
 };

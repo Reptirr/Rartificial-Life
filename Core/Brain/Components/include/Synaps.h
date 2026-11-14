@@ -40,7 +40,7 @@ public:
         prev_neuron_type_ = prev_neuron_type;
     }
 
-    void handleProtein(const SubMap &sub_map, const Genome &genome) override {
+    void handleProtein(SubMap &sub_map, const Genome &genome) override {
         const auto proteins = sub_map.subsAtPoint(point_);
 
         GenBlock genblock;
@@ -79,8 +79,8 @@ public:
         mediator += 1.0; // from prev neuron, imitation
 
         if (Ca > 0.0) {
-            w -= mediator * 0.05;
-            w = std::clamp(w, 0.0, 100.0);
+            w -= mediator * w_reduce_lr;
+            w = std::clamp(w, w_min, w_max);
         }
 
         data_collector_->onUpdate(this_id_);
@@ -102,7 +102,7 @@ public:
 
         Ca += 1.0;
         if (mediator > 0.0) {
-            w += Ca * 0.05;
+            w += Ca * w_produce_lr;
             w = std::clamp(w, 0.0, 100.0);
         }
 

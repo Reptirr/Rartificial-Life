@@ -11,6 +11,7 @@ void WorldUIController::newWorldObject(const std::string &id, WorldObjectData *d
             break;
         case EntityKind::AGENT_BODY:
             item = new AgentBodyItem(data);
+            QObject::connect(item, &WorldObjectItem::mouseClick, view_, &WorldView::onAgentOpen);
             break;
         case EntityKind::FOOD:
             item = new FoodItem(data);
@@ -18,8 +19,6 @@ void WorldUIController::newWorldObject(const std::string &id, WorldObjectData *d
 
         default: my_assert(false);
     }
-
-    QObject::connect(item, &WorldObjectItem::mouseDoubleClick, view_, &WorldView::onAgentOpen);
 
     // !!!костыль
     item->setData(data);
