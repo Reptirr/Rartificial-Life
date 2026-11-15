@@ -114,6 +114,7 @@ add_executable(Rartificial_Life
         Core/Simulation/src/SimulationController.cpp
         GeneralUI/include/AgentTabs.h
         WorldUI/Managers/src/WorldUIController.cpp
+        Core/Simulation/include/SimulationBridge.h
 )
 
 target_link_libraries(Rartificial_Life PRIVATE

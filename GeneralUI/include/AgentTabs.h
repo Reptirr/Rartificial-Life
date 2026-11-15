@@ -10,7 +10,7 @@ class AgentTabs : public QTabWidget {
         QWidget *w = widget(index);
         removeTab(index);                      // убирает вкладку, но не виджет
         std::erase_if(views_, [w](const auto &p) { return p.second == w; });
-        w->deleteLater();                      // удаляем сами
+        delete w;  // удаляем сами
     }
 
 public slots:

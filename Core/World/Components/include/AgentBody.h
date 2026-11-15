@@ -84,7 +84,7 @@ public:
         }
 
         // !костыль!
-        energy -= 0.005;
+        energy -= 0.05;
         if (energy <= 0) {
             executor_->push({
                 .type = WorldCommandType::AGENT_BODY_DEATH,

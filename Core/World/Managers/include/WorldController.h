@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SenseGetter.h>
+#include <SimulationBridge.h>
 #include <SimulationController.h>
 #include <WorldDataCollector.h>
 #include <WorldExecutor.h>
@@ -17,7 +18,7 @@ class WorldController {
     WorldExecutor *executor_;
     double dt_;
 
-    SimulationController *sim_controller_{};
+    SimulationBridge *sim_bridge_{};
 
 public:
     explicit WorldController(WorldStorage &storage, WorldDataCollector &collector, WorldExecutor *executor, const double dt)
@@ -25,8 +26,8 @@ public:
 
     }
 
-    void init(SimulationController *controller) {
-        sim_controller_ = controller;
+    void init(SimulationBridge *bridge) {
+        sim_bridge_ = bridge;
     }
 
     // adders

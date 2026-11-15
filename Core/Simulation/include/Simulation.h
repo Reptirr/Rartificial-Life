@@ -1,5 +1,6 @@
 #pragma once
 #include <Agent.h>
+#include <BrainView.h>
 #include <SimulationController.h>
 #include <SimulationStorage.h>
 #include <thread>
@@ -7,7 +8,9 @@
 #include <WorldView.h>
 
 
-class Simulation {
+class Simulation : public QObject {
+    Q_OBJECT
+
     World world_;
     SimulationStorage storage_;
     SimulationController controller_{world_, storage_};
@@ -32,8 +35,13 @@ class Simulation {
             agent->handleOutputs();
     }
 
+signals:
+    void onAgentDeath(std::string id);
+
 public:
     explicit Simulation(const SimulationDef &def) : world_(def.dt), need_tps_(def.need_tps) {
+        controller_.setDeathCons([&](const std::string &id) { emit onAgentDeath(id); });
+
         world_.init(&controller_);
 
         // создаем препятствия
@@ -95,10 +103,6 @@ public:
     }
     void connectUIWorld(WorldView *view) {
         view->connectWorld(&world_);
-    }
-
-    void setOnAgentDeathConsumer(const StringConsumer &cons) {
-        controller_.setOnAgentDeathConsumer(cons);
     }
 
     World *getWorld() {

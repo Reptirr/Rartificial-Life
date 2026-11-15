@@ -78,9 +78,8 @@ public:
 
     // subs
     std::string putProtein(Protein *info) {
-        auto id = generateUuid();
-        subs_.insert({id, info});
-        return id;
+        subs_.insert({info->id, info});
+        return info->id;
     }
 
     std::unordered_map<std::string, Protein *> &proteins();

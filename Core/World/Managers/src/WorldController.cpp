@@ -90,6 +90,8 @@ void WorldController::remove(const std::string &id) {
         case EntityKind::NONE:
             break;
         case EntityKind::AGENT_BODY: {
+            // уведомляем симуляцию перед этим
+            sim_bridge_->deleteAgent(id);
 
             auto *agentbody = storage_.getAgentBody(id);
             storage_.removeAgentBody(id);

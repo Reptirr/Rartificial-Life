@@ -19,12 +19,6 @@ class MainWindow : public QMainWindow {
     AgentTabs *agent_tabs_{};
     WorldView *world_view_{};
 
-protected:
-    void closeEvent(QCloseEvent *event) override {
-        qDebug() << "MainWindow closeEvent";
-        QMainWindow::closeEvent(event);
-    }
-
 public:
     MainWindow() {
         // defs
@@ -38,7 +32,7 @@ public:
             },
             .agent_config = {
                 .genome = GenomeRandomizer::randomizing(),
-                .num_of_common_neurons = 100
+                .num_of_common_neurons = 1000
             }
         };
         auto sim_def = SimulationDef{
@@ -59,6 +53,7 @@ public:
             auto *brain = simulation_->getAgents().at(id)->getBrain();
             agent_tabs_->onAgentOpen(id, brain);
         });
+        connect(simulation_.get(), &Simulation::onAgentDeath, agent_tabs_, &AgentTabs::onAgentClose);
 
         agent_tabs_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         world_view_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);

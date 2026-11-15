@@ -2,30 +2,31 @@
 
 
 #include <Model.h>
+#include <SimulationBridge.h>
 #include <SimulationStorage.h>
 #include <string>
 
 class World;
 
 
-class SimulationController {
+class SimulationController : public SimulationBridge {
     World &world_;
     SimulationStorage &storage_;
 
-    StringConsumer onAgentDeath;
+    StringConsumer deathCons;
 
 public:
     explicit SimulationController(World &world, SimulationStorage &storage)
         : world_(world), storage_(storage) {
     }
 
-    void setOnAgentDeathConsumer(const StringConsumer &cons) {
-        onAgentDeath = cons;
+    void setDeathCons(const StringConsumer &cons) {
+        deathCons = cons;
     }
 
     std::string createAgent(AgentDef &agent_def);
-    void deleteAgent(const std::string &id) {
-        onAgentDeath(id); // deletes ui
+    void deleteAgent(const std::string id) override {
+        deathCons(id);
 
         auto *agent = storage_.removeAgent(id);
         delete agent;

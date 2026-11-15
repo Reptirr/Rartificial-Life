@@ -85,7 +85,7 @@ Storage::~Storage() {
     for (auto *neuron : neurons_ | std::views::values) {
         delete neuron;
     }
-    for (auto *dendrite : neurons_ | std::views::values) {
+    for (auto *dendrite : dendrites_ | std::views::values) {
         delete dendrite;
     }
     for (auto *axon : axons_ | std::views::values) {
