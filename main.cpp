@@ -1,30 +1,23 @@
 
-#include <Brain.h>
-#include <bits/this_thread_sleep.h>
+#include <MainWindow.h>
+#include <QApplication>
+#include <QSurfaceFormat>
 
-int main() {
-    Brain brain{5};
-    auto &storage = brain.getStorage();
+int main(int argc, char* argv[]) {
+    // сглаживание
+    QSurfaceFormat fmt;
+    fmt.setSamples(16);                       
+    QSurfaceFormat::setDefaultFormat(fmt);
 
-    // создаем рандомные синапсы
-    for (int i = 0; i < 100; i++) {
-        std::string axon, dendrite;
+    QApplication a{argc, argv};
 
-        do {
-            axon = storage.getRandomAxon();
-            dendrite = storage.getRandomDendrite();
-        } while (storage.get<Axon>(axon)->getNeuron() == storage.get<Dendrite>(dendrite)->getNeuron());
+    std::cout << std::random_device()() << std::endl;
 
-        brain.createSynaps(axon, dendrite);
-    }
+    Rng::seed(std::random_device()());
 
-    // запускаем сеть (выстрел)
-    storage.get<Neuron>(storage.getRandomNeuron())->addSignal("13");
+    MainWindow w;
+    w.show();
 
 
-    for (;;) {
-        brain.tact();
-        std::this_thread::sleep_for(std::chrono::milliseconds{500});
-    }
-
+    return a.exec();
 }

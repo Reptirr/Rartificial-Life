@@ -1,0 +1,83 @@
+#pragma once
+
+#include <mutex>
+#include <my_assert.h>
+#include <queue>
+#include <UIController.h>
+#include <unordered_map>
+
+struct ToCreate {
+    std::string id;
+    std::unique_ptr<Data> data;
+};
+
+class UIBatcher {
+    UIController &controller_;
+    UIStorage &ui_storage_;
+
+    std::queue<ToCreate> to_create_;
+    std::unordered_map<std::string, std::unique_ptr<Data>> updates_;
+
+    std::mutex mtx;
+
+public:
+    explicit UIBatcher(UIController &controller, UIStorage &storage)
+        : controller_(controller), ui_storage_(storage) {
+    }
+
+    void onCreate(const std::string &id, std::unique_ptr<Data> d) {
+        if (d.get() == nullptr || id.empty())
+            return;
+
+        std::lock_guard lock(mtx);
+        to_create_.push({id, std::move(d)});
+    }
+    void onUpdate(std::string id, std::unique_ptr<Data> d) {
+        if (d.get() == nullptr || id.empty())
+            return;
+        std::lock_guard lock(mtx);
+        updates_.insert_or_assign(id, std::move(d));
+    }
+
+    void applyBatch() {
+        std::unordered_set<UIComponent *> creates;
+        std::queue<ToCreate> to_create;
+        std::unordered_map<std::string, std::unique_ptr<Data>> updates;
+
+        {
+            std::lock_guard lock(mtx);
+            to_create.swap(to_create_);
+            updates.swap(updates_);
+        }
+
+        while (!to_create.empty()) {
+            auto creating = std::move(to_create.front());
+            to_create.pop();
+
+            auto id = std::move(creating.id);
+            auto d = creating.data.get();
+
+            if (const auto neuron = dynamic_cast<NeuronData*>(d)) {
+                creates.insert(controller_.newNeuron(id, *neuron));
+            } else if (const auto dendrite = dynamic_cast<DendriteData*>(d)) {
+                creates.insert(controller_.newDendrite(id, *dendrite));
+            } else if (const auto axon = dynamic_cast<AxonData*>(d)) {
+                creates.insert(controller_.newAxon(id, *axon));
+            } else if (const auto synapse = dynamic_cast<SynapsData*>(d)) {
+                creates.insert(controller_.newSynaps(id, *synapse));
+            } else if (const auto protein = dynamic_cast<ProteinData*>(d)) {
+                creates.insert(controller_.newProtein(id, *protein));
+            } else {
+                my_assert(false);
+            }
+        }
+
+        for (auto comp : creates) {
+            comp->UIUpdate(); // двухфазное обновление
+        }
+
+        for (auto& [component_id, data] : updates) {
+            controller_.updateComponent(ui_storage_.getComponent(component_id), data.get());
+        }
+    }
+};
