@@ -162,6 +162,9 @@ public:
 
             for (auto &[name, val_s] : out_genblock) {
                 if (!Rng::chance(gen_mutate_chance)) continue;
+
+
+
                 val_s = mutateGen(conf, name, val_s);
             }
 

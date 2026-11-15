@@ -84,7 +84,8 @@ public:
         }
 
         // !костыль!
-        energy -= 0.05;
+        energy -= 0.005;
+        data_collector_->onUpdate(this_id_);
         if (energy <= 0) {
             executor_->push({
                 .type = WorldCommandType::AGENT_BODY_DEATH,
@@ -136,6 +137,17 @@ public:
     void onEat() {
         energy += 10;
         data_collector_->onUpdate(this_id_);
+
+        if (energy >= 120) {
+            executor_->push({
+                .type = WorldCommandType::AGENT_BODY_BIRTH,
+                .data = {
+                    {"parent_id", this_id_}
+                }
+            });
+
+            energy -= 60;
+        }
     }
 
     void onCollision(const WorldEntity *other) override {
@@ -163,5 +175,8 @@ public:
     // getters
     double getEnergy() const {
         return energy;
+    }
+    AgentBodyConfig getAgentBodyConfig() const {
+        return conf_;
     }
 };

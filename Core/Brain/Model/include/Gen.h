@@ -23,8 +23,6 @@ namespace Gen {
     GENNAME AXON_STEP_DEVIATION = "axon_step_deviation";
     GENNAME AXON_SEARCH_DENDRITE_R = "axon_search_dendrite_r";
     GENNAME AXON_MAX_NODES = "axon_max_nodes";
-    GENNAME AXON_MOVE_PROTEINS = "axon_move_proteins";
-    GENNAME AXON_AVOID_PROTEINS = "axon_avoid_proteins";
 
     // synaps
     GENNAME SYNAPS_W_REDUCE_LR = "synaps_w_reduce_lr";
@@ -70,8 +68,6 @@ struct DefaultGenblock {
             {Gen::AXON_STEP_DEVIATION,      "0.005"}, // разброс длины шага
             {Gen::AXON_SEARCH_DENDRITE_R,   "0.02"},  // радиус поиска дендрита
             {Gen::AXON_MAX_NODES,           "200"},   // потолок длины аксона
-            {Gen::AXON_MOVE_PROTEINS,       ""},
-            {Gen::AXON_AVOID_PROTEINS,      ""},
 
             // synaps
             {Gen::SYNAPS_W_REDUCE_LR,       "0.01"},

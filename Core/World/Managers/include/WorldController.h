@@ -31,6 +31,7 @@ public:
     }
 
     // adders
+    void birthAgent(const std::string &id) const;
     std::string addAgentBody(AgentBodyConfig conf) const;
     std::string addObstacle(QPointF, QRectF rect, QColor color) const;
     std::string addFood(QPointF) const;

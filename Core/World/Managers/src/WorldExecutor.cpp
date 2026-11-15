@@ -41,9 +41,20 @@ void WorldExecutor::handleCmdFabric(const WorldCommand &cmd) {
         }
 
         case WorldCommandType::AGENT_BODY_DEATH: {
+            if (!data.contains("agentbody")) return;
             auto agentbody_id = data.at("agentbody");
 
             controller_->remove(agentbody_id);
+
+            return;
+        }
+
+        case WorldCommandType::AGENT_BODY_BIRTH: {
+            if (!data.contains("parent_id")) return;
+            auto parent_id = data.at("parent_id");
+
+
+            controller_->birthAgent(parent_id);
 
             return;
         }

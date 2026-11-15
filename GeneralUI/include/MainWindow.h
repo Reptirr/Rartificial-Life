@@ -32,7 +32,7 @@ public:
             },
             .agent_config = {
                 .genome = GenomeRandomizer::randomizing(),
-                .num_of_common_neurons = 1000
+                .num_of_common_neurons = 300
             }
         };
         auto sim_def = SimulationDef{

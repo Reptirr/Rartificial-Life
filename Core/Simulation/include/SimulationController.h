@@ -25,11 +25,12 @@ public:
     }
 
     std::string createAgent(AgentDef &agent_def);
+    void createAgent(std::string parent_id) override;
+
     void deleteAgent(const std::string id) override {
         deathCons(id);
 
         auto *agent = storage_.removeAgent(id);
         delete agent;
     }
-
 };

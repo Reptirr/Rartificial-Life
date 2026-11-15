@@ -4,6 +4,10 @@
 #include <box2d/types.h>
 #include <box2d/box2d.h>
 
+void WorldController::birthAgent(const std::string &id) const {
+    sim_bridge_->createAgent(id);
+}
+
 std::string WorldController::addAgentBody(AgentBodyConfig conf) const {
     auto bd = b2DefaultBodyDef();
     bd.type = b2_dynamicBody;
