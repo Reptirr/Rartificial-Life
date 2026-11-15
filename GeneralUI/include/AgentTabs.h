@@ -15,6 +15,8 @@ class AgentTabs : public QTabWidget {
 
 public slots:
     void onAgentClose(const std::string &id) {
+        if (!views_.contains(id)) return;
+
         auto *view = views_.at(id);
         auto index = indexOf(view);
 

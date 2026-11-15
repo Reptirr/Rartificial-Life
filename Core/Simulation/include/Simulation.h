@@ -15,7 +15,7 @@ class Simulation : public QObject {
     SimulationStorage storage_;
     SimulationController controller_{world_, storage_};
 
-    int need_tps_;
+    SimulationDef def_;
 
     std::atomic<bool> running{};
     std::thread worker_thread_;
@@ -39,20 +39,10 @@ signals:
     void onAgentDeath(std::string id);
 
 public:
-    explicit Simulation(const SimulationDef &def) : world_(def.dt), need_tps_(def.need_tps) {
+    explicit Simulation(const SimulationDef &def) : world_(def.dt), def_(def) {
         controller_.setDeathCons([&](const std::string &id) { emit onAgentDeath(id); });
 
         world_.init(&controller_);
-
-        // создаем препятствия
-        for (auto obstacle_def : def.obstacles) {
-            world_.addObstacle(obstacle_def.point, obstacle_def.rect, obstacle_def.color);
-        }
-
-        // создаем агентов
-        for (auto agent_def : def.init_agents) {
-            controller_.createAgent(agent_def);
-        }
     }
 
     void start() {
@@ -61,27 +51,24 @@ public:
         worker_thread_ = std::thread([&] {
             running = true;
 
-            const auto step = std::chrono::milliseconds(1000 / need_tps_);
+            const auto step = std::chrono::milliseconds(1000 / def_.need_tps);
             auto next = std::chrono::steady_clock::now();
 
+            auto ctx = TickContext{
+                .tick_i = 0,
+                .simulation = this,
+                .world = &world_,
+
+                .sim_controller = &controller_,
+                .sim_storage = &storage_
+            };
+
             while (running.load()) {
+                def_.experiment->onTick(ctx);
+                ctx.tick_i++;
                 tick();
 
-                auto food_num = world_.getStorage()->getFood().size();
-
-                if (food_num < 10000) {
-                    for (int i = 0; i < 10000 - food_num; i++) {
-                        QPointF pos = {
-                            Rng::randReal(-100, 100),
-                            Rng::randReal(-100, 100)
-                        };
-
-                        world_.addFood(pos);
-                    }
-
-                }
-
-                if (need_tps_ != -1) {
+                if (def_.need_tps != -1) {
                     next += step;
                     std::this_thread::sleep_until(next);
                 }
@@ -112,7 +99,8 @@ public:
         return storage_.agents();
     }
 
-    ~Simulation() {
+    ~Simulation() override {
         stop(true);
+        delete def_.experiment;
     }
 };

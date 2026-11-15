@@ -19,11 +19,9 @@ std::unordered_map<std::string, std::string> Controller::createCommonNeuron() {
     auto dendrite_id = storage_.put(dendrite);
 
     // random coordinates
-    static std::random_device rd{};
-    static std::mt19937 gen{rd()};
-    static std::uniform_real_distribution dist{-1.0, 1.0};
 
-    neuron->setPoint({ dist(gen), dist(gen) });
+
+    neuron->setPoint({ Rng::randReal(-1, 1), Rng::randReal(-1, 1) });
     axon->setPoint(neuron->point());
     dendrite->setPoint(neuron->point());
 

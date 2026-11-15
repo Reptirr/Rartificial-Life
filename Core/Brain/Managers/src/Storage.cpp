@@ -15,16 +15,6 @@ std::string Storage::putImpl(std::unordered_map<std::string, T *> &map, T *item)
 }
 
 
-template<typename Map>
-std::string Storage::randomKey(const Map &m) {
-    if (m.empty()) return "";
-
-    static std::mt19937 rng{std::random_device{}()};
-    std::uniform_int_distribution<size_t> dist(0, m.size() - 1);
-
-    return std::next(m.begin(), dist(rng))->first;
-}
-
 template<typename T>
 bool Storage::remove(const std::string &uuid) {
     return mapFor<T>(*this).erase(uuid) > 0;
@@ -45,12 +35,6 @@ std::string Storage::put(Synaps *synaps) {
 std::string Storage::put(Dendrite *dendrite) {
     return putImpl(dendrites_, dendrite);
 }
-
-std::string Storage::getRandomNeuron() const { return randomKey(neurons_); }
-
-std::string Storage::getRandomAxon() const { return randomKey(axons_); }
-
-std::string Storage::getRandomDendrite() const { return randomKey(dendrites_); }
 
 std::unordered_set<std::string> Storage::neurons() {
     auto k = std::ranges::views::keys(neurons_);

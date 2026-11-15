@@ -32,6 +32,10 @@ public:
         std::uniform_real_distribution dist(from, to);
         return dist(engine());
     }
+    static float randFloat(const float from, const float to) {
+        std::uniform_real_distribution dist(from, to);
+        return dist(engine());
+    }
 
     static void seed(unsigned int s) {
         engine().seed(s);

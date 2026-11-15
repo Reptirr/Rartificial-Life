@@ -1,6 +1,8 @@
 #pragma once
 #include <Genome.h>
+#include <my_assert.h>
 #include <RandomGenerator.h>
+#include <UUIDGenerator.h>
 
 struct GenMinMax {
     double min{};

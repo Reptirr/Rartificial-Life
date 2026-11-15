@@ -1,6 +1,5 @@
 #pragma once
 
-#include <AgentConfig.h>
 #include <AgentTabs.h>
 #include <BrainView.h>
 #include <GenomeRandomizer.h>
@@ -9,6 +8,7 @@
 #include <QSplitter>
 #include <Simulation.h>
 #include <WorldView.h>
+#include <MainExperiment.h>
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -21,23 +21,8 @@ class MainWindow : public QMainWindow {
 
 public:
     MainWindow() {
-        // defs
-        auto agent_def = AgentDef{
-            .agent_body_config = {
-                .pos = {},
-                .rays = 64,
-                .fov = std::numbers::pi,
-
-                .move_dirs = 40
-            },
-            .agent_config = {
-                .genome = GenomeRandomizer::randomizing(),
-                .num_of_common_neurons = 300
-            }
-        };
         auto sim_def = SimulationDef{
-            .init_agents = {agent_def},
-            .obstacles = {},
+            .experiment = new MainExperiment,
             .need_tps = -1,
             .dt = 1/60.0
         };

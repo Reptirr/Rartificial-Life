@@ -40,9 +40,6 @@ class Storage {
         else static_assert(always_false<T>, "Unknown type");
     }
 
-    template <typename Map>
-    static std::string randomKey(const Map& m);
-
 public:
     void setGenome(Genome genome) {
         genome_ = genome;
@@ -65,10 +62,6 @@ public:
 
     template <typename T>
     bool remove(const std::string &uuid);
-
-    std::string getRandomNeuron() const;
-    std::string getRandomAxon() const;
-    std::string getRandomDendrite() const;
 
     std::unordered_set<std::string> neurons();
     std::unordered_set<std::string> synapses();

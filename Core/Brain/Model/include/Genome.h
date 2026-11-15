@@ -3,7 +3,6 @@
 #include <Gen.h>
 #include <map>
 
-#define GEN_NAME inline const std::string
 
 struct Protein {
     std::string id;

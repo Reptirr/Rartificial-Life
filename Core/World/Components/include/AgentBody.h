@@ -146,7 +146,7 @@ public:
                 }
             });
 
-            energy -= 60;
+            energy -= 90;
         }
     }
 

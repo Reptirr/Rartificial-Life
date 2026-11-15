@@ -115,6 +115,10 @@ add_executable(Rartificial_Life
         GeneralUI/include/AgentTabs.h
         WorldUI/Managers/src/WorldUIController.cpp
         Core/Simulation/include/SimulationBridge.h
+        Core/Simulation/include/Experiment.h
+        Experiments/include/MainExperiment.h
+        Core/World/Managers/src/World.cpp
+        Experiments/src/MainExperiment.cpp
 )
 
 target_link_libraries(Rartificial_Life PRIVATE
@@ -150,6 +154,8 @@ include_directories(Rartificial_Life
         WorldUI/Utils/include
 
         GeneralUI/include
+
+        Experiments/include
 )
 
 target_compile_definitions(Rartificial_Life PRIVATE

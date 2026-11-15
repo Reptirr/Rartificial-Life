@@ -3,7 +3,6 @@
 #include <SenseGetter.h>
 #include <SimulationBridge.h>
 #include <SimulationController.h>
-#include <WorldDataCollector.h>
 #include <WorldExecutor.h>
 #include <WorldStorage.h>
 #include <box2d/box2d.h>
