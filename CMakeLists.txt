@@ -3,6 +3,9 @@ project(Rartificial_Life)
 
 set(CMAKE_CXX_STANDARD 20)
 
+# что бы поведение было как с GCC
+add_compile_definitions(_GLIBCXX_ASSERTIONS)
+
 # Автоматическая обработка Qt-специфичных файлов
 set(CMAKE_AUTOMOC ON)   # moc: для Q_OBJECT, сигналов и слотов
 set(CMAKE_AUTORCC ON)   # rcc: для .qrc ресурсов

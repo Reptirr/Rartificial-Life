@@ -10,10 +10,12 @@ class Rng {
 
 public:
     static double normal(double mean, double sigma) {
+        if (sigma <= 0) return mean;
         std::normal_distribution dist(mean, sigma);
         return dist(engine());
     }
     static int normal(int mean, int sigma) {
+        if (sigma <= 0) return mean;
         std::normal_distribution dist(static_cast<double>(mean), static_cast<double>(sigma));
         return static_cast<int>(std::lround(dist(engine())));
     }
