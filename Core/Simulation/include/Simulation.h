@@ -18,7 +18,11 @@ class Simulation : public QObject {
     SimulationDef def_;
 
     std::atomic<bool> running{};
+    std::chrono::steady_clock::time_point pre_resolve_tps_time{};
+
+    std::atomic<unsigned int> tick_i{};
     std::thread worker_thread_;
+    TickContext ctx_;
 
     void tick() {
         // сенсоры
@@ -37,35 +41,69 @@ class Simulation : public QObject {
 
 signals:
     void onAgentDeath(std::string id);
+    void simLife(bool running);
+
+    void newTick(unsigned int tick);
+    void tpsValue(double tps);
+    void seedValue(unsigned int seed);
+
+public slots:
+    void onSimLifeToggle() {
+        if (running) stop(true);
+        else start();
+
+        emit simLife(running.load()); // уведомляем о изменении состояния
+    }
 
 public:
     explicit Simulation(const SimulationDef &def) : world_(def.dt), def_(def) {
         controller_.setDeathCons([&](const std::string &id) { emit onAgentDeath(id); });
 
         world_.init(&controller_);
+
+        ctx_ = TickContext{
+            .tick_i = -1,
+            .simulation = this,
+            .world = &world_,
+
+            .sim_controller = &controller_,
+            .sim_storage = &storage_
+        };
+
+        def_.experiment->preFirstTick(ctx_);
+
+        auto *timer = new QTimer(this);
+
+        connect(timer, &QTimer::timeout, [&] {
+            auto elapsed = std::chrono::duration<double>(
+                std::chrono::steady_clock::now() - pre_resolve_tps_time
+            ).count();
+            auto tps_s = tick_i.load() / elapsed;
+
+            emit tpsValue(tps_s);
+
+            tick_i = 0;
+            pre_resolve_tps_time = std::chrono::steady_clock::now();
+        });
+        timer->start(250);
     }
 
     void start() {
         if (running.load()) return;
 
+        running = true;
+        pre_resolve_tps_time = std::chrono::steady_clock::now();
         worker_thread_ = std::thread([&] {
-            running = true;
-
             const auto step = std::chrono::milliseconds(1000 / def_.need_tps);
             auto next = std::chrono::steady_clock::now();
 
-            auto ctx = TickContext{
-                .tick_i = 0,
-                .simulation = this,
-                .world = &world_,
-
-                .sim_controller = &controller_,
-                .sim_storage = &storage_
-            };
+            auto tps_time = std::chrono::steady_clock::now();
 
             while (running.load()) {
-                def_.experiment->onTick(ctx);
-                ctx.tick_i++;
+                def_.experiment->onTick(ctx_);
+                ctx_.tick_i++;
+                ++tick_i;
+                emit newTick(ctx_.tick_i);
                 tick();
 
                 if (def_.need_tps != -1) {
@@ -90,6 +128,11 @@ public:
     }
     void connectUIWorld(WorldView *view) {
         view->connectWorld(&world_);
+    }
+
+    void setSeed(const unsigned int seed) {
+        Rng::seed(seed);
+        emit seedValue(seed);
     }
 
     World *getWorld() {

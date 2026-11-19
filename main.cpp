@@ -11,10 +11,6 @@ int main(int argc, char* argv[]) {
 
     QApplication a{argc, argv};
 
-    std::cout << std::random_device()() << std::endl;
-
-    Rng::seed(std::random_device()());
-
     MainWindow w;
     w.show();
 

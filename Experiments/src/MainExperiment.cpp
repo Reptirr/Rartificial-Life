@@ -2,54 +2,35 @@
 #include <SimulationController.h>
 #include <World.h>
 
-void MainExperiment::onTick(TickContext &ctx) {
-    if (ctx.tick_i == 0) {
-        // создаем начальных агентов
-        for (int i = 0; i < 1; i++) {
-            auto agent_def = AgentDef{
-                .agent_body_config = {
-                    .pos = {Rng::randFloat(-100, 100), Rng::randFloat(-100, 100)},
-                    .rays = 64,
-                    .fov = std::numbers::pi,
+void MainExperiment::preFirstTick(TickContext &ctx) {
+    // создаем начальных агентов
+    for (int i = 0; i < 1; i++) {
+        auto agent_def = AgentDef{
+            .agent_body_config = {
+                .pos = {Rng::randFloat(-100, 100), Rng::randFloat(-100, 100)},
+                .rays = 64,
+                .fov = std::numbers::pi,
 
-                    .move_dirs = 40
-                },
-                .agent_config = {
-                    .genome = GenomeRandomizer::randomizing(),
-                    .num_of_common_neurons = 300
-                }
-            };
+                .move_dirs = 40
+            },
+            .agent_config = {
+                .genome = GenomeRandomizer::randomizing(),
+                .num_of_common_neurons = 300
+            }
+        };
 
-            ctx.sim_controller->createAgent(agent_def);
-        }
-
-
-        // создаем начальную еду для популяции
-        for (int i = 0; i < 10000; i++) {
-            ctx.world->addFood({Rng::randReal(-100, 100), Rng::randReal(-100, 100)});
-        }
+        ctx.sim_controller->createAgent(agent_def);
     }
 
 
+    // создаем начальную еду для популяции
+    for (int i = 0; i < 10000; i++) {
+        ctx.world->addFood({Rng::randReal(-100, 100), Rng::randReal(-100, 100)});
+    }
+}
+
+void MainExperiment::onTick(TickContext &ctx) {
     /*
-     * это нейроны зрения
-     *
-     * щас покажу нейроны обычные
-     * они короче передают сигнал
-     * они просто типа через дендриты получают сигналы от других нейронов, если в сумме больше какогото числа то сам дают сигнал
-     *
-     * щас покажу двигательный
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
      * создание еды
      *
      * делаем механику клеток, всего 9 клеток в 100x100 площади, заполняем постепенно, раз в x тактов создаем еду

@@ -20,6 +20,7 @@ struct TickContext {
 // interface
 class Experiment {
 public:
+    virtual void preFirstTick(TickContext &ctx) {}
     virtual void onTick(TickContext &ctx) = 0;
 
     virtual ~Experiment() = default;

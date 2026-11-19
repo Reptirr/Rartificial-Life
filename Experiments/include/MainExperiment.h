@@ -13,5 +13,6 @@ class MainExperiment : public Experiment {
     int tact_per_food = 1; // 1 еда в 1 такт, постепенно увеличивается
 
 public:
+    void preFirstTick(TickContext &ctx) override;
     void onTick(TickContext &ctx) override;
 };
