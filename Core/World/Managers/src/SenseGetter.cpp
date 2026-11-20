@@ -35,38 +35,69 @@ QLineF SenseGetter::rayByAzimuth(QPointF from, const double azimuth, const doubl
 }
 
 
-std::vector<QColor> SenseGetter::getVision(std::string id, const double fov,
-                                           const int rays, const float maxDist,
-                                           const QColor default_color, const std::string &exclude_obj) const {
+std::vector<QColor> SenseGetter::getVision(
+    std::string id,
+    const double fov,
+    const int rays,
+    const float maxDist,
+    const QColor default_color,
+    const std::string &exclude_obj
+) const {
     std::vector<QColor> res;
+
+    if (rays <= 0 || fov <= 0.0 || maxDist <= 0.0f)
+        return res;
+
     res.reserve(rays);
 
-    auto from = b2Body_GetPosition(storage_.getObject(id)->getBodyId());
-    auto azimuth = b2Rot_GetAngle(b2Body_GetRotation(storage_.getObject(id)->getBodyId()));
+    auto *object = storage_.getObject(id);
+    const auto bodyId = object->getBodyId();
 
-    
+    const auto from = b2Body_GetPosition(bodyId);
+    const auto rotation = b2Body_GetRotation(bodyId);
+
+    const auto forward = b2Rot_GetXAxis(rotation);
+    const auto side = b2Rot_GetYAxis(rotation);
+
     const double ray_angle = fov / rays;
-    double angle = azimuth - fov / 2 + ray_angle / 2; // центр сектора, а не его край
 
     for (int i = 0; i < rays; i++) {
-        // azimuth -> vec
-        b2Vec2 dir = { .x = static_cast<float>(std::sin(angle)), .y = static_cast<float>(std::cos(angle)) };
-        b2Vec2 translation = {.x = dir.x * maxDist, .y = dir.y * maxDist};
+        const float angle = static_cast<float>(
+            -fov / 2.0 + ray_angle * (i + 0.5)
+        );
 
-        auto hit = b2World_CastRayClosest(storage_.getWorldId(), from, translation, b2DefaultQueryFilter());
+        const float c = std::cos(angle);
+        const float s = std::sin(angle);
+
+        // направление луча в мировых координатах
+        b2Vec2 dir = {
+            .x = forward.x * c + side.x * s,
+            .y = forward.y * c + side.y * s
+        };
+
+        b2Vec2 translation = {
+            .x = dir.x * maxDist,
+            .y = dir.y * maxDist
+        };
+
+        auto hit = b2World_CastRayClosest(
+            storage_.getWorldId(),
+            from,
+            translation,
+            b2DefaultQueryFilter()
+        );
 
         WorldObject *obj{};
 
         if (hit.hit) {
             auto body = b2Shape_GetBody(hit.shapeId);
-            obj = static_cast<WorldObject *>(b2Body_GetUserData(body));
+            obj = static_cast<WorldObject *>(
+                b2Body_GetUserData(body)
+            );
             my_assert(obj != nullptr);
         }
 
-        if (obj) res.push_back(obj->getColor());
-        else res.push_back(default_color);
-
-        angle += ray_angle;
+        res.push_back(obj ? obj->getColor() : default_color);
     }
 
     return res;
