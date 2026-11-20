@@ -39,6 +39,12 @@ public:
             .align = BrainAlign::Left
         });
 
+        // energy
+        groups.push_back({
+            .num = 1,
+            .align = BrainAlign::Bottom_Left
+        });
+
         return groups;
     }
 
@@ -64,6 +70,7 @@ public:
     std::vector<double> getInput() {
         std::vector<double> input;
 
+        // vision
         for (auto color : getVision()) {
             for (int i = 0; i < 3; i++) {
                 double intens{};
@@ -82,6 +89,9 @@ public:
                 input.push_back(intens);
             }
         }
+
+        // energy
+        input.push_back(energy / 120);
 
         // !костыль!
         energy -= 0.005;
