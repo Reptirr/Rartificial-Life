@@ -140,14 +140,10 @@ unsigned int Executor::tact() {
 
     int action_i = 0;
 
-    // чекаем планы
-    for (auto it = plan_commands_.begin(); it != plan_commands_.end(); ) {
-        if (--it->inTact <= 0) {
-            dirties_.push(it->cmd);
-            it = plan_commands_.erase(it);
-        } else {
-            ++it;
-        }
+    // проверяем запланированные команды
+    while (!plan_commands_.empty() && plan_commands_.top().execute_at <= tact_i) {
+        dirties_.push(plan_commands_.top().cmd);
+        plan_commands_.pop();
     }
 
     while (!dirties_.empty()) {

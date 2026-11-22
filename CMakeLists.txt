@@ -125,6 +125,7 @@ add_executable(Rartificial_Life
         GeneralUI/include/ControlPanel.h
         GeneralUI/include/ActionManager.h
         GeneralUI/include/StatusBar.h
+        Uuid.h
 )
 
 target_link_libraries(Rartificial_Life PRIVATE

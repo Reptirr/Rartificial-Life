@@ -8,12 +8,14 @@
 
 
 template<typename T>
-std::string Storage::putImpl(std::unordered_map<std::string, T *> &map, T *item) {
+std::string Storage::putImpl(
+    std::unordered_map<std::string, T*>& map,
+    T* item
+) {
     auto uuid = generateUuid();
-    map.insert({uuid, item});
+    map.emplace(uuid, item);
     return uuid;
 }
-
 
 template<typename T>
 bool Storage::remove(const std::string &uuid) {

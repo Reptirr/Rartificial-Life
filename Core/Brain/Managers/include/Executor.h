@@ -1,5 +1,6 @@
 #pragma once
 #include <BrainAnalyzer.h>
+#include <Command.h>
 #include <queue>
 
 
@@ -36,7 +37,7 @@ class Executor {
     unsigned int tact_i{};
     bool tact_running{};
 
-    std::vector<PlanCommand> plan_commands_{};
+    std::priority_queue<PlanCommand, std::vector<PlanCommand>, PlanCommandCompare> plan_commands_;
 
     void executeCmdFabric(Command cmd);
 
@@ -47,7 +48,7 @@ public:
 
     void pushPlan(int inTact, Command cmd) {
         if (inTact == 0) return;
-        plan_commands_.push_back(PlanCommand{cmd, inTact});
+        plan_commands_.push(PlanCommand{cmd, tact_i + inTact});
     }
 
     void push(const Command &cmd) {

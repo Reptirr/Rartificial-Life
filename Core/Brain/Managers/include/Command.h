@@ -36,5 +36,12 @@ struct Command {
 
 struct PlanCommand {
     Command cmd{};
-    int inTact{};
+    unsigned int execute_at;
+};
+
+struct PlanCommandCompare {
+    bool operator()(const PlanCommand& a,
+                    const PlanCommand& b) const {
+        return a.execute_at > b.execute_at;
+    }
 };
