@@ -5,7 +5,6 @@
 #include <unordered_map>
 #include <UUIDGenerator.h>
 
-
 class Storage;
 
 class SubMap {

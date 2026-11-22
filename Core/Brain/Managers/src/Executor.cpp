@@ -30,7 +30,7 @@ void Executor::executeCmdFabric(Command cmd) {
             std::string synaps_id = cmd.data.at("synaps");
             auto *synaps = storage_.get<Synaps>(synaps_id);
 
-            synaps->handleSpike();
+            synaps->handleSpike(tact_i);
             return;
         }
 
@@ -76,18 +76,7 @@ void Executor::executeCmdFabric(Command cmd) {
             auto synaps_id = cmd.data.at("synaps");
             auto *synaps = storage_.get<Synaps>(synaps_id);
 
-            synaps->handleCa();
-
-            return;
-        }
-
-        case REDUCE_VALS_IN_SYNAPS: {
-            // std::cout << "get REDUCE_VALS_IN_SYNAPS command. data: " << mapToString(cmd.data) << std::endl;
-
-            auto synaps_id = cmd.data.at("synaps");
-            auto *synaps = storage_.get<Synaps>(synaps_id);
-
-            synaps->reduce();
+            synaps->handleCa(tact_i);
 
             return;
         }

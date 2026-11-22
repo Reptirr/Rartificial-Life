@@ -13,7 +13,7 @@ class Synaps : public Executable, public BrainComponent {
 
     double w{1};
 
-    bool is_reducing{};
+    int tick_before{};
 
     NeuronType prev_neuron_type_{};
 
@@ -28,6 +28,25 @@ class Synaps : public Executable, public BrainComponent {
     double w_max{};
     double ca_decay{};
     double med_reduce_val{};
+
+    void reduce(int tick_i) {
+        my_assert(prev_neuron_type_ != NeuronType::INPUT);
+
+        int tick_delta = tick_i - tick_before;
+        tick_before = tick_i;
+
+        // чем больше Ca, тем быстрее уходит (экспоненциальный распад)
+        constexpr double ca_min_step = 0.02; // минимальный шаг, чтобы значение дошло до нуля
+
+        if (Ca != 0.0) {
+            Ca -= std::max(Ca * ca_decay * tick_delta, ca_min_step);
+            if (Ca < 0.0) Ca = 0.0;
+        }
+
+        if (mediator != 0.0) mediator = std::max(0.0, mediator - med_reduce_val * tick_delta);
+
+        data_collector_->onUpdate(this_id_);
+    }
 
 protected:
     void onSetThisId() override {
@@ -65,7 +84,7 @@ public:
 
     }
 
-    void handleSpike() {
+    void handleSpike(int tick_i) {
         executor_->push(Command{
             .type = DENDRIT_GET_SIGNAL,
             .data = {
@@ -75,6 +94,7 @@ public:
         });
 
         if (prev_neuron_type_ == NeuronType::INPUT) return;
+        reduce(tick_i);
 
         mediator += 1.0; // from prev neuron, imitation
 
@@ -84,21 +104,12 @@ public:
         }
 
         data_collector_->onUpdate(this_id_);
-
-        if (!is_reducing) {
-            executor_->push({
-                .type = REDUCE_VALS_IN_SYNAPS,
-                .data = {
-                    {"synaps", this_id_}
-                }
-            });
-
-            is_reducing = true;
-        }
     }
 
-    void handleCa() {
+    void handleCa(int tick_i) {
         if (prev_neuron_type_ == NeuronType::INPUT) return;
+        reduce(tick_i);
+
 
         Ca += 1.0;
         if (mediator > 0.0) {
@@ -107,42 +118,6 @@ public:
         }
 
         data_collector_->onUpdate(this_id_);
-
-        if (!is_reducing) {
-            executor_->push({
-                .type = REDUCE_VALS_IN_SYNAPS,
-                .data = {
-                    {"synaps", this_id_}
-                }
-            });
-
-            is_reducing = true;
-        }
-    }
-
-    void reduce() {
-        my_assert(prev_neuron_type_ != NeuronType::INPUT);
-
-        // чем больше Ca, тем быстрее уходит (экспоненциальный распад)
-        constexpr double ca_min_step = 0.02; // минимальный шаг, чтобы значение дошло до нуля
-
-        Ca -= std::max(Ca * ca_decay, ca_min_step);
-        if (Ca < 0.0) Ca = 0.0;
-
-        mediator = std::max(0.0, mediator - med_reduce_val);
-
-        data_collector_->onUpdate(this_id_);
-
-        if (Ca != 0.0 || mediator != 0.0) {
-            executor_->push({
-                .type = REDUCE_VALS_IN_SYNAPS,
-                .data = {
-                    {"synaps", this_id_}
-                }
-            });
-        } else {
-            is_reducing = false;
-        }
     }
 
     // getters

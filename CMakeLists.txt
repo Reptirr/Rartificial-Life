@@ -167,5 +167,5 @@ include_directories(Rartificial_Life
 )
 
 target_compile_definitions(Rartificial_Life PRIVATE
-#    BRAIN_DEBUG
+    BRAIN_DEBUG
 )

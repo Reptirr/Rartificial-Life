@@ -110,7 +110,7 @@ void Agent::align_helper(BrainAlign align, int num, BrainPoint &first_p, BrainPo
 
 void Agent::init(AgentConfig conf) {
     conf_ = conf;
-    brain_.init(conf.genome, conf.num_of_common_neurons);
+    brain_.init(conf.genome);
 
     // input
     for (auto [num, align] : conf.input_groups) {

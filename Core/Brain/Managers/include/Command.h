@@ -15,7 +15,6 @@ enum CommandType : int {
     // EDU
     HANDLE_CA_IN_DENDRITE,
     HANDLE_CA_IN_SYNAPS,
-    REDUCE_VALS_IN_SYNAPS,
 
     // GROWING
     AXON_GREW,

@@ -17,7 +17,6 @@ void MainExperiment::preFirstTick(TickContext &ctx) {
             },
             .agent_config = {
                 .genome = GenomeRandomizer::randomizing(),
-                .num_of_common_neurons = 300
             }
         };
 
@@ -33,16 +32,16 @@ void MainExperiment::preFirstTick(TickContext &ctx) {
     // создаём границы карты
 
     // сверху
-    ctx.world->addObstacle({0, 50}, {-50, 0, 100, 1}, QColorConstants::Black);
+    ctx.world->addObstacle({0, 50}, {-50, 0, 100, 1}, QColorConstants::Cyan);
 
     // снизу
-    ctx.world->addObstacle({0, -50}, {-50, 0, 100, 1}, QColorConstants::Black);
+    ctx.world->addObstacle({0, -50}, {-50, 0, 100, 1}, QColorConstants::Cyan);
 
     // слева
-    ctx.world->addObstacle({-50, 0}, {0, -50, 1, 100}, QColorConstants::Black);
+    ctx.world->addObstacle({-50, 0}, {0, -50, 1, 100}, QColorConstants::Cyan);
 
     // справа
-    ctx.world->addObstacle({50, 0}, {0, -50, 1, 100}, QColorConstants::Black);
+    ctx.world->addObstacle({50, 0}, {0, -50, 1, 100}, QColorConstants::Cyan);
 }
 
 void MainExperiment::onTick(TickContext &ctx) {

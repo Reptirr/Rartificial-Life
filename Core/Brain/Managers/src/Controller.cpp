@@ -8,7 +8,7 @@ Controller::Controller(Storage &storage, Executor &executor, BrainMap &brain_map
     : storage_(storage), executor_(executor), brain_map_(brain_map), sub_map_(sub_map), data_collector_(data_collector) {
 }
 
-std::unordered_map<std::string, std::string> Controller::createCommonNeuron() {
+std::unordered_map<std::string, std::string> Controller::createCommonNeuron(BrainPoint point) {
     auto *neuron = new Neuron(&executor_, NeuronType::COMMON);
     auto neuron_id = storage_.put(neuron);
 
@@ -18,10 +18,7 @@ std::unordered_map<std::string, std::string> Controller::createCommonNeuron() {
     auto *dendrite = new Dendrite(&executor_, neuron_id);
     auto dendrite_id = storage_.put(dendrite);
 
-    // random coordinates
-
-
-    neuron->setPoint({ Rng::randReal(-1, 1), Rng::randReal(-1, 1) });
+    neuron->setPoint(point);
     axon->setPoint(neuron->point());
     dendrite->setPoint(neuron->point());
 
@@ -35,6 +32,9 @@ std::unordered_map<std::string, std::string> Controller::createCommonNeuron() {
     neuron->handleProtein(sub_map_, storage_.getGenome());
     dendrite->handleProtein(sub_map_, storage_.getGenome());
     axon->handleProtein(sub_map_, storage_.getGenome());
+
+    // notify brain_map
+    brain_map_.updateDendrite(dendrite_id);
 
     return {
         {"neuron", neuron_id},
@@ -107,10 +107,12 @@ std::unordered_map<std::string, std::string> Controller::createOutputNeuron(Brai
     neuron->setInit(neuron_id, brain_map_, &data_collector_);
     axon->setInit(axon_id, brain_map_, &data_collector_);
 
-
     neuron->handleProtein(sub_map_, storage_.getGenome());
     dendrite->handleProtein(sub_map_, storage_.getGenome());
     axon->handleProtein(sub_map_, storage_.getGenome());
+
+    // notify brain_map
+    brain_map_.updateDendrite(dendrite_id);
 
     return {
         {"neuron", neuron_id},
