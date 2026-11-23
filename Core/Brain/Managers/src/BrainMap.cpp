@@ -48,7 +48,7 @@ void BrainMap::rebuildDendriteIndex() {
 
 void BrainMap::removeFromBucket(
     const Cell& cell,
-    const std::string& id
+    const Uuid& id
 ) {
     auto it = cells_.find(cell);
 
@@ -66,7 +66,7 @@ void BrainMap::removeFromBucket(
         cells_.erase(it);
 }
 
-void BrainMap::updateDendrite(const std::string& id) {
+void BrainMap::updateDendrite(const Uuid& id) {
     if (!storage_)
         return;
 
@@ -93,7 +93,7 @@ void BrainMap::updateDendrite(const std::string& id) {
     cells_[new_cell].push_back(id);
 }
 
-void BrainMap::eraseDendrite(const std::string& id) {
+void BrainMap::eraseDendrite(const Uuid& id) {
     auto it = cell_by_id_.find(id);
 
     if (it == cell_by_id_.end())
@@ -103,11 +103,11 @@ void BrainMap::eraseDendrite(const std::string& id) {
     cell_by_id_.erase(it);
 }
 
-std::vector<std::string> BrainMap::searchDendrite(
+std::vector<Uuid> BrainMap::searchDendrite(
     BrainPoint from,
     double r
 ) const {
-    std::vector<std::string> res;
+    std::vector<Uuid> res;
 
     if (!storage_ || !(r >= 0.0) || !std::isfinite(r))
         return res;

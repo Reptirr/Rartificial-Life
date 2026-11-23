@@ -1,14 +1,14 @@
 #pragma once
 #include <queue>
-#include <string>
 #include <unordered_map>
+#include <Uuid.h>
 #include <WorldUIController.h>
 #include <WorldUIDatas.h>
 #include <WorldUIMapper.h>
 #include <WorldUIStorage.h>
 
 struct WorldUIToCreate {
-    std::string id;
+    Uuid id;
     WorldObjectData *data;
 };
 
@@ -17,8 +17,8 @@ class WorldUIBatcher {
     WorldUIController &controller_;
 
     std::queue<WorldUIToCreate> to_create_;
-    std::unordered_map<std::string, WorldObjectData *> to_update_;
-    std::unordered_set<std::string> to_remove_;
+    std::unordered_map<Uuid, WorldObjectData *> to_update_;
+    std::unordered_set<Uuid> to_remove_;
 
     std::mutex mtx_;
 
@@ -27,23 +27,23 @@ public:
         : storage_(storage), controller_(controller) {
     }
 
-    void onCreate(const std::string &id, WorldObjectData *data) {
+    void onCreate(const Uuid &id, WorldObjectData *data) {
         std::lock_guard lock(mtx_);
         to_create_.push(WorldUIToCreate{id, data});
     }
-    void onUpdate(const std::string &id, WorldObjectData *data) {
+    void onUpdate(const Uuid &id, WorldObjectData *data) {
         std::lock_guard lock(mtx_);
         to_update_.insert_or_assign(id, data);
     }
-    void onRemove(const std::string &id) {
+    void onRemove(const Uuid &id) {
         std::lock_guard lock(mtx_);
         to_remove_.insert(id);
     }
 
     void applyBatch() {
         std::queue<WorldUIToCreate> to_create;
-        std::unordered_map<std::string, WorldObjectData *> to_update;
-        std::unordered_set<std::string> to_remove;
+        std::unordered_map<Uuid, WorldObjectData *> to_update;
+        std::unordered_set<Uuid> to_remove;
 
         {
             std::lock_guard lock(mtx_);

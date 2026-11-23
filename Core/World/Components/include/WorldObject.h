@@ -6,12 +6,13 @@
 #include <box2d/box2d.h>
 #include <box2d/id.h>
 #include <qdebug.h>
+#include <Uuid.h>
 
 class WorldObject {
     WorldDataCollector &data_collector_;
 
     EntityKind entity_kind_{EntityKind::NONE};
-    std::string this_id_;
+    Uuid this_id_;
     QColor color_;
     b2BodyId body_id_;
 
@@ -25,7 +26,7 @@ public:
         data_collector_.onUpdate(this_id_);
     }
 
-    void init(const std::string &entity_id, EntityKind entity_kind) {
+    void init(const Uuid &entity_id, EntityKind entity_kind) {
         this_id_ = entity_id;
         entity_kind_ = entity_kind;
 
@@ -34,8 +35,11 @@ public:
     EntityKind getEntityKind() const {
         return entity_kind_;
     }
-    std::string getThisId() const {
+    Uuid getThisId() const {
         return this_id_;
+    }
+    std::string getThisIdString() const {
+        return this_id_.toString();
     }
 
     QColor getColor() const {

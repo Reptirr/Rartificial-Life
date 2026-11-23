@@ -1,15 +1,15 @@
 #pragma once
 #include <Command.h>
 #include <Gen.h>
+#include <NeuronType.h>
 #include <utility>
-
-#pragma once
+#include <Uuid.h>
 
 class Dendrite;
 
 class Synaps : public Executable, public BrainComponent {
-    std::string axon_;
-    std::string dendrite_;
+    Uuid axon_;
+    Uuid dendrite_;
 
     double w{1};
 
@@ -54,8 +54,8 @@ protected:
     }
 
 public:
-    explicit Synaps(Executor *executor, std::string dendrite, std::string axon, NeuronType prev_neuron_type)
-        : Executable(executor), axon_(std::move(axon)), dendrite_(std::move(dendrite)) {
+    explicit Synaps(Executor *executor, Uuid dendrite, Uuid axon, NeuronType prev_neuron_type)
+        : Executable(executor), axon_(axon), dendrite_(dendrite) {
         prev_neuron_type_ = prev_neuron_type;
     }
 
@@ -121,10 +121,10 @@ public:
     }
 
     // getters
-    std::string getAxon() {
+    Uuid getAxon() const {
         return axon_;
     }
-    std::string getDendrite() {
+    Uuid getDendrite() const {
         return dendrite_;
     }
     double getCa() {

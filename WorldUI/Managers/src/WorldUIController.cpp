@@ -2,7 +2,7 @@
 #include <WorldUIController.h>
 #include <WorldView.h>
 
-void WorldUIController::newWorldObject(const std::string &id, WorldObjectData *data) {
+void WorldUIController::newWorldObject(const Uuid &id, WorldObjectData *data) {
     WorldObjectItem *item{};
 
     switch (data->entity_kind) {

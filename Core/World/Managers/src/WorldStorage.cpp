@@ -1,7 +1,7 @@
 #include <AgentBody.h>
 #include <WorldStorage.h>
 
-WorldEntity *WorldStorage::getEntity(const std::string &id) {
+WorldEntity *WorldStorage::getEntity(const Uuid &id) {
     auto *obj = getObject(id);
 
     switch (obj->getEntityKind()) {

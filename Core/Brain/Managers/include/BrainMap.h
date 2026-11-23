@@ -2,9 +2,9 @@
 
 #include <BrainComponent.h>
 #include <Storage.h>
+#include <Uuid.h>
 
 #include <cstdint>
-#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -31,21 +31,21 @@ class BrainMap {
     double cell_size_;
 
     // ячейка -> идентификаторы дендритов
-    std::unordered_map<Cell, std::vector<std::string>, CellHash> cells_;
+    std::unordered_map<Cell, std::vector<Uuid>, CellHash> cells_;
 
     // айди дендрита -> его ячейка
-    std::unordered_map<std::string, Cell> cell_by_id_;
+    std::unordered_map<Uuid, Cell, UuidHash> cell_by_id_;
 
     Cell cellOf(BrainPoint p) const;
 
-    void removeFromBucket(const Cell& cell, const std::string& id);
+    void removeFromBucket(const Cell& cell, const Uuid& id);
 
 public:
     explicit BrainMap(Storage* storage, double cell_size = 1.0);
 
     void rebuildDendriteIndex();
-    void updateDendrite(const std::string& id);
-    void eraseDendrite(const std::string& id);
+    void updateDendrite(const Uuid& id);
+    void eraseDendrite(const Uuid& id);
 
-    std::vector<std::string> searchDendrite(BrainPoint from, double r) const;
+    std::vector<Uuid> searchDendrite(BrainPoint from, double r) const;
 };

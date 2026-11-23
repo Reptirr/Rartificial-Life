@@ -8,7 +8,7 @@ Controller::Controller(Storage &storage, Executor &executor, BrainMap &brain_map
     : storage_(storage), executor_(executor), brain_map_(brain_map), sub_map_(sub_map), data_collector_(data_collector) {
 }
 
-std::unordered_map<std::string, std::string> Controller::createCommonNeuron(BrainPoint point) {
+std::unordered_map<std::string, Uuid> Controller::createCommonNeuron(BrainPoint point) {
     auto *neuron = new Neuron(&executor_, NeuronType::COMMON);
     auto neuron_id = storage_.put(neuron);
 
@@ -43,7 +43,7 @@ std::unordered_map<std::string, std::string> Controller::createCommonNeuron(Brai
     };
 }
 
-std::string Controller::createSynaps(const std::string &dendrite_id, const std::string &axon_id, int axon_node_from) {
+Uuid Controller::createSynaps(const Uuid &dendrite_id, const Uuid &axon_id, int axon_node_from) {
     auto *axon = storage_.get<Axon>(axon_id);
     auto *dendrite = storage_.get<Dendrite>(dendrite_id);
 
@@ -62,7 +62,7 @@ std::string Controller::createSynaps(const std::string &dendrite_id, const std::
     return synaps_id;
 }
 
-std::unordered_map<std::string, std::string> Controller::createInputNeuron(BrainPoint point) {
+std::unordered_map<std::string, Uuid> Controller::createInputNeuron(BrainPoint point) {
     auto *neuron = new Neuron(&executor_, NeuronType::INPUT);
     auto neuron_id = storage_.put(neuron);
 
@@ -73,7 +73,7 @@ std::unordered_map<std::string, std::string> Controller::createInputNeuron(Brain
     axon->setPoint(neuron->point());
 
     neuron->setInit(neuron_id, brain_map_, &data_collector_);
-    neuron->init(axon_id, "");
+    neuron->init(axon_id, Uuid{});
 
     axon->setInit(axon_id, brain_map_, &data_collector_);
 
@@ -86,7 +86,7 @@ std::unordered_map<std::string, std::string> Controller::createInputNeuron(Brain
     };
 }
 
-std::unordered_map<std::string, std::string> Controller::createOutputNeuron(BrainPoint point) {
+std::unordered_map<std::string, Uuid> Controller::createOutputNeuron(BrainPoint point) {
     auto *neuron = new Neuron(&executor_, NeuronType::OUTPUT);
     auto neuron_id = storage_.put(neuron);
 

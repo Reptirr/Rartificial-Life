@@ -1,12 +1,13 @@
 #pragma once
 #include <map>
-#include <string>
 #include <unordered_set>
+#include <Uuid.h>
+#include <string>
 
 struct GenBlock : std::unordered_map<std::string, std::string> {
-    // axon
-    std::unordered_set<std::string> axon_move_proteins;
-    std::unordered_set<std::string> axon_avoid_proteins;
+    // axon - using Uuid for protein identifiers
+    std::unordered_set<Uuid, UuidHash> axon_move_proteins;
+    std::unordered_set<Uuid, UuidHash> axon_avoid_proteins;
 };
 
 #define GENNAME inline const std::string

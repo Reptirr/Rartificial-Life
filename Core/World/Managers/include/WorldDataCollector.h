@@ -5,17 +5,18 @@
 #include <string>
 #include <typedefs.h>
 #include <vector>
+#include <Uuid.h>
 
 class WorldDataCollector {
-    StringConsumer createConsumer_;
-    StringConsumer updateConsumer_;
-    StringConsumer removeConsumer_;
-    std::vector<std::string> creates_;
+    IdConsumer createConsumer_;
+    IdConsumer updateConsumer_;
+    IdConsumer removeConsumer_;
+    std::vector<Uuid> creates_;
     std::mutex mtx_;
 
 public:
-    void onCreate(const std::string &id) {
-        StringConsumer cons;
+    void onCreate(const Uuid &id) {
+        IdConsumer cons;
         {
             std::lock_guard lock(mtx_);
             creates_.push_back(id);
@@ -24,16 +25,16 @@ public:
         if (cons) cons(id);
     }
 
-    void onUpdate(const std::string &id) {
-        StringConsumer cons;
+    void onUpdate(const Uuid &id) {
+        IdConsumer cons;
         {
             std::lock_guard lock(mtx_);
             cons = updateConsumer_;
         }
         if (cons) cons(id);
     }
-    void onRemove(const std::string &id) {
-        StringConsumer cons;
+    void onRemove(const Uuid &id) {
+        IdConsumer cons;
         {
             std::lock_guard lock(mtx_);
             cons = removeConsumer_;
@@ -41,8 +42,8 @@ public:
         if (cons) cons(id);
     }
 
-    void setCreateConsumer(const StringConsumer &cons) {
-        std::vector<std::string> snapshot;
+    void setCreateConsumer(const IdConsumer &cons) {
+        std::vector<Uuid> snapshot;
         {
             std::lock_guard lock(mtx_);
             createConsumer_ = cons;
@@ -52,11 +53,11 @@ public:
             for (const auto &id : snapshot) cons(id);
     }
 
-    void setUpdateConsumer(const StringConsumer &cons) {
+    void setUpdateConsumer(const IdConsumer &cons) {
         std::lock_guard lock(mtx_);
         updateConsumer_ = cons;
     }
-    void setRemoveConsumer(const StringConsumer &cons) {
+    void setRemoveConsumer(const IdConsumer &cons) {
         std::lock_guard lock(mtx_);
         removeConsumer_ = cons;
     }

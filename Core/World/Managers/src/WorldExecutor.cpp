@@ -1,5 +1,6 @@
 #include <AgentBody.h>
 #include <WorldExecutor.h>
+#include <Uuid.h>
 
 void WorldExecutor::handleCmdFabric(const WorldCommand &cmd) {
     auto &data = cmd.data;
@@ -9,10 +10,10 @@ void WorldExecutor::handleCmdFabric(const WorldCommand &cmd) {
             break;
 
         case WorldCommandType::AGENT_BODY_EAT_FOOD: {
-            auto agentbody_id = data.at("agentbody");
+            Uuid agentbody_id(data.at("agentbody"));
             auto *agentbody = storage_->getAgentBody(agentbody_id);
 
-            auto food_id = data.at("food");
+            Uuid food_id(data.at("food"));
 
             controller_->remove(food_id);
             agentbody->onEat();
@@ -21,7 +22,7 @@ void WorldExecutor::handleCmdFabric(const WorldCommand &cmd) {
         }
 
         case WorldCommandType::AGENT_BODY_MOVE: {
-            auto agentbody_id = data.at("agentbody");
+            Uuid agentbody_id(data.at("agentbody"));
 
             auto vec_x = std::stod(data.at("vec_x"));
             auto vec_y = std::stod(data.at("vec_y"));
@@ -32,7 +33,7 @@ void WorldExecutor::handleCmdFabric(const WorldCommand &cmd) {
         }
 
         case WorldCommandType::AGENT_BODY_ROTATE: {
-            auto agentbody_id = data.at("agentbody");
+            Uuid agentbody_id(data.at("agentbody"));
             auto force = std::stod(data.at("force"));
 
             controller_->rotate(agentbody_id, force);
@@ -42,7 +43,7 @@ void WorldExecutor::handleCmdFabric(const WorldCommand &cmd) {
 
         case WorldCommandType::AGENT_BODY_DEATH: {
             if (!data.contains("agentbody")) return;
-            auto agentbody_id = data.at("agentbody");
+            Uuid agentbody_id(data.at("agentbody"));
 
             controller_->remove(agentbody_id);
 
@@ -51,7 +52,7 @@ void WorldExecutor::handleCmdFabric(const WorldCommand &cmd) {
 
         case WorldCommandType::AGENT_BODY_BIRTH: {
             if (!data.contains("parent_id")) return;
-            auto parent_id = data.at("parent_id");
+            Uuid parent_id(data.at("parent_id"));
 
 
             controller_->birthAgent(parent_id);

@@ -3,7 +3,7 @@
 #include <Food.h>
 #include <string>
 #include <unordered_map>
-#include <UUIDGenerator.h>
+#include <Uuid.h>
 #include <WorldObject.h>
 
 class AgentBody;
@@ -18,54 +18,54 @@ class WorldStorage {
 
     b2WorldId world_id_;
 
-    std::unordered_map<std::string, WorldObject *> objects_;
+    std::unordered_map<Uuid, WorldObject *, UuidHash> objects_;
 
-    std::unordered_map<std::string, AgentBody *> agent_bodies_;
-    std::unordered_map<std::string, Food *> food_;
+    std::unordered_map<Uuid, AgentBody *, UuidHash> agent_bodies_;
+    std::unordered_map<Uuid, Food *, UuidHash> food_;
 
 public:
     explicit WorldStorage(const b2WorldId &world_id)
         : world_id_(world_id) {
     }
 
-    std::string putObject(WorldObject *obj) {
-        auto id = generateUuid();
+    Uuid putObject(WorldObject *obj) {
+        auto id = Uuid::generate();
         objects_.insert({id, obj});
         return id;
     }
-    WorldObject *getObject(const std::string &id) const {
+    WorldObject *getObject(const Uuid &id) const {
         return objects_.at(id);
     }
-    bool removeObject(const std::string &id) {
+    bool removeObject(const Uuid &id) {
         return objects_.erase(id);
     }
 
-    void putAgentBody(AgentBody *agent_body, std::string id) {
+    void putAgentBody(AgentBody *agent_body, Uuid id) {
         agent_bodies_.insert({id, agent_body});
     }
-    AgentBody *getAgentBody(const std::string &id) const {
+    AgentBody *getAgentBody(const Uuid &id) const {
         return agent_bodies_.at(id);
     }
-    bool removeAgentBody(const std::string &id) {
+    bool removeAgentBody(const Uuid &id) {
         return agent_bodies_.erase(id);
     }
 
-    void putFood(Food *food, const std::string& id) {
+    void putFood(Food *food, const Uuid& id) {
         food_.insert({id, food});
     }
-    Food *getFood(const std::string &id) const {
+    Food *getFood(const Uuid &id) const {
         return food_.at(id);
     }
-    bool removeFood(const std::string &id) {
+    bool removeFood(const Uuid &id) {
         return food_.erase(id);
     }
 
-    WorldEntity *getEntity(const std::string &id);
+    WorldEntity *getEntity(const Uuid &id);
 
-    const std::unordered_map<std::string, WorldObject *> &getObjects() const {
+    const std::unordered_map<Uuid, WorldObject *, UuidHash> &getObjects() const {
         return objects_;
     }
-    const std::unordered_map<std::string, Food *> &getFood() const {
+    const std::unordered_map<Uuid, Food *, UuidHash> &getFood() const {
         return food_;
     }
     const b2WorldId &getWorldId() const {

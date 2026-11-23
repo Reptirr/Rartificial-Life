@@ -5,9 +5,10 @@
 #include <queue>
 #include <UIController.h>
 #include <unordered_map>
+#include <Uuid.h>
 
 struct ToCreate {
-    std::string id;
+    Uuid id;
     std::unique_ptr<Data> data;
 };
 
@@ -16,7 +17,7 @@ class UIBatcher {
     UIStorage &ui_storage_;
 
     std::queue<ToCreate> to_create_;
-    std::unordered_map<std::string, std::unique_ptr<Data>> updates_;
+    std::unordered_map<Uuid, std::unique_ptr<Data>> updates_;
 
     std::mutex mtx;
 
@@ -25,15 +26,15 @@ public:
         : controller_(controller), ui_storage_(storage) {
     }
 
-    void onCreate(const std::string &id, std::unique_ptr<Data> d) {
-        if (d.get() == nullptr || id.empty())
+    void onCreate(const Uuid &id, std::unique_ptr<Data> d) {
+        if (!d.get())
             return;
 
         std::lock_guard lock(mtx);
         to_create_.push({id, std::move(d)});
     }
-    void onUpdate(std::string id, std::unique_ptr<Data> d) {
-        if (d.get() == nullptr || id.empty())
+    void onUpdate(const Uuid &id, std::unique_ptr<Data> d) {
+        if (!d.get())
             return;
         std::lock_guard lock(mtx);
         updates_.insert_or_assign(id, std::move(d));
@@ -42,7 +43,7 @@ public:
     void applyBatch() {
         std::unordered_set<UIComponent *> creates;
         std::queue<ToCreate> to_create;
-        std::unordered_map<std::string, std::unique_ptr<Data>> updates;
+        std::unordered_map<Uuid, std::unique_ptr<Data>> updates;
 
         {
             std::lock_guard lock(mtx);

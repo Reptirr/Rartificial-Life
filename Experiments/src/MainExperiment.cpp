@@ -48,4 +48,10 @@ void MainExperiment::onTick(TickContext &ctx) {
     if (ctx.world->getStorage()->getFood().size() < min_food) {
         ctx.world->addFood({Rng::randReal(-50, 50), Rng::randReal(-10, 10)});
     }
+
+    if (ctx.sim_storage->agents().empty()) {
+        std::cout << numbers << "ll" << std::endl;
+        numbers++;
+        preFirstTick(ctx);
+    }
 }

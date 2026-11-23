@@ -1,21 +1,22 @@
 #pragma once
 
 #include <typedefs.h>
+#include <Uuid.h>
 
 
 // ему говорят данные компоненты. а он уже вызывает колбеки, тем самым говоря ui о изменениях
 class DataCollector {
     // consumers
-    StringConsumer createConsumer;
-    StringConsumer updateConsumer;
+    IdConsumer createConsumer;
+    IdConsumer updateConsumer;
 
     // при изменении консьюмера, говорим ему о том что у нас есть
-    std::vector<std::string> creates_;
+    std::vector<Uuid> creates_;
     std::mutex mtx_;
 
 public:
     // events
-    void onCreate(const std::string &id) {
+    void onCreate(const Uuid &id) {
         std::lock_guard lock(mtx_);
         creates_.push_back(id);
 
@@ -23,7 +24,7 @@ public:
             createConsumer(id);
     }
 
-    void onUpdate(const std::string &id) {
+    void onUpdate(const Uuid &id) {
         std::lock_guard lock(mtx_);
 
         if (updateConsumer)
@@ -31,7 +32,7 @@ public:
     }
 
     // setters
-    void setCreateConsumer(const StringConsumer &cons) {
+    void setCreateConsumer(const IdConsumer &cons) {
         std::lock_guard lock(mtx_);
         createConsumer = cons;
 
@@ -40,7 +41,7 @@ public:
         }
     }
 
-    void setUpdateConsumer(const StringConsumer &cons) {
+    void setUpdateConsumer(const IdConsumer &cons) {
         std::lock_guard lock(mtx_);
 
         updateConsumer = cons;

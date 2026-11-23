@@ -100,7 +100,7 @@ public:
             executor_->push({
                 .type = WorldCommandType::AGENT_BODY_DEATH,
                 .data = {
-                    {"agentbody", this_id_}
+                    {"agentbody", this_id_.toString()}
                 }
             });
         }
@@ -126,7 +126,7 @@ public:
             executor_->push({
                 .type = WorldCommandType::AGENT_BODY_MOVE,
                 .data = {
-                    {"agentbody", this_id_},
+                    {"agentbody", this_id_.toString()},
                     {"vec_x", std::to_string(out_move.x)},
                     {"vec_y", std::to_string(out_move.y)}
                 }
@@ -137,7 +137,7 @@ public:
             executor_->push({
                 .type = WorldCommandType::AGENT_BODY_ROTATE,
                 .data = {
-                    {"agentbody", this_id_},
+                    {"agentbody", this_id_.toString()},
                     {"force", std::to_string(0.7 * neurons[i])}
                 }
             });
@@ -152,7 +152,7 @@ public:
             executor_->push({
                 .type = WorldCommandType::AGENT_BODY_BIRTH,
                 .data = {
-                    {"parent_id", this_id_}
+                    {"parent_id", this_id_.toString()}
                 }
             });
 
@@ -166,8 +166,8 @@ public:
                 executor_->push({
                     .type = WorldCommandType::AGENT_BODY_EAT_FOOD,
                     .data = {
-                        {"agentbody", this_id_},
-                        {"food", other->getId()}
+                        {"agentbody", this_id_.toString()},
+                        {"food", other->getId().toString()}
                     }
                 });
 

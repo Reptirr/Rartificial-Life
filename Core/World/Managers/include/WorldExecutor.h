@@ -2,6 +2,7 @@
 #include <queue>
 #include <string>
 #include <unordered_map>
+#include <Uuid.h>
 
 class WorldController;
 class WorldStorage;

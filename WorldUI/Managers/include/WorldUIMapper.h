@@ -3,6 +3,7 @@
 #include <WorldObject.h>
 #include <WorldUIConfig.h>
 #include <WorldUIDatas.h>
+#include <Uuid.h>
 #include <box2d/box2d.h>
 
 inline QPointF toScreen(b2Vec2 p) {
@@ -118,7 +119,7 @@ public:
         return data;
     }
 
-    static WorldObjectData *dataFromObjectId(const std::string &id, const WorldStorage *storage) {
+    static WorldObjectData *dataFromObjectId(const Uuid &id, const WorldStorage *storage) {
         const auto obj = storage->getObject(id);
 
         auto *data = new WorldObjectData;

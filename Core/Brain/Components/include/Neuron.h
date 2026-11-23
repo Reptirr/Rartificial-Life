@@ -5,15 +5,15 @@
 #include <Executable.h>
 #include <Executor.h>
 #include <NeuronType.h>
-#include <string>
 #include <my_assert.h>
 #include <SubMap.h>
+#include <Uuid.h>
 
 class Axon;
 
 class Neuron : public Executable, public BrainComponent {
-    std::string axon_{};
-    std::string dendrite_{};
+    Uuid axon_{};
+    Uuid dendrite_{};
     NeuronType type_{};
 
     // настраиваемые свойства
@@ -70,11 +70,11 @@ public:
 
     /// use it for neuron creating: first create neuron, after create axon&dendrite, after use that method to finish init
     /// set id before it
-    void init(std::string axon, std::string dendrite) {
-        axon_ = std::move(axon);
-        dendrite_ = std::move(dendrite);
+    void init(Uuid axon, Uuid dendrite) {
+        axon_ = axon;
+        dendrite_ = dendrite;
 
-        my_assert(!this_id_.empty());
+        my_assert(!this_id_.isNil());
 
         if (type_ == NeuronType::COMMON) {
             executor_->pushPlan(random_spike_ticks, {
@@ -159,10 +159,10 @@ public:
     }
 
     // getters
-    std::string getAxon() {
+    Uuid getAxon() const {
         return axon_;
     }
-    std::string getDendrite() {
+    Uuid getDendrite() const {
         return dendrite_;
     }
     NeuronType getType() const {

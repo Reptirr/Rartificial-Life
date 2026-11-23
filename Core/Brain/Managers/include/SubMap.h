@@ -1,15 +1,15 @@
 #pragma once
 #include <BrainPoint.h>
 #include <Genome.h>
-#include <string>
 #include <unordered_map>
 #include <UUIDGenerator.h>
+#include <Uuid.h>
 
 class Storage;
 
 class SubMap {
     Storage &storage_;
-    std::unordered_map<std::string, Protein *>& subs_;
+    std::unordered_map<Uuid, Protein *, UuidHash>& subs_;
 
 public:
     explicit SubMap(Storage &storage);

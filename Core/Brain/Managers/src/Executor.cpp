@@ -6,129 +6,114 @@
 #include <Neuron.h>
 #include <Storage.h>
 #include <Synaps.h>
+#include <Uuid.h>
 
-void Executor::executeCmdFabric(Command cmd) {
+void Executor::executeCmdFabric(const Command &cmd) {
     switch (cmd.type) {
         case NONE: {
-            // std::cout << "get NONE command. data: " << mapToString(cmd.data) << std::endl;
             return;
         }
 
         case AXON_GET_SPIKE: {
-            // std::cout << "get NEURON_SPIKE command. data: " << mapToString(cmd.data) << std::endl;
-
-            std::string axon_id = cmd.data.at("axon");
+            const Uuid &axon_id = cmd.data.at("axon").uuid_var;
             auto *axon = storage_.get<Axon>(axon_id);
+            my_assert(axon != nullptr);
 
             axon->putSpike();
             return;
         }
 
         case SYNAPS_GET_SPIKE: {
-            // std::cout << "get SYNAPS_FORWARD_SIGNAL command. data: " << mapToString(cmd.data) << std::endl;
-
-            std::string synaps_id = cmd.data.at("synaps");
+            const Uuid &synaps_id = cmd.data.at("synaps").uuid_var;
             auto *synaps = storage_.get<Synaps>(synaps_id);
+            my_assert(synaps != nullptr);
 
             synaps->handleSpike(tact_i);
             return;
         }
 
-        case DENDRIT_GET_SIGNAL:  {
-            // std::cout << "get DENDRIT_GET_SIGNAL command. data: " << mapToString(cmd.data) << std::endl;
-
-            std::string dendrite_id = cmd.data.at("dendrite");
-            std::string signal = cmd.data.at("signal");
+        case DENDRIT_GET_SIGNAL: {
+            const Uuid &dendrite_id = cmd.data.at("dendrite").uuid_var;
+            const std::string &signal = cmd.data.at("signal").string_var;
 
             auto *dendrite = storage_.get<Dendrite>(dendrite_id);
+            my_assert(dendrite != nullptr);
 
             dendrite->addSignal(signal);
             return;
         }
 
         case NEURON_GET_SIGNAL: {
-            // std::cout << "get NEURON_GET_SIGNAL command. data: " << mapToString(cmd.data) << std::endl;
-
-            std::string neuron_id = cmd.data.at("neuron");
-            std::string signal_s = cmd.data.at("signal");
+            const Uuid &neuron_id = cmd.data.at("neuron").uuid_var;
+            const std::string &signal = cmd.data.at("signal").string_var;
 
             auto *neuron = storage_.get<Neuron>(neuron_id);
+            my_assert(neuron != nullptr);
 
-            neuron->addSignal(signal_s);
-
+            neuron->addSignal(signal);
             return;
         }
 
         case HANDLE_CA_IN_DENDRITE: {
-            // std::cout << "get HANDLE_CA_IN_DENDRITE command. data: " << mapToString(cmd.data) << std::endl;
-
-            std::string dendrite_id = cmd.data.at("dendrite");
+            const Uuid &dendrite_id = cmd.data.at("dendrite").uuid_var;
             auto *dendrite = storage_.get<Dendrite>(dendrite_id);
+            my_assert(dendrite != nullptr);
 
             dendrite->transmitCu();
-
             return;
         }
 
         case HANDLE_CA_IN_SYNAPS: {
-            // std::cout << "get PRODUCE_CA_IN_SYNAPS command. data: " << mapToString(cmd.data) << std::endl;
-
-            auto synaps_id = cmd.data.at("synaps");
+            const Uuid &synaps_id = cmd.data.at("synaps").uuid_var;
             auto *synaps = storage_.get<Synaps>(synaps_id);
+            my_assert(synaps != nullptr);
 
             synaps->handleCa(tact_i);
-
             return;
         }
 
         case RANDOM_NEURON_SPIKE: {
-            // std::cout << "get RANDOM_NEURON_SPIKE command. data: " << mapToString(cmd.data) << std::endl;
-
-            auto neuron_id = cmd.data.at("neuron");
+            const Uuid &neuron_id = cmd.data.at("neuron").uuid_var;
             auto *neuron = storage_.get<Neuron>(neuron_id);
+            my_assert(neuron != nullptr);
 
             neuron->onRandomSpike();
-
             return;
         }
 
         case AXON_GREW: {
-            // std::cout << "get AXON_GREW command. data: " << mapToString(cmd.data) << std::endl;
-
-            auto axon_id = cmd.data.at("axon");
+            const Uuid &axon_id = cmd.data.at("axon").uuid_var;
             auto *axon = storage_.get<Axon>(axon_id);
+            my_assert(axon != nullptr);
 
             axon->handleGrow();
-
             return;
         }
 
         case CREATE_SYNAPS: {
-            // std::cout << "get CREATE_SYNAPS. data: " << mapToString(cmd.data) << std::endl;
+            const int node_i = std::stoi(cmd.data.at("current_node_index").string_var);
 
-            auto node_i = std::stoi(cmd.data.at("current_node_index"));
+            const Uuid &axon_id = cmd.data.at("axon").uuid_var;
+            const Uuid &dendrite_id = cmd.data.at("dendrite").uuid_var;
 
-            auto axon_id = cmd.data.at("axon");
-            auto *axon = storage_.get<Axon>(axon_id);
+            my_assert(storage_.get<Axon>(axon_id) != nullptr);
+            my_assert(storage_.get<Dendrite>(dendrite_id) != nullptr);
 
-            auto dendrite_id = cmd.data.at("dendrite");
-            auto *dendrite = storage_.get<Dendrite>(dendrite_id);
-
-            auto synaps_id = controller_.createSynaps(dendrite_id, axon_id, node_i);
-
+            controller_.createSynaps(dendrite_id, axon_id, node_i);
             return;
         }
 
         case NEURON_REFRACTOR_RESET: {
-            auto neuron_id = cmd.data.at("neuron");
+            const Uuid &neuron_id = cmd.data.at("neuron").uuid_var;
             auto *neuron = storage_.get<Neuron>(neuron_id);
+            my_assert(neuron != nullptr);
 
             neuron->refractorReset();
-
             return;
         }
 
-        default: my_assert(false);
+        default:
+            my_assert(false);
     }
 }
 

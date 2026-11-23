@@ -1,10 +1,11 @@
 #pragma once
 #include <string>
+#include <Uuid.h>
 
 class SimulationBridge {
 public:
-    virtual void deleteAgent(std::string id) = 0;
-    virtual void createAgent(std::string parent_id) = 0;
+    virtual void deleteAgent(const Uuid &id) = 0;
+    virtual void createAgent(const Uuid &parent_id) = 0;
 
     virtual ~SimulationBridge() = default;
 };

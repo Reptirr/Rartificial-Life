@@ -8,6 +8,7 @@
 #include <WorldUIController.h>
 #include <WorldUIMapper.h>
 #include <WorldUIStorage.h>
+#include <Uuid.h>
 
 class WorldView : public QGraphicsView {
     Q_OBJECT
@@ -39,12 +40,12 @@ protected:
     }
 
 public slots:
-    void onAgentOpen(std::string id) {
+    void onAgentOpen(const Uuid &id) {
         emit agentOpen(id);
     }
 
 signals:
-    void agentOpen(std::string id);
+    void agentOpen(const Uuid &id);
 
 public:
     explicit WorldView(QWidget *parent) : QGraphicsView(parent) {
@@ -66,24 +67,24 @@ public:
     void connectWorld(World *world) {
         storage_ = world->getStorage();
 
-        world->setCreateConsumer([&](const std::string &id) { onCreate(id); });
-        world->setUpdateConsumer([&](const std::string &id) { onUpdate(id); });
-        world->setRemoveConsumer([&](const std::string &id) { onRemove(id); });
+        world->setCreateConsumer([&](const Uuid &id) { onCreate(id); });
+        world->setUpdateConsumer([&](const Uuid &id) { onUpdate(id); });
+        world->setRemoveConsumer([&](const Uuid &id) { onRemove(id); });
     }
 
-    void onCreate(const std::string &id) {
+    void onCreate(const Uuid &id) {
         batcher_.onCreate(
             id,
             WorldUIMapper::dataFromObjectId(id, storage_)
         );
     }
-    void onUpdate(const std::string &id) {
+    void onUpdate(const Uuid &id) {
         batcher_.onUpdate(
             id,
             WorldUIMapper::dataFromObjectId(id, storage_)
         );
     }
-    void onRemove(const std::string &id) {
+    void onRemove(const Uuid &id) {
         batcher_.onRemove(id);
     }
 };

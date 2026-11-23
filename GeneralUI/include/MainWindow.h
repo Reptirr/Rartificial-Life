@@ -29,7 +29,7 @@ class MainWindow : public QMainWindow {
 
     void connects() {
         // WORLD_VIEW/SIMULATION -> AGENT_TABS
-        connect(world_view_, &WorldView::agentOpen, this, [&](const std::string &id) {
+        connect(world_view_, &WorldView::agentOpen, this, [&](const Uuid &id) {
             auto *brain = simulation_->getAgents().at(id)->getBrain();
             agent_tabs_->onAgentOpen(id, brain);
         });

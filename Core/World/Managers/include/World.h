@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <WorldDataCollector.h>
+#include <Uuid.h>
 
 
 class QColor;
@@ -26,14 +27,14 @@ public:
 
     void tick();
 
-    std::string addAgentBody(const AgentBodyConfig &conf) const;
-    std::string addObstacle(QPointF pos, QRectF rect, QColor color) const;
-    std::string addFood(QPointF pos) const;
+    Uuid addAgentBody(const AgentBodyConfig &conf) const;
+    Uuid addObstacle(QPointF pos, QRectF rect, QColor color) const;
+    Uuid addFood(QPointF pos) const;
 
     const WorldStorage *getStorage() const;
 
     // data collector
-    void setCreateConsumer(const StringConsumer &cons);
-    void setUpdateConsumer(const StringConsumer &cons);
-    void setRemoveConsumer(const StringConsumer &cons);
+    void setCreateConsumer(const IdConsumer &cons);
+    void setUpdateConsumer(const IdConsumer &cons);
+    void setRemoveConsumer(const IdConsumer &cons);
 };

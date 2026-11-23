@@ -1,9 +1,10 @@
 #pragma once
 #include <BrainView.h>
 #include <qtabwidget.h>
+#include <Uuid.h>
 
 class AgentTabs : public QTabWidget {
-    std::unordered_map<std::string, BrainView *> views_;
+    std::unordered_map<Uuid, BrainView *> views_;
 
     void closeTabAt(int index) {
         if (index < 0) return;
@@ -14,7 +15,7 @@ class AgentTabs : public QTabWidget {
     }
 
 public slots:
-    void onAgentClose(const std::string &id) {
+    void onAgentClose(const Uuid &id) {
         if (!views_.contains(id)) return;
 
         auto *view = views_.at(id);
@@ -23,7 +24,7 @@ public slots:
         closeTabAt(index);
     }
 
-    void onAgentOpen(std::string id, Brain *brain) {
+    void onAgentOpen(const Uuid &id, Brain *brain) {
         if (views_.contains(id)) {
             return;
         }

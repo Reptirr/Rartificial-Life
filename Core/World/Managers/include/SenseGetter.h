@@ -1,6 +1,7 @@
 #pragma once
 #include <qline.h>
 #include <WorldStorage.h>
+#include <Uuid.h>
 
 class QPolygonF;
 class QColor;
@@ -19,9 +20,9 @@ public:
 
 
     std::vector<QColor> getVision(
-        std::string id,
+        const Uuid &id,
         double fov,
         int rays,
-        float maxDist, QColor default_color, const std::string &exclude_obj
+        float maxDist, QColor default_color, const Uuid &exclude_obj
     ) const;
 };

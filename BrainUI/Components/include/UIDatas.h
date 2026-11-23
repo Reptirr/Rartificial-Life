@@ -9,14 +9,14 @@ struct Data {
 
 struct DendriteData : Data {
     QPointF pos;
-    std::string neuron;
-    std::unordered_set<std::string> synapses;
+    Uuid neuron;
+    std::unordered_set<Uuid, UuidHash> synapses;
 };
 
 struct NeuronData : Data {
     QPointF pos;
-    std::string dendrite;
-    std::string axon;
+    Uuid dendrite;
+    Uuid axon;
 
     NeuronType type;
 
@@ -29,17 +29,17 @@ struct NeuronData : Data {
 struct AxonNodeData {
     QPointF pos;
     int prev_node{-2}; // -1 - корневой нод (от нейрона); индекс предыдущего нейрона
-    std::string synaps; // "" - синапса нет и наоборот
+    Uuid synaps;
 };
 struct AxonData : Data {
-    std::string neuron;
+    Uuid neuron;
     std::vector<AxonNodeData> nodes;
 };
 
 struct SynapsData : Data {
     QPointF pos;
-    std::string axon;
-    std::string dendrite;
+    Uuid axon;
+    Uuid dendrite;
 
     double mediator{};
     double Ca{};

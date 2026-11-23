@@ -9,8 +9,8 @@
 #include <QWheelEvent>
 #include <Storage.h>
 #include <UIBatcher.h>
-#include <UIController.h>
 #include <UIMapper.h>
+#include <Uuid.h>
 
 class BrainView : public QGraphicsView {
     QGraphicsScene *scene_ = new QGraphicsScene(this);
@@ -94,11 +94,11 @@ public:
         brain_ = brain;
         storage_ = &brain_->getStorage();
 
-        brain->setCreateCallback([&](const std::string &s) { this->onCreate(s); });
-        brain->setUpdateCallback([&](const std::string &s) { this->onUpdate(s); });
+        brain->setCreateCallback([&](const Uuid &s) { this->onCreate(s); });
+        brain->setUpdateCallback([&](const Uuid &s) { this->onUpdate(s); });
     }
 
-    void onCreate(const std::string &id) {
+    void onCreate(const Uuid &id) {
         if (auto *neuron = storage_->get<Neuron>(id)) {
             // тут особый случай: надо заявить еще и аксон с дендритом(если не инпут)
             auto *dendrite = storage_->get<Dendrite>(neuron->getDendrite()); // when there is input neuron it is null
@@ -126,7 +126,7 @@ public:
             my_assert(false);
         }
     }
-    void onUpdate(const std::string &id) {
+    void onUpdate(const Uuid &id) {
         std::unique_ptr<Data> data;
 
         if (auto *neuron = storage_->get<Neuron>(id)) {

@@ -36,12 +36,12 @@ QLineF SenseGetter::rayByAzimuth(QPointF from, const double azimuth, const doubl
 
 
 std::vector<QColor> SenseGetter::getVision(
-    std::string id,
-    const double fov,
-    const int rays,
-    const float maxDist,
-    const QColor default_color,
-    const std::string &exclude_obj
+    const Uuid &id,
+    double fov,
+    int rays,
+    float maxDist,
+    QColor default_color,
+    const Uuid &exclude_obj
 ) const {
     std::vector<QColor> res;
 

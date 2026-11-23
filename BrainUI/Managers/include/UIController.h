@@ -38,35 +38,35 @@ public:
     }
 
 
-    auto newNeuron(const std::string &neuron_id, const NeuronData &data) const {
+    auto newNeuron(const Uuid &neuron_id, const NeuronData &data) const {
         auto *item = createNeuronItem(data);
         ui_storage_.insertNeuron(neuron_id, item);
         addItems(scene_, {item});
         return item;
     }
 
-    auto newDendrite(const std::string &dendrite_id, const DendriteData &data) const {
+    auto newDendrite(const Uuid &dendrite_id, const DendriteData &data) const {
         auto *item = createDendriteItem(data);
         ui_storage_.insertDendrite(dendrite_id, item);
         addItems(scene_, {item});
         return item;
     }
 
-    auto newAxon(const std::string &axon_id, const AxonData &data) const {
+    auto newAxon(const Uuid &axon_id, const AxonData &data) const {
         auto *item = createAxonItem(data);
         ui_storage_.insertAxon(axon_id, item);
         addItems(scene_, {item});
         return item;
     }
 
-    auto newSynaps(const std::string &synaps_id, const SynapsData &data) const {
+    auto newSynaps(const Uuid &synapse_id, const SynapsData &data) const {
         auto *item = createSynapsItem(data);
-        ui_storage_.insertSynaps(synaps_id, item);
+        ui_storage_.insertSynaps(synapse_id, item);
         scene_->addItem(item);
         return item;
     }
 
-    auto newProtein(const std::string &protein_id, const ProteinData &data) const {
+    auto newProtein(const Uuid &protein_id, const ProteinData &data) const {
         auto *item = createProteinItem(data);
         ui_storage_.insertProtein(protein_id, item);
         scene_->addItem(item);

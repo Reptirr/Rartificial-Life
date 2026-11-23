@@ -3,6 +3,7 @@
 #include <EntityKind.h>
 #include <FoodItem.h>
 #include <WorldUIStorage.h>
+#include <Uuid.h>
 
 class WorldView;
 
@@ -17,15 +18,15 @@ public:
           view_(view), scene_(scene) {
     }
 
-    void newWorldObject(const std::string &id, WorldObjectData *data);
+    void newWorldObject(const Uuid &id, WorldObjectData *data);
 
-    void updateWorldObject(const std::string &id, WorldObjectData *data) const {
+    void updateWorldObject(const Uuid &id, WorldObjectData *data) const {
         auto item = storage_.getObject(id);
         item->setData(data);
         item->UIUpdate();
     }
 
-    void removeWorldObject(const std::string &id) const {
+    void removeWorldObject(const Uuid &id) const {
         const auto item = storage_.getObject(id);
         storage_.removeObject(id);
         delete item; // remove from scene

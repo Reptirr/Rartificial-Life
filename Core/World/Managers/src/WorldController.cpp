@@ -4,11 +4,11 @@
 #include <box2d/types.h>
 #include <box2d/box2d.h>
 
-void WorldController::birthAgent(const std::string &id) const {
+void WorldController::birthAgent(const Uuid &id) const {
     sim_bridge_->createAgent(id);
 }
 
-std::string WorldController::addAgentBody(AgentBodyConfig conf) const {
+Uuid WorldController::addAgentBody(AgentBodyConfig conf) const {
     auto bd = b2DefaultBodyDef();
     bd.type = b2_dynamicBody;
     bd.linearDamping = 0.001;
@@ -36,7 +36,7 @@ std::string WorldController::addAgentBody(AgentBodyConfig conf) const {
     return id;
 }
 
-std::string WorldController::addObstacle(QPointF pos, QRectF rect, QColor color) const {
+Uuid WorldController::addObstacle(QPointF pos, QRectF rect, QColor color) const {
     auto bd = b2DefaultBodyDef();
     bd.type = b2_staticBody;
     bd.position = {static_cast<float>(pos.x()), static_cast<float>(pos.y())};
@@ -57,7 +57,7 @@ std::string WorldController::addObstacle(QPointF pos, QRectF rect, QColor color)
     return id;
 }
 
-std::string WorldController::addFood(QPointF pos) const {
+Uuid WorldController::addFood(QPointF pos) const {
     auto bd = b2DefaultBodyDef();
     bd.type = b2_staticBody;
     bd.position = {static_cast<float>(pos.x()), static_cast<float>(pos.y())};
@@ -84,7 +84,7 @@ std::string WorldController::addFood(QPointF pos) const {
     return id;
 }
 
-void WorldController::remove(const std::string &id) {
+void WorldController::remove(const Uuid &id) {
     // delete from ui
     collector_.onRemove(id);
 

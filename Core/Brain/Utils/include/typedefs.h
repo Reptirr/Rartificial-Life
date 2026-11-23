@@ -1,5 +1,6 @@
 #pragma once
 #include <functional>
 #include <string>
+#include <Uuid.h>
 
-using StringConsumer = std::function<void(std::string)>;
+using IdConsumer = std::function<void(Uuid)>;

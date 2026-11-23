@@ -7,6 +7,7 @@
 #include <Genome.h>
 #include <Storage.h>
 #include <typedefs.h>
+#include <Uuid.h>
 
 class Brain {
     Storage storage_;
@@ -31,10 +32,10 @@ public:
         controller_.createNeuronsInProteins(genome.proteins);
     }
 
-    void setCreateCallback(const StringConsumer &cons) {
+    void setCreateCallback(const IdConsumer &cons) {
         data_collector_.setCreateConsumer(cons);
     }
-    void setUpdateCallback(const StringConsumer &cons) {
+    void setUpdateCallback(const IdConsumer &cons) {
         data_collector_.setUpdateConsumer(cons);
     }
     void resetCallbacks() {
@@ -45,14 +46,14 @@ public:
         return storage_;
     }
 
-    std::unordered_map<std::string, std::string> createNeuron(BrainPoint p) {
+    std::unordered_map<std::string, Uuid> createNeuron(BrainPoint p) {
         auto res = controller_.createCommonNeuron(p);
         return res;
     }
-    std::unordered_map<std::string, std::string> createInputNeuron(BrainPoint p) {
+    std::unordered_map<std::string, Uuid> createInputNeuron(BrainPoint p) {
         return controller_.createInputNeuron(p);
     }
-    std::unordered_map<std::string, std::string> createOutputNeuron(BrainPoint p) {
+    std::unordered_map<std::string, Uuid> createOutputNeuron(BrainPoint p) {
         return controller_.createOutputNeuron(p);
     }
 

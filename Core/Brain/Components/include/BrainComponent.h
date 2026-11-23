@@ -1,5 +1,6 @@
 #pragma once
 #include <BrainPoint.h>
+#include <Uuid.h>
 
 struct Genome;
 class SubMap;
@@ -10,7 +11,7 @@ class BrainMap;
 class BrainComponent {
 protected:
     BrainPoint point_{};
-    std::string this_id_{};
+    Uuid this_id_{};
     BrainMap *brain_map_{};
     DataCollector *data_collector_{};
 
@@ -18,7 +19,7 @@ protected:
 
 public:
     /// set after all pre-creatings
-    void setInit(const std::string &this_id, BrainMap &brain_map, DataCollector *data_collector) {
+    void setInit(const Uuid &this_id, BrainMap &brain_map, DataCollector *data_collector) {
         this_id_ = this_id;
         brain_map_ = &brain_map;
         data_collector_ = data_collector;
@@ -35,6 +36,11 @@ public:
 
     BrainPoint point() const { return point_; }
     void setPoint(const BrainPoint point) { point_ = point; }
+
+    // Get ID as Uuid
+    const Uuid& getId() const { return this_id_; }
+    // Get ID as string (for logging/UI)
+    std::string getIdString() const { return this_id_.toString(); }
 
     virtual ~BrainComponent() = default;
 };

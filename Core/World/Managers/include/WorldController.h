@@ -6,6 +6,7 @@
 #include <WorldExecutor.h>
 #include <WorldStorage.h>
 #include <box2d/box2d.h>
+#include <Uuid.h>
 
 class AgentLifeController;
 class QRectF;
@@ -30,21 +31,21 @@ public:
     }
 
     // adders
-    void birthAgent(const std::string &id) const;
-    std::string addAgentBody(AgentBodyConfig conf) const;
-    std::string addObstacle(QPointF, QRectF rect, QColor color) const;
-    std::string addFood(QPointF) const;
+    void birthAgent(const Uuid &id) const;
+    Uuid addAgentBody(AgentBodyConfig conf) const;
+    Uuid addObstacle(QPointF, QRectF rect, QColor color) const;
+    Uuid addFood(QPointF) const;
 
     // changers
-    void remove(const std::string &id);
-    void setVel(const std::string &id, b2Vec2 vec) const {
+    void remove(const Uuid &id);
+    void setVel(const Uuid &id, b2Vec2 vec) const {
         const auto obj = storage_.getObject(id);
         const auto body = obj->getBodyId();
 
         const b2Vec2 world = b2Body_GetWorldVector(body, vec);
         b2Body_SetLinearVelocity(body, world);
     }
-    void rotate(const std::string &id, const double force) const {
+    void rotate(const Uuid &id, const double force) const {
         const auto obj = storage_.getObject(id);
 
         b2Body_ApplyAngularImpulse(obj->getBodyId(), force / dt_, true);

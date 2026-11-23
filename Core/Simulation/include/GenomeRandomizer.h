@@ -116,7 +116,7 @@ public:
             // move/avoid proteins
             my_assert(conf.move_proteins_per_genblock + conf.avoid_proteins_per_genblock < proteins);
             for (int j = 0; j < conf.move_proteins_per_genblock; j++) {
-                std::string protein_id;
+                Uuid protein_id = out.proteins.at(Rng::randInt(0, proteins-1)).id;
                 do {
                     protein_id = out.proteins.at(Rng::randInt(0, proteins-1)).id;
                 } while (genblock.axon_move_proteins.contains(protein_id) || genblock.axon_avoid_proteins.contains(protein_id));
@@ -124,7 +124,7 @@ public:
                 genblock.axon_move_proteins.insert(protein_id);
             }
             for (int j = 0; j < conf.avoid_proteins_per_genblock; j++) {
-                std::string protein_id;
+                Uuid protein_id = out.proteins.at(Rng::randInt(0, proteins-1)).id;
                 do {
                     protein_id = out.proteins.at(Rng::randInt(0, proteins-1)).id;
                 } while (genblock.axon_move_proteins.contains(protein_id) || genblock.axon_avoid_proteins.contains(protein_id));

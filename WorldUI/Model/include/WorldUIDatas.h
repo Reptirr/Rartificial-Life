@@ -3,10 +3,11 @@
 #include <QColor>
 #include <QPolygonF>
 #include <string>
+#include <Uuid.h>
 
 struct WorldObjectData {
     EntityKind entity_kind;
-    std::string entity_id;
+    Uuid entity_id;
 
     QPointF point;
     QColor color;
@@ -14,6 +15,9 @@ struct WorldObjectData {
     double angle{}; // degree
 
     virtual ~WorldObjectData() {}
+    std::string getIdString() const {
+        return entity_id.toString();
+    }
 };
 
 struct AgentBodyData : WorldObjectData {

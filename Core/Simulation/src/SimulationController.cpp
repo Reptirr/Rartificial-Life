@@ -3,7 +3,7 @@
 #include <AgentBody.h>
 #include <GenomeRandomizer.h>
 
-std::string SimulationController::createAgent(AgentDef &agent_def) {
+Uuid SimulationController::createAgent(AgentDef &agent_def) {
     auto id = world_.addAgentBody(agent_def.agent_body_config);
     auto *agentbody = world_.getStorage()->getAgentBody(id);
 
@@ -19,7 +19,7 @@ std::string SimulationController::createAgent(AgentDef &agent_def) {
     return id;
 }
 
-void SimulationController::createAgent(std::string parent_id) {
+void SimulationController::createAgent(const Uuid &parent_id) {
     AgentDef def{};
 
     def.agent_body_config = world_.getStorage()->getAgentBody(parent_id)->getAgentBodyConfig();

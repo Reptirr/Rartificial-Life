@@ -31,8 +31,8 @@ protected:
     }
 
 signals:
-    void mouseDoubleClick(std::string id);
-    void mouseClick(std::string id);
+    void mouseDoubleClick(const Uuid &id);
+    void mouseClick(const Uuid &id);
 
 public:
     explicit WorldObjectItem(const WorldObjectData *data) : QGraphicsPolygonItem(data->poly) {

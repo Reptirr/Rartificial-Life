@@ -5,18 +5,18 @@
 #include <DataCollector.h>
 #include <Executable.h>
 #include <Executor.h>
-#include <string>
 #include <unordered_set>
+#include <Uuid.h>
 
 class Neuron;
 
 class Dendrite : public Executable, public BrainComponent {
-    std::string neuron_{};
-    std::unordered_set<std::string> synapses_{};
+    Uuid neuron_{};
+    std::unordered_set<Uuid, UuidHash> synapses_{};
 
 public:
-    explicit Dendrite(Executor *executor, std::string neuron)
-        : Executable(executor), neuron_(std::move(neuron)) {
+    explicit Dendrite(Executor *executor, Uuid neuron)
+        : Executable(executor), neuron_(neuron) {
     }
 
     void handleProtein(SubMap &sub_map, const Genome &genome) override {}
@@ -31,14 +31,14 @@ public:
         });
     }
 
-    void addSynaps(std::string synaps) {
+    void addSynaps(Uuid synaps) {
         synapses_.insert(synaps);
 
         data_collector_->onUpdate(this_id_);
     }
 
     void transmitCu() const {
-        for (std::string synaps : synapses_) {
+        for (auto synaps : synapses_) {
             executor_->push({
                 .type = HANDLE_CA_IN_SYNAPS,
                 .data = {
@@ -49,10 +49,10 @@ public:
     }
 
     // getters
-    std::string getNeuron() {
+    Uuid getNeuron() const {
         return neuron_;
     }
-    std::unordered_set<std::string> getSynapses() {
+    std::unordered_set<Uuid, UuidHash> getSynapses() const {
         return synapses_;
     }
 };

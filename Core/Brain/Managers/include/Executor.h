@@ -39,7 +39,7 @@ class Executor {
 
     std::priority_queue<PlanCommand, std::vector<PlanCommand>, PlanCommandCompare> plan_commands_;
 
-    void executeCmdFabric(Command cmd);
+    void executeCmdFabric(const Command &cmd);
 
 public:
     explicit Executor(Storage &storage, Controller &controller) : storage_(storage), controller_(controller) {

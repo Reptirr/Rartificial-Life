@@ -2,6 +2,7 @@
 
 #include <AgentConfig.h>
 #include <Brain.h>
+#include <Uuid.h>
 
 class AgentBody;
 
@@ -17,23 +18,23 @@ class Agent {
 
     // текущие частоты спайков на входные нейроны.
     // обозначает раз в сколько таков делать спайк
-    std::unordered_map<std::string, int> input_freqs;
+    std::unordered_map<Uuid, int, UuidHash> input_freqs;
 
     // счетчик, показывающий через сколько делать спайк. per tact
     // при изменении частоты, он делает спайк а затем начинает с новой частотой
-    std::unordered_map<std::string, int> input_counters;
+    std::unordered_map<Uuid, int, UuidHash> input_counters;
 
-    std::vector<std::string> input_neurons;
-    std::vector<std::string> output_neurons;
+    std::vector<Uuid> input_neurons;
+    std::vector<Uuid> output_neurons;
 
 
 
     int convertIntensityToFreq(double intensity);
-    void setInputNeuronIntensity(const std::string &id, const double intensity);
-    bool getNeuronSpiked(const std::string &id);
+    void setInputNeuronIntensity(const Uuid &id, const double intensity);
+    bool getNeuronSpiked(const Uuid &id);
 
-    std::string createInputNeuron(BrainPoint p, double init_intensity);
-    std::string createOutputNeuron(BrainPoint p);
+    Uuid createInputNeuron(BrainPoint p, double init_intensity);
+    Uuid createOutputNeuron(BrainPoint p);
 
     // utils
     static void align_helper(BrainAlign align, int num, BrainPoint &first_p, BrainPoint &step_p);

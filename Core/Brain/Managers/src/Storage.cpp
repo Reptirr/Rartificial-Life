@@ -8,8 +8,8 @@
 
 
 template<typename T>
-std::string Storage::putImpl(
-    std::unordered_map<std::string, T*>& map,
+Uuid Storage::putImpl(
+    std::unordered_map<Uuid, T*, UuidHash>& map,
     T* item
 ) {
     auto uuid = generateUuid();
@@ -18,42 +18,42 @@ std::string Storage::putImpl(
 }
 
 template<typename T>
-bool Storage::remove(const std::string &uuid) {
+bool Storage::remove(const Uuid &uuid) {
     return mapFor<T>(*this).erase(uuid) > 0;
 }
 
-std::string Storage::put(Neuron *neuron) {
+Uuid Storage::put(Neuron *neuron) {
     return putImpl(neurons_, neuron);
 }
 
-std::string Storage::put(Axon *axon) {
+Uuid Storage::put(Axon *axon) {
     return putImpl(axons_, axon);
 }
 
-std::string Storage::put(Synaps *synaps) {
+Uuid Storage::put(Synaps *synaps) {
     return putImpl(synapses_, synaps);
 }
 
-std::string Storage::put(Dendrite *dendrite) {
+Uuid Storage::put(Dendrite *dendrite) {
     return putImpl(dendrites_, dendrite);
 }
 
-std::unordered_set<std::string> Storage::neurons() {
+std::unordered_set<Uuid, UuidHash> Storage::neurons() {
     auto k = std::ranges::views::keys(neurons_);
-    return std::unordered_set(k.begin(), k.end());
+    return std::unordered_set<Uuid, UuidHash>(k.begin(), k.end());
 }
 
-std::unordered_set<std::string> Storage::synapses() {
+std::unordered_set<Uuid, UuidHash> Storage::synapses() {
     auto k = std::ranges::views::keys(synapses_);
-    return std::unordered_set(k.begin(), k.end());
+    return std::unordered_set<Uuid, UuidHash>(k.begin(), k.end());
 }
 
-std::unordered_set<std::string> Storage::dendrites() {
+std::unordered_set<Uuid, UuidHash> Storage::dendrites() {
     auto k = std::ranges::views::keys(dendrites_);
-    return std::unordered_set(k.begin(), k.end());
+    return std::unordered_set<Uuid, UuidHash>(k.begin(), k.end());
 }
 
-BrainComponent * Storage::getBrainComponent(const std::string &uuid) const {
+BrainComponent * Storage::getBrainComponent(const Uuid &uuid) const {
     if (auto *item = get<Neuron>(uuid))   return item;
     if (auto *item = get<Dendrite>(uuid)) return item;
     if (auto *item = get<Axon>(uuid))     return item;
@@ -62,7 +62,7 @@ BrainComponent * Storage::getBrainComponent(const std::string &uuid) const {
     return nullptr;
 }
 
-std::unordered_map<std::string, Protein *> &Storage::proteins() {
+std::unordered_map<Uuid, Protein *, UuidHash> &Storage::proteins() {
     return subs_;
 }
 

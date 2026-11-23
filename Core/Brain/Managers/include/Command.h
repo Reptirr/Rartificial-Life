@@ -29,9 +29,24 @@ inline std::string_view toString(CommandType type) {
     return magic_enum::enum_name(type);
 }
 
+enum VarType {
+    STRING,
+    UUID
+};
+struct CommandVar {
+    VarType type;
+    std::string string_var{};
+    Uuid uuid_var{};
+
+    CommandVar(const std::string &s) : type(STRING), string_var(s) {}
+    CommandVar(std::string &&s)      : type(STRING), string_var(std::move(s)) {}
+    CommandVar(const char *s)        : type(STRING), string_var(s) {}
+    CommandVar(const Uuid &id)       : type(UUID),   uuid_var(id) {}
+};
+
 struct Command {
     CommandType type{};
-    std::unordered_map<std::string, std::string> data{};
+    std::unordered_map<std::string, CommandVar> data{};
 };
 
 struct PlanCommand {

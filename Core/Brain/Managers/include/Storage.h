@@ -4,6 +4,7 @@
 #include <Neuron.h>
 #include <unordered_set>
 #include <UUIDGenerator.h>
+#include <Uuid.h>
 
 
 struct SubInfo;
@@ -16,15 +17,15 @@ class Neuron;
 class Storage {
     Genome genome_;
 
-    std::unordered_map<std::string, Neuron *> neurons_{};
-    std::unordered_map<std::string, Axon *> axons_{};
-    std::unordered_map<std::string, Synaps *> synapses_{};
-    std::unordered_map<std::string, Dendrite *> dendrites_{};
+    std::unordered_map<Uuid, Neuron *, UuidHash> neurons_{};
+    std::unordered_map<Uuid, Axon *, UuidHash> axons_{};
+    std::unordered_map<Uuid, Synaps *, UuidHash> synapses_{};
+    std::unordered_map<Uuid, Dendrite *, UuidHash> dendrites_{};
 
-    std::unordered_map<std::string, Protein *> subs_;
+    std::unordered_map<Uuid, Protein *, UuidHash> subs_;
 
     template <typename T>
-    std::string putImpl(std::unordered_map<std::string, T *> &map, T *item);
+    Uuid putImpl(std::unordered_map<Uuid, T *, UuidHash> &map, T *item);
 
     template <typename T>
     static constexpr bool always_false = false;
@@ -48,34 +49,34 @@ public:
         return genome_;
     }
 
-    std::string put(Neuron *neuron);
-    std::string put(Axon *axon);
-    std::string put(Synaps *synaps);
-    std::string put(Dendrite *dendrite);
+    Uuid put(Neuron *neuron);
+    Uuid put(Axon *axon);
+    Uuid put(Synaps *synaps);
+    Uuid put(Dendrite *dendrite);
 
     template <typename T>
-    T *get(const std::string &uuid) const {
+    T *get(const Uuid &uuid) const {
         const auto &map = mapFor<T>(*this);
         auto it = map.find(uuid);
         return it != map.end() ? it->second : nullptr;
     }
 
     template <typename T>
-    bool remove(const std::string &uuid);
+    bool remove(const Uuid &uuid);
 
-    std::unordered_set<std::string> neurons();
-    std::unordered_set<std::string> synapses();
-    std::unordered_set<std::string> dendrites();
+    std::unordered_set<Uuid, UuidHash> neurons();
+    std::unordered_set<Uuid, UuidHash> synapses();
+    std::unordered_set<Uuid, UuidHash> dendrites();
 
-    BrainComponent *getBrainComponent(const std::string &uuid) const;
+    BrainComponent *getBrainComponent(const Uuid &uuid) const;
 
     // subs
-    std::string putProtein(Protein *info) {
-        subs_.insert({info->id, info});
-        return info->id;
+    Uuid putProtein(Protein *info) {
+        auto id = subs_.insert({info->id, info}).first->first;
+        return id;
     }
 
-    std::unordered_map<std::string, Protein *> &proteins();
+    std::unordered_map<Uuid, Protein *, UuidHash> &proteins();
 
     ~Storage();
 };

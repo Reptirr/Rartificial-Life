@@ -6,6 +6,7 @@
 #include <thread>
 #include <World.h>
 #include <WorldView.h>
+#include <Uuid.h>
 
 
 class Simulation : public QObject {
@@ -40,7 +41,7 @@ class Simulation : public QObject {
     }
 
 signals:
-    void onAgentDeath(std::string id);
+    void onAgentDeath(const Uuid &id);
     void simLife(bool running);
 
     void newTick(unsigned int tick);
@@ -57,7 +58,7 @@ public slots:
 
 public:
     explicit Simulation(const SimulationDef &def) : world_(def.dt), def_(def) {
-        controller_.setDeathCons([&](const std::string &id) { emit onAgentDeath(id); });
+        controller_.setDeathCons([&](const Uuid &id) { emit onAgentDeath(id); });
 
         world_.init(&controller_);
 
@@ -121,7 +122,7 @@ public:
             worker_thread_.join();
     }
 
-    void connectUIBrain(BrainView *view, const std::string &agent) const {
+    void connectUIBrain(BrainView *view, const Uuid &agent) const {
         auto *brain = storage_.getAgent(agent)->getBrain();
 
         view->connectWithBrain(brain);
@@ -138,7 +139,7 @@ public:
     World *getWorld() {
         return &world_;
     }
-    const std::unordered_map<std::string, Agent *>& getAgents() {
+    const std::unordered_map<Uuid, Agent *, UuidHash>& getAgents() {
         return storage_.agents();
     }
 

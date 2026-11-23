@@ -16,7 +16,7 @@ int Agent::convertIntensityToFreq(double intensity) {
     return static_cast<int>(std::round(MIN_PERIOD / intensity));
 }
 
-void Agent::setInputNeuronIntensity(const std::string &id, const double intensity) {
+void Agent::setInputNeuronIntensity(const Uuid &id, const double intensity) {
     my_assert(input_freqs.contains(id));
     my_assert(input_counters.contains(id));
 
@@ -28,14 +28,14 @@ void Agent::setInputNeuronIntensity(const std::string &id, const double intensit
     neuron->setIntensity(intensity);
 }
 
-bool Agent::getNeuronSpiked(const std::string &id) {
+bool Agent::getNeuronSpiked(const Uuid &id) {
     auto *neuron = brain_.getStorage().get<Neuron>(id);
     auto isSpiked = neuron->isSpiked();
 
     return isSpiked;
 }
 
-std::string Agent::createInputNeuron(BrainPoint p, double init_intensity) {
+Uuid Agent::createInputNeuron(BrainPoint p, double init_intensity) {
     auto res = brain_.createInputNeuron(p);
 
     // init freq & counter
@@ -47,7 +47,7 @@ std::string Agent::createInputNeuron(BrainPoint p, double init_intensity) {
     return res.at("neuron");
 }
 
-std::string Agent::createOutputNeuron(BrainPoint p) {
+Uuid Agent::createOutputNeuron(BrainPoint p) {
     return brain_.createOutputNeuron(p).at("neuron");
 }
 

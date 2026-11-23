@@ -56,15 +56,15 @@ void World::tick() {
     executor_->apply(); // moves, births, deaths, removes
 }
 
-std::string World::addAgentBody(const AgentBodyConfig &conf) const {
+Uuid World::addAgentBody(const AgentBodyConfig &conf) const {
     return controller_->addAgentBody(conf);
 }
 
-std::string World::addObstacle(QPointF pos, QRectF rect, QColor color) const {
+Uuid World::addObstacle(QPointF pos, QRectF rect, QColor color) const {
     return controller_->addObstacle(pos, rect, color);
 }
 
-std::string World::addFood(QPointF pos) const {
+Uuid World::addFood(QPointF pos) const {
     return controller_->addFood(pos);
 }
 
@@ -72,14 +72,14 @@ const WorldStorage * World::getStorage() const {
     return storage_.get();
 }
 
-void World::setCreateConsumer(const StringConsumer &cons) {
+void World::setCreateConsumer(const IdConsumer &cons) {
     data_collector_.setCreateConsumer(cons);
 }
 
-void World::setUpdateConsumer(const StringConsumer &cons) {
+void World::setUpdateConsumer(const IdConsumer &cons) {
     data_collector_.setUpdateConsumer(cons);
 }
 
-void World::setRemoveConsumer(const StringConsumer &cons) {
+void World::setRemoveConsumer(const IdConsumer &cons) {
     data_collector_.setRemoveConsumer(cons);
 }

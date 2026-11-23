@@ -1,11 +1,12 @@
 #pragma once
 #include <BrainPoint.h>
 #include <Gen.h>
+#include <Uuid.h>
 #include <map>
 
 
 struct Protein {
-    std::string id;
+    Uuid id;
 
     BrainPoint point;
     double dist{};

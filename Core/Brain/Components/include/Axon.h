@@ -7,19 +7,20 @@
 #include <Executor.h>
 #include <random>
 #include <RandomGenerator.h>
-#include <string>
 #include <unordered_set>
 #include <utility>
+#include <Uuid.h>
 
 struct AxonNode {
     BrainPoint point{};
-    bool active{}; // при соединению с синапсам равен false
-    std::string synaps{}; // "" если у него синапса нет, айди синапса если есть
+    bool active{}; // при соединении с синапсам равен false
+    Uuid synaps{}; // nil если у него синапса нет, айди синапса если есть
     int previous_node{-1}; // индекс в векторе
 
     std::string toString() const {
         return "AxonNode{point=(" + std::to_string(point.x) + ", " + std::to_string(point.y) + ")"
              + ", active=" + (active ? "true" : "false")
+             + ", synaps=" + synaps.toString()
              + ", previous_node=" + std::to_string(previous_node) + "}";
     }
 };
@@ -29,8 +30,8 @@ class Synaps;
 class Axon : public Executable, public BrainComponent {
     SubMap *sub_map_{};
 
-    std::unordered_set<std::string> synapses_{};
-    std::string neuron_{};
+    std::unordered_set<Uuid, UuidHash> synapses_{};
+    Uuid neuron_{};
 
     // growing
     std::vector<AxonNode> nodes_{};
@@ -44,9 +45,8 @@ class Axon : public Executable, public BrainComponent {
     double step_deviation{};
     double search_dendrite_r{};
     int max_nodes = 200;
-    std::unordered_set<std::string> move_proteins_;
-    std::unordered_set<std::string> avoid_proteins_;
-
+    std::unordered_set<Uuid, UuidHash> move_proteins_;
+    std::unordered_set<Uuid, UuidHash> avoid_proteins_;
 
 
     static BrainPoint moveByAzimuth(const BrainPoint p, const double azimuth, const double length) {
@@ -72,7 +72,7 @@ protected:
     }
 
 public:
-    explicit Axon(Executor *executor, std::string neuron) : Executable(executor), neuron_(std::move(neuron)) {
+    explicit Axon(Executor *executor, Uuid neuron) : Executable(executor), neuron_(neuron) {
 
     }
 
@@ -87,9 +87,15 @@ public:
             genblock = genome.genblocks.at(proteins.at(0)->genblock_i);
         }
 
-        // move/avoid proteins
-        move_proteins_ = genblock.axon_move_proteins;
-        avoid_proteins_ = genblock.axon_avoid_proteins;
+        // move/avoid proteins - convert string IDs to Uuid
+        move_proteins_.clear();
+        avoid_proteins_.clear();
+        for (const auto& id : genblock.axon_move_proteins) {
+            move_proteins_.insert(Uuid(id));
+        }
+        for (const auto& id : genblock.axon_avoid_proteins) {
+            avoid_proteins_.insert(Uuid(id));
+        }
 
         auto dscr = [&](std::string s) {
             if (genblock.contains(s)) return std::stod(genblock.at(s));
@@ -103,7 +109,7 @@ public:
         max_nodes = dscr(Gen::AXON_MAX_NODES);
     }
 
-    void addSynaps(const std::string& synaps, int node_i) {
+    void addSynaps(const Uuid& synaps, int node_i) {
         synapses_.insert(synaps);
         if (node_i >= 0)
             nodes_.at(node_i).synaps = synaps;
@@ -135,7 +141,7 @@ public:
             bool has_influence = false;
 
             for (const auto* protein : sub_map_->subsAtPoint(point_)) {
-                const auto id = protein->id;
+                const Uuid id(protein->id);
 
                 const bool move = move_proteins_.contains(id);
                 const bool avoid = avoid_proteins_.contains(id);
@@ -221,13 +227,13 @@ public:
 
 
     // getters
-    std::unordered_set<std::string> getSynapses() {
+    std::unordered_set<Uuid, UuidHash> getSynapses() const {
         return synapses_;
     }
-    std::string getNeuron() {
+    Uuid getNeuron() const {
         return neuron_;
     }
-    std::vector<AxonNode> nodes() {
+    std::vector<AxonNode> nodes() const {
         return nodes_;
     }
 };

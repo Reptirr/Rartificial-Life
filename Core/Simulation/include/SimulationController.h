@@ -5,6 +5,7 @@
 #include <SimulationBridge.h>
 #include <SimulationStorage.h>
 #include <string>
+#include <Uuid.h>
 
 class World;
 
@@ -13,21 +14,21 @@ class SimulationController : public SimulationBridge {
     World &world_;
     SimulationStorage &storage_;
 
-    StringConsumer deathCons;
+    IdConsumer deathCons;
 
 public:
     explicit SimulationController(World &world, SimulationStorage &storage)
         : world_(world), storage_(storage) {
     }
 
-    void setDeathCons(const StringConsumer &cons) {
+    void setDeathCons(const IdConsumer &cons) {
         deathCons = cons;
     }
 
-    std::string createAgent(AgentDef &agent_def);
-    void createAgent(std::string parent_id) override;
+    Uuid createAgent(AgentDef &agent_def);
+    void createAgent(const Uuid &parent_id) override;
 
-    void deleteAgent(const std::string id) override {
+    void deleteAgent(const Uuid &id) override {
         deathCons(id);
 
         auto *agent = storage_.removeAgent(id);
