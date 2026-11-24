@@ -1,13 +1,11 @@
 #pragma once
-#include <Agent.h>
 #include <BrainView.h>
+#include <QObject>
 #include <SimulationController.h>
+#include <SimulationRunner.h>
 #include <SimulationStorage.h>
-#include <thread>
 #include <World.h>
 #include <WorldView.h>
-#include <Uuid.h>
-
 
 class Simulation : public QObject {
     Q_OBJECT
@@ -15,111 +13,37 @@ class Simulation : public QObject {
     World world_;
     SimulationStorage storage_;
     SimulationController controller_{world_, storage_};
+    SimulationRunner *runner_{};
 
     SimulationDef def_;
 
-    std::atomic<bool> running{};
-    std::chrono::steady_clock::time_point pre_resolve_tps_time{};
-
-    std::atomic<unsigned int> tick_i{};
-    std::thread worker_thread_;
-    TickContext ctx_;
-
-    void tick() {
-        // сенсоры
-        for (auto *agent : storage_.agents() | std::views::values)
-            agent->handleSensors();
-
-        // обрабатываем
-        for (auto *agent : storage_.agents() | std::views::values)
-            agent->tick();
-        world_.tick();
-
-        // движения
-        for (auto *agent : storage_.agents() | std::views::values)
-            agent->handleOutputs();
-    }
 
 signals:
-    void onAgentDeath(const Uuid &id);
+    void agentBirth(Uuid id);
+    void agentDeath(Uuid id);
     void simLife(bool running);
 
-    void newTick(unsigned int tick);
     void tpsValue(double tps);
+    void foodValue(int num);
+
+    void newTick(unsigned int tick);
     void seedValue(unsigned int seed);
 
 public slots:
     void onSimLifeToggle() {
-        if (running) stop(true);
-        else start();
+        runner_->toggle();
 
-        emit simLife(running.load()); // уведомляем о изменении состояния
+        emit simLife(runner_->running());
     }
 
 public:
     explicit Simulation(const SimulationDef &def) : world_(def.dt), def_(def) {
-        controller_.setDeathCons([&](const Uuid &id) { emit onAgentDeath(id); });
+        controller_.setDeathCons([&](const Uuid &id) { emit agentDeath(id); });
 
         world_.init(&controller_);
 
-        ctx_ = TickContext{
-            .tick_i = -1,
-            .simulation = this,
-            .world = &world_,
-
-            .sim_controller = &controller_,
-            .sim_storage = &storage_
-        };
-
-        def_.experiment->preFirstTick(ctx_);
-
-        auto *timer = new QTimer(this);
-
-        connect(timer, &QTimer::timeout, [&] {
-            auto elapsed = std::chrono::duration<double>(
-                std::chrono::steady_clock::now() - pre_resolve_tps_time
-            ).count();
-            auto tps_s = tick_i.load() / elapsed;
-
-            emit tpsValue(tps_s);
-
-            tick_i = 0;
-            pre_resolve_tps_time = std::chrono::steady_clock::now();
-        });
-        timer->start(250);
-    }
-
-    void start() {
-        if (running.load()) return;
-
-        running = true;
-        pre_resolve_tps_time = std::chrono::steady_clock::now();
-        worker_thread_ = std::thread([&] {
-            const auto step = std::chrono::milliseconds(1000 / def_.need_tps);
-            auto next = std::chrono::steady_clock::now();
-
-            auto tps_time = std::chrono::steady_clock::now();
-
-            while (running.load()) {
-                def_.experiment->onTick(ctx_);
-                ctx_.tick_i++;
-                ++tick_i;
-                emit newTick(ctx_.tick_i);
-                tick();
-
-                if (def_.need_tps != -1) {
-                    next += step;
-                    std::this_thread::sleep_until(next);
-                }
-            }
-        });
-    }
-    void stop(const bool join) {
-        if (!running.load()) return;
-
-        running = false;
-        if (worker_thread_.joinable() && join)
-            worker_thread_.join();
+        runner_ = new SimulationRunner(this, &controller_, &storage_, def, [&](double tps) { emit tpsValue(tps); },
+                                       [&](int tick) { emit newTick(tick); });
     }
 
     void connectUIBrain(BrainView *view, const Uuid &agent) const {
@@ -144,7 +68,6 @@ public:
     }
 
     ~Simulation() override {
-        stop(true);
         delete def_.experiment;
     }
 };

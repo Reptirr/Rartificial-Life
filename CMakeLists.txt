@@ -126,6 +126,8 @@ add_executable(Rartificial_Life
         GeneralUI/include/ActionManager.h
         GeneralUI/include/StatusBar.h
         Uuid.h
+        Core/Simulation/include/SimulationRunner.h
+        Core/Simulation/src/SimulationRunner.cpp
 )
 
 target_link_libraries(Rartificial_Life PRIVATE

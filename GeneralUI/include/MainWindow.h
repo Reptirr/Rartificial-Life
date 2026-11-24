@@ -33,7 +33,7 @@ class MainWindow : public QMainWindow {
             auto *brain = simulation_->getAgents().at(id)->getBrain();
             agent_tabs_->onAgentOpen(id, brain);
         });
-        connect(simulation_.get(), &Simulation::onAgentDeath, agent_tabs_, &AgentTabs::onAgentClose);
+        connect(simulation_.get(), &Simulation::agentDeath, agent_tabs_, &AgentTabs::onAgentClose);
 
         // ACTIONS -> SIM (управление)
         connect(action_manager_, &ActionManager::simLifeTrigger, simulation_.get(), &Simulation::onSimLifeToggle);
