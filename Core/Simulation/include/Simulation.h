@@ -68,6 +68,7 @@ public:
     }
 
     ~Simulation() override {
+        delete runner_;
         delete def_.experiment;
     }
 };

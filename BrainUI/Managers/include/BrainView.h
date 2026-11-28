@@ -69,7 +69,6 @@ public:
         setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         setDragMode(ScrollHandDrag);
-        setViewportUpdateMode(BoundingRectViewportUpdate);
         setOptimizationFlags(DontSavePainterState
                              | DontAdjustForAntialiasing);
         scene_->setItemIndexMethod(QGraphicsScene::NoIndex);
@@ -80,7 +79,6 @@ public:
         setRenderHint(QPainter::Antialiasing);
 
         setBackgroundBrush(QColorConstants::White);
-
 
         setScene(scene_);
 

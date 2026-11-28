@@ -16,9 +16,10 @@ class SimulationRunner {
     std::atomic<int> tick_i{};
     TickContext ctx_;
 
-    std::atomic<bool> tps_measuring_{};
     std::function<void(double)> tps_listener_;
     std::function<void(int)> tick_listener_;
+
+    std::atomic<bool> tps_measuring_{};
     int previous_measure_tick_{};
     Clock::time_point previous_measure_time_;
     std::thread tps_timer_;

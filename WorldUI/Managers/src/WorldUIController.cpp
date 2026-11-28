@@ -11,7 +11,7 @@ void WorldUIController::newWorldObject(const Uuid &id, WorldObjectData *data) {
             break;
         case EntityKind::AGENT_BODY:
             item = new AgentBodyItem(data);
-            QObject::connect(item, &WorldObjectItem::mouseClick, view_, &WorldView::onAgentOpen);
+            QObject::connect(item, &WorldObjectItem::mouseDoubleClick, view_, &WorldView::onAgentOpen);
             break;
         case EntityKind::FOOD:
             item = new FoodItem(data);

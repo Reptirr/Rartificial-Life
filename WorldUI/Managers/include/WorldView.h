@@ -1,14 +1,15 @@
 #pragma once
 #include <QGraphicsScene>
 #include <QGraphicsView>
+#include <QOpenGLWidget>
 #include <QTimer>
 #include <QWheelEvent>
+#include <Uuid.h>
 #include <World.h>
 #include <WorldUIBatcher.h>
 #include <WorldUIController.h>
 #include <WorldUIMapper.h>
 #include <WorldUIStorage.h>
-#include <Uuid.h>
 
 class WorldView : public QGraphicsView {
     Q_OBJECT
@@ -22,10 +23,6 @@ class WorldView : public QGraphicsView {
     QTimer timer_;
 
 protected:
-    void drawBackground(QPainter *painter, const QRectF &rect) override {
-
-    }
-
     void wheelEvent(QWheelEvent *event) override {
         const int dy = event->angleDelta().y();
         if (dy == 0) {
@@ -40,8 +37,19 @@ protected:
     }
 
 public slots:
-    void onAgentOpen(const Uuid &id) {
+    void onAgentOpen(const Uuid &id) { // from WorldUIController
         emit agentOpen(id);
+    }
+
+    void onAgentTabOpen(Uuid id) {
+        auto *obj = ui_storage_.getObject(id);
+
+        obj->onPenEnable();
+    }
+    void onAgentTabClose(Uuid id) {
+        auto *obj = ui_storage_.getObject(id);
+
+        obj->onPenDisable();
     }
 
 signals:
@@ -50,11 +58,15 @@ signals:
 public:
     explicit WorldView(QWidget *parent) : QGraphicsView(parent) {
         setScene(scene_);
-        setRenderHints(QPainter::Antialiasing);
         setTransformationAnchor(AnchorUnderMouse);
         setDragMode(ScrollHandDrag);
-        setBackgroundBrush(QColorConstants::DarkGreen);
+
+        // сглаживание
+        setViewport(new QOpenGLWidget);
         setViewportUpdateMode(FullViewportUpdate);
+        setRenderHint(QPainter::Antialiasing);
+
+        setBackgroundBrush(QColorConstants::White);
 
         setSceneRect(-500*WorldUIConfig::pixelsPerMeter, -500*WorldUIConfig::pixelsPerMeter, 1000*WorldUIConfig::pixelsPerMeter, 1000*WorldUIConfig::pixelsPerMeter);
 

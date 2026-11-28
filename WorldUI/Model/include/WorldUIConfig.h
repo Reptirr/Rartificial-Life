@@ -6,6 +6,8 @@ struct WorldUIConfig {
 
     // world obj
     static constexpr double world_obj_pen_w = 0;
+    static constexpr double world_obj_light_pen_w = 1;
+    static constexpr QColor world_obj_light_pen_color = QColorConstants::Red;
 
     // agent
     static constexpr double agent_angle_head_size = 1;

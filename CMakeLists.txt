@@ -11,7 +11,6 @@ set(CMAKE_AUTOMOC ON)   # moc: для Q_OBJECT, сигналов и слотов
 set(CMAKE_AUTORCC ON)   # rcc: для .qrc ресурсов
 
 find_package(Qt6 REQUIRED Core Gui Widgets OpenGLWidgets)
-
 # box2d
 include(FetchContent)
 
@@ -115,7 +114,7 @@ add_executable(Rartificial_Life
         WorldUI/Components/include/FoodItem.h
         Core/Brain/Managers/src/SubMap.cpp
         Core/Simulation/src/SimulationController.cpp
-        GeneralUI/include/AgentTabs.h
+        GeneralUI/Left/include/AgentTabs.h
         WorldUI/Managers/src/WorldUIController.cpp
         Core/Simulation/include/SimulationBridge.h
         Core/Simulation/include/Experiment.h
@@ -128,6 +127,10 @@ add_executable(Rartificial_Life
         Uuid.h
         Core/Simulation/include/SimulationRunner.h
         Core/Simulation/src/SimulationRunner.cpp
+        Core/Simulation/include/Statistics.h
+        GeneralUI/Left/include/StackedWidget.h
+        GeneralUI/include/AppStyle.h
+        GeneralUI/Left/include/StackedToolBar.h
 )
 
 target_link_libraries(Rartificial_Life PRIVATE
@@ -137,6 +140,15 @@ target_link_libraries(Rartificial_Life PRIVATE
         Qt6::OpenGLWidgets
         box2d
 )
+
+# assets
+qt_add_resources(Rartificial_Life "rl_icons"
+        PREFIX "/icons"
+        BASE "${CMAKE_CURRENT_SOURCE_DIR}/Assets/icons"
+        FILES
+        "Assets/icons/brain.svg"
+)
+
 
 include_directories(Rartificial_Life
         ${CMAKE_SOURCE_DIR}
@@ -165,6 +177,7 @@ include_directories(Rartificial_Life
         WorldUI/Utils/include
 
         GeneralUI/include
+        GeneralUI/Left/include
 
         Experiments/include
 )
